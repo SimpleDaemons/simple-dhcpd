@@ -170,10 +170,9 @@ package: build
 ifeq ($(PLATFORM),macos)
 	@echo "Building macOS packages..."
 	@mkdir -p $(DIST_DIR)
-	cd $(BUILD_DIR) && cpack -G DragNDrop
+	cd $(BUILD_DIR) && ../scripts/build-dmg.sh
 	cd $(BUILD_DIR) && ../scripts/build-pkg.sh
-	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.dmg $(DIST_DIR)/ 2>/dev/null || true
-	@echo "macOS packages created: DMG and PKG"
+	@echo "macOS packages created: Enhanced DMG and PKG"
 else ifeq ($(PLATFORM),linux)
 	@echo "Building Linux packages..."
 	@mkdir -p $(DIST_DIR)
