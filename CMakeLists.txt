@@ -179,13 +179,15 @@ if(ENABLE_PACKAGING)
         # macOS DMG and PKG packages
         set(CPACK_GENERATOR "DragNDrop;productbuild")
         
+        # Create a single PKG installer instead of component package
+        set(CPACK_PRODUCTBUILD_PACKAGE_NAME "${PROJECT_NAME}")
+        set(CPACK_PRODUCTBUILD_IDENTIFIER "com.simpledaemons.${PROJECT_NAME}")
+        set(CPACK_PRODUCTBUILD_DISTRIBUTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/deployment/distribution.xml")
+        
         # DMG settings
         set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}")
         set(CPACK_DMG_FORMAT "UDBZ")
         
-        # PKG settings
-        set(CPACK_PRODUCTBUILD_IDENTIFIER "com.simpledaemons.${PROJECT_NAME}")
-        set(CPACK_PRODUCTBUILD_PACKAGE_NAME "${PROJECT_NAME}")
         
     else()
         # Linux DEB and RPM packages

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Simple DHCP Daemon</title>
+    <welcome file="Welcome.txt"/>
+    <readme file="ReadMe.txt"/>
+    <license file="License.txt"/>
+    <options allow-external-scripts="no" customize="allow" rootVolumeOnly="false"/>
+    
+    <choices-outline>
+        <line choice="default">
+            <line choice="simple-dhcpd"/>
+        </line>
+    </choices-outline>
+    
+    <choice id="default"/>
+    <choice id="simple-dhcpd" visible="false">
+        <pkg-ref id="com.simpledaemons.simple-dhcpd"/>
+    </choice>
+    
+    <pkg-ref id="com.simpledaemons.simple-dhcpd" version="0.1.0" onConclusion="none">simple-dhcpd.pkg</pkg-ref>
+    
+    <product id="com.simpledaemons.simple-dhcpd" version="0.1.0"/>
+</installer-gui-script>
