@@ -1,4 +1,6 @@
 /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/simple-dhcpd.dir
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/package.dir
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/package_source.dir
 /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/edit_cache.dir
 /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/rebuild_cache.dir
 /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/list_install_components.dir

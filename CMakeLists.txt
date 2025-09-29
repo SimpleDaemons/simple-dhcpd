@@ -125,11 +125,11 @@ install(DIRECTORY config/
 
 # Install service files
 if(UNIX AND NOT APPLE)
-    install(FILES deployment/systemd/${PROJECT_NAME}.service
+    install(FILES deployment/systemd/simple-dhcpd.service
         DESTINATION lib/systemd/system
     )
 elseif(APPLE)
-    install(FILES deployment/launchd/com.${PROJECT_NAME}.${PROJECT_NAME}.plist
+    install(FILES deployment/launchd/com.simple-dhcpd.simple-dhcpd.plist
         DESTINATION /Library/LaunchDaemons
     )
 endif()

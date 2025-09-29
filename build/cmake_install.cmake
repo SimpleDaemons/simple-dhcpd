@@ -67,7 +67,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/Library/LaunchDaemons" TYPE FILE FILES "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/deployment/launchd/com.simple-dhcpd.simple-dhcpd.plist")
+  file(INSTALL DESTINATION "/Library/LaunchDaemons" TYPE FILE RENAME "com.simple-dhcpd.simple-dhcpd.plist" FILES "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/deployment/launchd/com.{{PROJECT_NAME}}.{{PROJECT_NAME}}.plist")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT

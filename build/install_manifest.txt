@@ -1,0 +1,14 @@
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/bin/simple-dhcpd
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/logger.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/dhcp_types.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/dhcp_utils.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/dhcp_parser.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/lease_manager.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/dhcp_server.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/config.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/include/udp_socket.hpp
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/etc/simple-dhcpd/simple-dhcpd.conf
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/etc/simple-dhcpd/examples/advanced/simple-dhcpd.conf
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/etc/simple-dhcpd/examples/simple/simple-dhcpd.conf
+/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/_CPack_Packages/Darwin/DragNDrop/simple-dhcpd-0.1.0-Darwin/etc/simple-dhcpd/examples/production/simple-dhcpd.conf
+/Library/LaunchDaemons/com.simple-dhcpd.simple-dhcpd.plist

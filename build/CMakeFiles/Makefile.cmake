@@ -17,6 +17,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/opt/local/share/cmake-3.31/Modules/CMakeLanguageInformation.cmake"
   "/opt/local/share/cmake-3.31/Modules/CMakeSystemSpecificInformation.cmake"
   "/opt/local/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake"
+  "/opt/local/share/cmake-3.31/Modules/CPack.cmake"
+  "/opt/local/share/cmake-3.31/Modules/CPackComponent.cmake"
   "/opt/local/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake"
   "/opt/local/share/cmake-3.31/Modules/CheckIncludeFileCXX.cmake"
   "/opt/local/share/cmake-3.31/Modules/CheckLibraryExists.cmake"
@@ -42,6 +44,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/opt/local/share/cmake-3.31/Modules/Platform/Linker/Apple-AppleClang-CXX.cmake"
   "/opt/local/share/cmake-3.31/Modules/Platform/Linker/Apple-AppleClang.cmake"
   "/opt/local/share/cmake-3.31/Modules/Platform/UnixPaths.cmake"
+  "/opt/local/share/cmake-3.31/Templates/CPackConfig.cmake.in"
   )
 
 # The corresponding makefile is:
@@ -52,6 +55,8 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
+  "CPackConfig.cmake"
+  "CPackSourceConfig.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
