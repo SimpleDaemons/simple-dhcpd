@@ -1,0 +1,17 @@
+[Unit]
+Description=A lightweight and secure DHCP server daemon
+After=network.target
+
+[Service]
+Type=simple
+User=simple-dhcpd
+Group=simple-dhcpd
+ExecStart=/usr/local/bin/simple-dhcpd
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=simple-dhcpd
+
+[Install]
+WantedBy=multi-user.target

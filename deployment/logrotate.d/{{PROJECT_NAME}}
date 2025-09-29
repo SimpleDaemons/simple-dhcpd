@@ -1,0 +1,14 @@
+/var/log/simple-dhcpd/*.log {
+    daily
+    missingok
+    rotate 52
+    compress
+    delaycompress
+    notifempty
+    create 644 _simple-dhcpd _simple-dhcpd
+    postrotate
+        /bin/systemctl reload simple-dhcpd > /dev/null 2>&1 || true
+    endscript
+    sharedscripts
+    su _simple-dhcpd _simple-dhcpd
+}
