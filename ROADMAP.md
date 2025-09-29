@@ -63,8 +63,9 @@ The Simple DHCP Daemon (simple-dhcpd) is a lightweight, high-performance DHCP se
 - [x] DHCP Inform handling
 
 ### Phase 3: Advanced DHCP Features
-**Status**: 📋 Planned
+**Status**: 🚧 In Progress
 **Timeline**: 6-8 weeks
+**Start Date**: December 2024
 
 #### Lease Management
 - [ ] Dynamic lease allocation
