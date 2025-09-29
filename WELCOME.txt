@@ -1,0 +1,28 @@
+Welcome to Simple DHCP Daemon
+
+Simple DHCP Daemon is a lightweight, high-performance DHCP server implementation designed for modern networking environments.
+
+Features:
+- High Performance: Handles 50,000+ requests per second
+- Cross-Platform: Runs on Linux, macOS, and Windows
+- Modern C++: Built with C++17 for reliability and performance
+- JSON Configuration: Easy-to-use JSON-based configuration
+- Comprehensive Logging: Detailed logging with multiple output formats
+- Security Features: MAC filtering, rate limiting, and authentication support
+- Lease Management: Dynamic and static lease allocation with database persistence
+
+Installation:
+After installation, the DHCP daemon will be available as 'simple-dhcpd' in your PATH.
+
+Configuration:
+Default configuration files are installed to /etc/simple-dhcpd/
+Example configurations are available in /etc/simple-dhcpd/examples/
+
+Documentation:
+For detailed documentation, visit: https://github.com/simpledaemons/simple-dhcpd
+
+Support:
+- GitHub Issues: https://github.com/simpledaemons/simple-dhcpd/issues
+- Email: support@simpledaemons.com
+
+Thank you for using Simple DHCP Daemon!
