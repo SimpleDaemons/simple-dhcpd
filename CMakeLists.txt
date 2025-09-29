@@ -5,6 +5,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(simple-dhcpd VERSION 0.1.0 LANGUAGES CXX)
 
+# Set project description
+set(PROJECT_DESCRIPTION "A lightweight and secure DHCP server daemon")
+
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -139,7 +142,7 @@ endif()
 
 # Package generation
 if(ENABLE_PACKAGING)
-    # CPack configuration is already included above
+    include(CPack)
     
     # Package information
     set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
@@ -278,8 +281,6 @@ if(ENABLE_PACKAGING)
         "*.lib"
     )
     
-    # CPack configuration is already included above
-    # CPack configuration is already included above
 endif()
 
 # Print configuration summary
