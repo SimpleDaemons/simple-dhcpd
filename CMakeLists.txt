@@ -130,7 +130,7 @@ if(UNIX AND NOT APPLE)
     )
 elseif(APPLE)
     install(FILES deployment/launchd/com.simple-dhcpd.simple-dhcpd.plist
-        DESTINATION /Library/LaunchDaemons
+        DESTINATION Library/LaunchDaemons
     )
 endif()
 
@@ -142,8 +142,6 @@ endif()
 
 # Package generation
 if(ENABLE_PACKAGING)
-    include(CPack)
-    
     # Package information
     set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
     set(CPACK_PACKAGE_VENDOR "SimpleDaemons")
@@ -153,8 +151,12 @@ if(ENABLE_PACKAGING)
     set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/simpledaemons/${PROJECT_NAME}")
     
     # Package files
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+        set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+        set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    endif()
     
     # Platform-specific package settings
     if(WIN32)
@@ -174,14 +176,12 @@ if(ENABLE_PACKAGING)
         set(CPACK_ZIP_COMPONENT_INSTALL ON)
         
     elseif(APPLE)
-        # macOS DMG and PKG packages
-        set(CPACK_GENERATOR "DragNDrop;productbuild")
+        # macOS DMG package
+        set(CPACK_GENERATOR "DragNDrop")
         
         # DMG settings
         set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}")
         set(CPACK_DMG_FORMAT "UDBZ")
-        set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/assets/dmg_background.png")
-        set(CPACK_DMG_DS_STORE "${CMAKE_CURRENT_SOURCE_DIR}/assets/DS_Store")
         
         # PKG settings
         set(CPACK_PRODUCTBUILD_IDENTIFIER "com.simpledaemons.${PROJECT_NAME}")
@@ -281,6 +281,7 @@ if(ENABLE_PACKAGING)
         "*.lib"
     )
     
+    include(CPack)
 endif()
 
 # Print configuration summary
