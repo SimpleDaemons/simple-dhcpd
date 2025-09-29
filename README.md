@@ -55,9 +55,54 @@ brew tap simpledaemons/simple-dhcpd
 brew install simple-dhcpd
 ```
 
+### Configuration Examples
+
+We provide ready-to-use configuration examples for different environments:
+
+#### Simple Environment (Home/Small Office)
+```bash
+# Copy simple configuration
+sudo cp config/examples/simple/simple-dhcpd.conf /etc/simple-dhcpd/
+sudo systemctl start simple-dhcpd
+```
+
+**Features:**
+- Single subnet (192.168.1.0/24)
+- 100 IP addresses for dynamic allocation
+- Static reservations for router and NAS
+- Basic logging and monitoring
+
+#### Advanced Environment (Medium Office)
+```bash
+# Copy advanced configuration
+sudo cp config/examples/advanced/simple-dhcpd.conf /etc/simple-dhcpd/
+sudo systemctl start simple-dhcpd
+```
+
+**Features:**
+- Multiple subnets (main office, guest, IoT)
+- MAC filtering and rate limiting
+- Option 82 support
+- Performance optimization with caching
+- Prometheus metrics
+
+#### Production Environment (Enterprise)
+```bash
+# Copy production configuration
+sudo cp config/examples/production/simple-dhcpd.conf /etc/simple-dhcpd/
+sudo systemctl start simple-dhcpd
+```
+
+**Features:**
+- 4 subnets with different security levels
+- MySQL database with connection pooling
+- Comprehensive security (authentication, access control)
+- High availability with failover
+- Advanced monitoring and alerting
+
 ### Basic Configuration
 
-Create a configuration file at `/etc/simple-dhcpd/simple-dhcpd.conf`:
+Create a minimal configuration file:
 
 ```json
 {
@@ -73,7 +118,11 @@ Create a configuration file at `/etc/simple-dhcpd/simple-dhcpd.conf`:
         "domain_name": "local",
         "lease_time": 86400
       }
-    ]
+    ],
+    "logging": {
+      "enable": true,
+      "level": "info"
+    }
   }
 }
 ```
@@ -129,11 +178,37 @@ sudo simple-dhcpd -v -c /etc/simple-dhcpd/simple-dhcpd.conf
 - ✅ Prometheus metrics support
 - ✅ JSON and text log formats
 
-## Configuration
+## Configuration Examples
 
-### Basic Configuration
+### Simple Home Network
 
-The server uses JSON configuration files. Here's a basic example:
+```json
+{
+  "dhcp": {
+    "listen": ["0.0.0.0:67"],
+    "subnets": [
+      {
+        "name": "home-network",
+        "network": "192.168.1.0/24",
+        "range": "192.168.1.100-192.168.1.200",
+        "gateway": "192.168.1.1",
+        "dns_servers": ["8.8.8.8", "8.8.4.4"],
+        "domain_name": "home.local",
+        "lease_time": 86400,
+        "reservations": [
+          {
+            "mac_address": "00:11:22:33:44:55",
+            "ip_address": "192.168.1.10",
+            "hostname": "router"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Enterprise Network
 
 ```json
 {
@@ -141,28 +216,20 @@ The server uses JSON configuration files. Here's a basic example:
     "listen": ["0.0.0.0:67", "[::]:67"],
     "subnets": [
       {
-        "name": "main-subnet",
-        "network": "192.168.1.0/24",
-        "range": "192.168.1.100-192.168.1.200",
-        "gateway": "192.168.1.1",
-        "dns_servers": ["8.8.8.8", "8.8.4.4"],
-        "domain_name": "local",
-        "lease_time": 86400,
-        "max_lease_time": 172800,
-        "options": [
-          {
-            "name": "subnet-mask",
-            "value": "255.255.255.0"
-          },
-          {
-            "name": "routers",
-            "value": "192.168.1.1"
-          }
-        ]
+        "name": "main-office",
+        "network": "10.0.1.0/24",
+        "range": "10.0.1.100-10.0.1.200",
+        "gateway": "10.0.1.1",
+        "dns_servers": ["10.0.1.10", "10.0.1.11"],
+        "domain_name": "company.local",
+        "lease_time": 43200
       }
     ],
     "security": {
-      "enable": true,
+      "mac_filtering": {
+        "enabled": true,
+        "mode": "allow"
+      },
       "rate_limiting": {
         "enabled": true,
         "requests_per_minute": 1000
@@ -171,15 +238,11 @@ The server uses JSON configuration files. Here's a basic example:
     "logging": {
       "enable": true,
       "level": "info",
-      "log_file": "/var/log/simple-dhcpd.log"
+      "format": "json"
     }
   }
 }
 ```
-
-### Advanced Configuration
-
-For advanced configuration options, see the [Configuration Guide](docs/configuration/README.md).
 
 ## Command Line Options
 
@@ -279,15 +342,6 @@ sudo make install
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-## Documentation
-
-- [Getting Started](docs/getting-started/README.md)
-- [Configuration Guide](docs/configuration/README.md)
-- [User Guide](docs/user-guide/README.md)
-- [Deployment Guide](docs/deployment/README.md)
-- [Troubleshooting](docs/troubleshooting/README.md)
-- [API Reference](docs/api/README.md)
-
 ## Performance
 
 ### Benchmarks
@@ -313,6 +367,23 @@ Simple DHCP Daemon includes several security features:
 - **Access Control**: IP-based access control lists
 
 See the [Security Guide](docs/configuration/security.md) for detailed information.
+
+## Documentation
+
+- [Getting Started](docs/getting-started/README.md)
+- [Configuration Guide](docs/configuration/README.md)
+- [User Guide](docs/user-guide/README.md)
+- [Deployment Guide](docs/deployment/README.md)
+- [Troubleshooting](docs/troubleshooting/README.md)
+- [API Reference](docs/api/README.md)
+
+## Configuration Examples
+
+We provide comprehensive configuration examples for different environments:
+
+- **[Simple Environment](config/examples/simple/README.md)**: Home networks and small offices
+- **[Advanced Environment](config/examples/advanced/README.md)**: Medium offices with security requirements
+- **[Production Environment](config/examples/production/README.md)**: Enterprise deployments with high availability
 
 ## License
 
