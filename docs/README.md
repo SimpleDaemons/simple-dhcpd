@@ -12,7 +12,8 @@ Welcome to the Simple DHCP Daemon documentation. This guide will help you unders
 ### Configuration
 - [Configuration Guide](configuration/README.md) - Complete configuration reference
 - [Configuration Examples](configuration/examples.md) - Real-world configuration examples
-- [Security Configuration](configuration/security.md) - Security features and settings
+- [Security Configuration](../config/SECURITY_CONFIG.md) - Complete security configuration reference
+- [Security Examples](../config/examples/security/) - Security-focused configuration examples
 
 ### User Guide
 - [Command Line Interface](user-guide/cli.md) - Command line options and usage
@@ -60,4 +61,4 @@ If you find any issues with the documentation or have suggestions for improvemen
 ---
 
 **Last Updated**: December 2024  
-**Version**: 0.1.0-alpha
+**Version**: 0.3.0 (Phase 3 Complete)

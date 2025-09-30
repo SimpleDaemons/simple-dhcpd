@@ -25,7 +25,7 @@ CMAKE_AR:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=
+CMAKE_BUILD_TYPE:STRING=Release
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -134,16 +134,16 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 CMAKE_PROJECT_NAME:STATIC=simple-dhcpd
 
 //Value Computed by CMake
-CMAKE_PROJECT_VERSION:STATIC=0.2.1
+CMAKE_PROJECT_VERSION:STATIC=0.3.0
 
 //Value Computed by CMake
 CMAKE_PROJECT_VERSION_MAJOR:STATIC=0
 
 //Value Computed by CMake
-CMAKE_PROJECT_VERSION_MINOR:STATIC=2
+CMAKE_PROJECT_VERSION_MINOR:STATIC=3
 
 //Value Computed by CMake
-CMAKE_PROJECT_VERSION_PATCH:STATIC=1
+CMAKE_PROJECT_VERSION_PATCH:STATIC=0
 
 //Value Computed by CMake
 CMAKE_PROJECT_VERSION_TWEAK:STATIC=
@@ -223,10 +223,13 @@ ENABLE_PACKAGING:BOOL=ON
 ENABLE_SSL:BOOL=ON
 
 //Enable static linking for self-contained binaries
-ENABLE_STATIC_LINKING:BOOL=OFF
+ENABLE_STATIC_LINKING:BOOL=ON
 
 //Enable tests
 ENABLE_TESTS:BOOL=ON
+
+//Path to a library.
+JSONCPP_STATIC_LIB:FILEPATH=/opt/local/lib/libjsoncpp.dylib
 
 //Path to a library.
 OPENSSL_CRYPTO_LIBRARY:FILEPATH=/opt/local/libexec/openssl3/lib/libcrypto.dylib

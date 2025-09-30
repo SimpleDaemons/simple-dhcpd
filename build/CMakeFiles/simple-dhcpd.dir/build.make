@@ -241,6 +241,7 @@ simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o
 simple-dhcpd: CMakeFiles/simple-dhcpd.dir/build.make
 simple-dhcpd: /opt/local/libexec/openssl3/lib/libssl.dylib
 simple-dhcpd: /opt/local/libexec/openssl3/lib/libcrypto.dylib
+simple-dhcpd: /opt/local/lib/libjsoncpp.dylib
 simple-dhcpd: CMakeFiles/simple-dhcpd.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable simple-dhcpd"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/simple-dhcpd.dir/link.txt --verbose=$(VERBOSE)

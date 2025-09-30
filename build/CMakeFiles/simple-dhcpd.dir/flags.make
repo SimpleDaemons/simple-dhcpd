@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/include -I/opt/local/include -isystem /opt/local/libexec/openssl3/include
 
-CXX_FLAGS = -std=gnu++17 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unused-private-field
+CXX_FLAGS = -O3 -DNDEBUG -std=gnu++17 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unused-private-field
 
