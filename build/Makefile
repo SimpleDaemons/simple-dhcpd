@@ -194,6 +194,30 @@ simple-dhcpd/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/build
 .PHONY : simple-dhcpd/fast
 
+src/advanced_lease_manager.o: src/advanced_lease_manager.cpp.o
+.PHONY : src/advanced_lease_manager.o
+
+# target to build an object file
+src/advanced_lease_manager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o
+.PHONY : src/advanced_lease_manager.cpp.o
+
+src/advanced_lease_manager.i: src/advanced_lease_manager.cpp.i
+.PHONY : src/advanced_lease_manager.i
+
+# target to preprocess a source file
+src/advanced_lease_manager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.i
+.PHONY : src/advanced_lease_manager.cpp.i
+
+src/advanced_lease_manager.s: src/advanced_lease_manager.cpp.s
+.PHONY : src/advanced_lease_manager.s
+
+# target to generate assembly for a file
+src/advanced_lease_manager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.s
+.PHONY : src/advanced_lease_manager.cpp.s
+
 src/config.o: src/config.cpp.o
 .PHONY : src/config.o
 
@@ -218,6 +242,30 @@ src/config.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/config.cpp.s
 .PHONY : src/config.cpp.s
 
+src/dhcp_options_manager.o: src/dhcp_options_manager.cpp.o
+.PHONY : src/dhcp_options_manager.o
+
+# target to build an object file
+src/dhcp_options_manager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o
+.PHONY : src/dhcp_options_manager.cpp.o
+
+src/dhcp_options_manager.i: src/dhcp_options_manager.cpp.i
+.PHONY : src/dhcp_options_manager.i
+
+# target to preprocess a source file
+src/dhcp_options_manager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.i
+.PHONY : src/dhcp_options_manager.cpp.i
+
+src/dhcp_options_manager.s: src/dhcp_options_manager.cpp.s
+.PHONY : src/dhcp_options_manager.s
+
+# target to generate assembly for a file
+src/dhcp_options_manager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.s
+.PHONY : src/dhcp_options_manager.cpp.s
+
 src/dhcp_parser.o: src/dhcp_parser.cpp.o
 .PHONY : src/dhcp_parser.o
 
@@ -241,6 +289,30 @@ src/dhcp_parser.s: src/dhcp_parser.cpp.s
 src/dhcp_parser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.s
 .PHONY : src/dhcp_parser.cpp.s
+
+src/dhcp_security_manager.o: src/dhcp_security_manager.cpp.o
+.PHONY : src/dhcp_security_manager.o
+
+# target to build an object file
+src/dhcp_security_manager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o
+.PHONY : src/dhcp_security_manager.cpp.o
+
+src/dhcp_security_manager.i: src/dhcp_security_manager.cpp.i
+.PHONY : src/dhcp_security_manager.i
+
+# target to preprocess a source file
+src/dhcp_security_manager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.i
+.PHONY : src/dhcp_security_manager.cpp.i
+
+src/dhcp_security_manager.s: src/dhcp_security_manager.cpp.s
+.PHONY : src/dhcp_security_manager.s
+
+# target to generate assembly for a file
+src/dhcp_security_manager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.s
+.PHONY : src/dhcp_security_manager.cpp.s
 
 src/dhcp_server.o: src/dhcp_server.cpp.o
 .PHONY : src/dhcp_server.o
@@ -377,12 +449,21 @@ help:
 	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... simple-dhcpd"
+	@echo "... src/advanced_lease_manager.o"
+	@echo "... src/advanced_lease_manager.i"
+	@echo "... src/advanced_lease_manager.s"
 	@echo "... src/config.o"
 	@echo "... src/config.i"
 	@echo "... src/config.s"
+	@echo "... src/dhcp_options_manager.o"
+	@echo "... src/dhcp_options_manager.i"
+	@echo "... src/dhcp_options_manager.s"
 	@echo "... src/dhcp_parser.o"
 	@echo "... src/dhcp_parser.i"
 	@echo "... src/dhcp_parser.s"
+	@echo "... src/dhcp_security_manager.o"
+	@echo "... src/dhcp_security_manager.i"
+	@echo "... src/dhcp_security_manager.s"
 	@echo "... src/dhcp_server.o"
 	@echo "... src/dhcp_server.i"
 	@echo "... src/dhcp_server.s"

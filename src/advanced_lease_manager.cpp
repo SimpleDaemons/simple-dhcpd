@@ -7,7 +7,8 @@
  */
 
 #include "advanced_lease_manager.hpp"
-#include "logger.hpp"
+#include "dhcp_utils.hpp"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -65,8 +66,8 @@ bool AdvancedLeaseManager::add_static_lease(const StaticLease& static_lease) {
     
     add_lease(std::make_shared<DhcpLease>(dynamic_lease));
     
-    Logger::info("Added static lease: " + static_lease.mac_address.to_string() + 
-                 " -> " + static_lease.ip_address.to_string());
+    std::cout << "INFO: Added static lease: " << mac_to_string(static_lease.mac_address) << 
+                 " -> " << ip_to_string(static_lease.ip_address) << std::endl;
     
     return true;
 }
@@ -87,7 +88,7 @@ bool AdvancedLeaseManager::remove_static_lease(const MacAddress& mac_address) {
     
     static_leases_.erase(it);
     
-    Logger::info("Removed static lease: " + mac_address.to_string());
+    std::cout << "INFO: Removed static lease: " << mac_to_string(mac_address) << std::endl;
     
     return true;
 }

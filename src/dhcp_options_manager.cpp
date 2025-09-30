@@ -7,7 +7,7 @@
  */
 
 #include "dhcp_options_manager.hpp"
-#include "logger.hpp"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -30,7 +30,7 @@ void DhcpOptionsManager::register_standard_option(DhcpOptionCode option_code,
     auto template_ptr = std::make_shared<OptionTemplate>(template_data);
     standard_options_[option_code] = template_ptr;
     
-    Logger::info("Registered standard option: " + name + " (code " + std::to_string(static_cast<int>(option_code)) + ")");
+    std::cout << "INFO: Registered standard option: " + name + " (code " + std::to_string(static_cast<int>(option_code)) + ")" << std::endl;
 }
 
 void DhcpOptionsManager::register_vendor_option(DhcpOptionCode option_code, 
@@ -43,8 +43,8 @@ void DhcpOptionsManager::register_vendor_option(DhcpOptionCode option_code,
     auto template_ptr = std::make_shared<OptionTemplate>(template_data);
     vendor_options_[vendor_class][option_code] = template_ptr;
     
-    Logger::info("Registered vendor option: " + name + " for vendor " + vendor_class + 
-                 " (code " + std::to_string(static_cast<int>(option_code)) + ")");
+    std::cout << "INFO: Registered vendor option: " + name + " for vendor " + vendor_class + 
+                 " (code " + std::to_string(static_cast<int>(option_code)) + ")" << std::endl;
 }
 
 void DhcpOptionsManager::register_custom_option(DhcpOptionCode option_code, 
@@ -56,7 +56,7 @@ void DhcpOptionsManager::register_custom_option(DhcpOptionCode option_code,
     auto template_ptr = std::make_shared<OptionTemplate>(template_data);
     custom_options_[option_code] = template_ptr;
     
-    Logger::info("Registered custom option: " + name + " (code " + std::to_string(static_cast<int>(option_code)) + ")");
+    std::cout << "INFO: Registered custom option: " + name + " (code " + std::to_string(static_cast<int>(option_code)) + ")" << std::endl;
 }
 
 std::shared_ptr<OptionTemplate> DhcpOptionsManager::get_option_template(DhcpOptionCode option_code,
@@ -273,7 +273,7 @@ std::string DhcpOptionsManager::create_template(const std::string& name,
     std::string template_id = "template_" + std::to_string(std::time(nullptr));
     option_templates_[template_id] = options;
     
-    Logger::info("Created option template: " + name + " (ID: " + template_id + ")");
+    std::cout << "INFO: Created option template: " + name + " (ID: " + template_id + ")" << std::endl;
     
     return template_id;
 }
@@ -390,13 +390,13 @@ std::map<uint8_t, std::vector<uint8_t>> DhcpOptionsManager::parse_option_82(
 
 bool DhcpOptionsManager::load_configuration(const std::string& config_file) {
     // TODO: Implement configuration loading
-    Logger::info("Loading options configuration from: " + config_file);
+    std::cout << "INFO: Loading options configuration from: " + config_file << std::endl;
     return true;
 }
 
 bool DhcpOptionsManager::save_configuration(const std::string& config_file) {
     // TODO: Implement configuration saving
-    Logger::info("Saving options configuration to: " + config_file);
+    std::cout << "INFO: Saving options configuration to: " + config_file << std::endl;
     return true;
 }
 
@@ -412,7 +412,7 @@ void DhcpOptionsManager::reset_to_defaults() {
     
     initialize_standard_options();
     
-    Logger::info("Reset options manager to defaults");
+    std::cout << "INFO: Reset options manager to defaults" << std::endl;
 }
 
 std::map<DhcpOptionCode, size_t> DhcpOptionsManager::get_option_usage_stats() {

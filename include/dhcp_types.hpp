@@ -261,6 +261,15 @@ enum class DhcpOptionCode : uint8_t {
     PXE_FD = 128,
     PXE_FE = 128,
     PXE_FF = 128,
+    LEASE_TIME = 51,
+    RENEWAL_TIME = 58,
+    REBINDING_TIME = 59,
+    REQUESTED_IP = 50,
+    SERVER_IDENTIFIER = 54,
+    MESSAGE_TYPE = 53,
+    PARAMETER_REQUEST_LIST = 55,
+    MESSAGE = 56,
+    MAXIMUM_MESSAGE_SIZE = 57,
     END = 255
 };
 
@@ -311,6 +320,14 @@ using IpAddress = uint32_t;
 /**
  * @brief DHCP lease information
  */
+/**
+ * @brief Lease type enumeration
+ */
+enum class LeaseType {
+    DYNAMIC,
+    STATIC
+};
+
 struct DhcpLease {
     MacAddress mac_address;
     IpAddress ip_address;
@@ -319,6 +336,12 @@ struct DhcpLease {
     std::chrono::system_clock::time_point lease_end;
     std::chrono::system_clock::time_point renewal_time;
     std::chrono::system_clock::time_point rebinding_time;
+    std::chrono::system_clock::time_point allocated_at;
+    std::chrono::system_clock::time_point expires_at;
+    std::chrono::seconds lease_time;
+    LeaseType lease_type;
+    std::string client_id;
+    std::map<DhcpOptionCode, std::vector<uint8_t>> options;
     bool is_static;
     bool is_active;
     
