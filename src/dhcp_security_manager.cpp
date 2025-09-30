@@ -7,7 +7,8 @@
  */
 
 #include "dhcp_security_manager.hpp"
-#include "logger.hpp"
+#include "dhcp_utils.hpp"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -28,7 +29,7 @@ DhcpSecurityManager::~DhcpSecurityManager() {
 
 void DhcpSecurityManager::set_dhcp_snooping_enabled(bool enabled) {
     dhcp_snooping_enabled_ = enabled;
-    Logger::info("DHCP snooping " + std::string(enabled ? "enabled" : "disabled"));
+    std::cout << "INFO: DHCP snooping " << (enabled ? "enabled" : "disabled") << std::endl;
 }
 
 bool DhcpSecurityManager::is_dhcp_snooping_enabled() const {
@@ -38,13 +39,13 @@ bool DhcpSecurityManager::is_dhcp_snooping_enabled() const {
 void DhcpSecurityManager::add_trusted_interface(const std::string& interface_name) {
     std::lock_guard<std::mutex> lock(mutex_);
     trusted_interfaces_.insert(interface_name);
-    Logger::info("Added trusted interface: " + interface_name);
+    std::cout << "INFO: Added trusted interface: " << interface_name << std::endl;
 }
 
 void DhcpSecurityManager::remove_trusted_interface(const std::string& interface_name) {
     std::lock_guard<std::mutex> lock(mutex_);
     trusted_interfaces_.erase(interface_name);
-    Logger::info("Removed trusted interface: " + interface_name);
+    std::cout << "info("Removed trusted interface: " + interface_name);
 }
 
 bool DhcpSecurityManager::is_interface_trusted(const std::string& interface_name) const {
@@ -55,7 +56,7 @@ bool DhcpSecurityManager::is_interface_trusted(const std::string& interface_name
 void DhcpSecurityManager::add_snooping_binding(const DhcpSnoopingBinding& binding) {
     std::lock_guard<std::mutex> lock(mutex_);
     snooping_bindings_.push_back(binding);
-    Logger::info("Added snooping binding: " + binding.mac_address + " -> " + 
+    std::cout << "info("Added snooping binding: " + binding.mac_address + " -> " + 
                  binding.ip_address.to_string() + " on " + binding.interface);
 }
 
@@ -69,7 +70,7 @@ void DhcpSecurityManager::remove_snooping_binding(const std::string& mac_address
             }),
         snooping_bindings_.end());
     
-    Logger::info("Removed snooping binding: " + mac_address + " -> " + ip_address.to_string());
+    std::cout << "info("Removed snooping binding: " + mac_address + " -> " + ip_address.to_string());
 }
 
 std::vector<DhcpSnoopingBinding> DhcpSecurityManager::get_snooping_bindings() {
@@ -108,7 +109,7 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
 void DhcpSecurityManager::add_mac_filter_rule(const MacFilterRule& rule) {
     std::lock_guard<std::mutex> lock(mutex_);
     mac_filter_rules_.push_back(rule);
-    Logger::info("Added MAC filter rule: " + rule.mac_address + " (" + 
+    std::cout << "info("Added MAC filter rule: " + rule.mac_address + " (" + 
                  (rule.allow ? "allow" : "deny") + ")");
 }
 
@@ -122,7 +123,7 @@ void DhcpSecurityManager::remove_mac_filter_rule(const std::string& mac_address)
             }),
         mac_filter_rules_.end());
     
-    Logger::info("Removed MAC filter rule: " + mac_address);
+    std::cout << "info("Removed MAC filter rule: " + mac_address);
 }
 
 bool DhcpSecurityManager::check_mac_address(const std::string& mac_address) {
@@ -157,7 +158,7 @@ std::vector<MacFilterRule> DhcpSecurityManager::get_mac_filter_rules() {
 void DhcpSecurityManager::add_ip_filter_rule(const IpFilterRule& rule) {
     std::lock_guard<std::mutex> lock(mutex_);
     ip_filter_rules_.push_back(rule);
-    Logger::info("Added IP filter rule: " + rule.ip_address.to_string() + " (" + 
+    std::cout << "info("Added IP filter rule: " + rule.ip_address.to_string() + " (" + 
                  (rule.allow ? "allow" : "deny") + ")");
 }
 
@@ -171,7 +172,7 @@ void DhcpSecurityManager::remove_ip_filter_rule(const IpAddress& ip_address) {
             }),
         ip_filter_rules_.end());
     
-    Logger::info("Removed IP filter rule: " + ip_address.to_string());
+    std::cout << "info("Removed IP filter rule: " + ip_address.to_string());
 }
 
 bool DhcpSecurityManager::check_ip_address(const IpAddress& ip_address) {
@@ -206,7 +207,7 @@ std::vector<IpFilterRule> DhcpSecurityManager::get_ip_filter_rules() {
 void DhcpSecurityManager::add_rate_limit_rule(const RateLimitRule& rule) {
     std::lock_guard<std::mutex> lock(mutex_);
     rate_limit_rules_.push_back(rule);
-    Logger::info("Added rate limit rule: " + rule.identifier + " (" + 
+    std::cout << "info("Added rate limit rule: " + rule.identifier + " (" + 
                  std::to_string(rule.max_requests) + " requests per " + 
                  std::to_string(rule.time_window.count()) + " seconds)");
 }
@@ -221,7 +222,7 @@ void DhcpSecurityManager::remove_rate_limit_rule(const std::string& identifier, 
             }),
         rate_limit_rules_.end());
     
-    Logger::info("Removed rate limit rule: " + identifier + " (" + identifier_type + ")");
+    std::cout << "info("Removed rate limit rule: " + identifier + " (" + identifier_type + ")");
 }
 
 bool DhcpSecurityManager::check_rate_limit(const std::string& identifier, const std::string& identifier_type) {
@@ -235,7 +236,7 @@ std::vector<RateLimitRule> DhcpSecurityManager::get_rate_limit_rules() {
 
 void DhcpSecurityManager::set_option_82_validation_enabled(bool enabled) {
     option_82_validation_enabled_ = enabled;
-    Logger::info("Option 82 validation " + std::string(enabled ? "enabled" : "disabled"));
+    std::cout << "info("Option 82 validation " + std::string(enabled ? "enabled" : "disabled"));
 }
 
 bool DhcpSecurityManager::is_option_82_validation_enabled() const {
@@ -298,18 +299,18 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
 void DhcpSecurityManager::add_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
     std::lock_guard<std::mutex> lock(mutex_);
     trusted_relay_agents_[circuit_id] = remote_id;
-    Logger::info("Added trusted relay agent: " + circuit_id + " -> " + remote_id);
+    std::cout << "info("Added trusted relay agent: " + circuit_id + " -> " + remote_id);
 }
 
 void DhcpSecurityManager::remove_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
     std::lock_guard<std::mutex> lock(mutex_);
     trusted_relay_agents_.erase(circuit_id);
-    Logger::info("Removed trusted relay agent: " + circuit_id + " -> " + remote_id);
+    std::cout << "info("Removed trusted relay agent: " + circuit_id + " -> " + remote_id);
 }
 
 void DhcpSecurityManager::set_authentication_enabled(bool enabled) {
     authentication_enabled_ = enabled;
-    Logger::info("Authentication " + std::string(enabled ? "enabled" : "disabled"));
+    std::cout << "info("Authentication " + std::string(enabled ? "enabled" : "disabled"));
 }
 
 bool DhcpSecurityManager::is_authentication_enabled() const {
@@ -318,7 +319,7 @@ bool DhcpSecurityManager::is_authentication_enabled() const {
 
 void DhcpSecurityManager::set_authentication_key(const std::string& key) {
     authentication_key_ = key;
-    Logger::info("Authentication key updated");
+    std::cout << "info("Authentication key updated");
 }
 
 bool DhcpSecurityManager::validate_client_authentication(const std::string& client_mac, 
@@ -369,7 +370,7 @@ void DhcpSecurityManager::report_security_event(const SecurityEvent& event) {
         case ThreatLevel::CRITICAL: level_str = "CRITICAL"; break;
     }
     
-    Logger::warning("Security Event [" + level_str + "]: " + event.description);
+    std::cout << "warning("Security Event [" + level_str + "]: " + event.description);
 }
 
 void DhcpSecurityManager::set_security_event_callback(std::function<void(const SecurityEvent&)> callback) {
@@ -406,18 +407,18 @@ void DhcpSecurityManager::clear_security_statistics() {
     security_stats_ = SecurityStats{};
     security_stats_.last_reset = std::chrono::system_clock::now();
     
-    Logger::info("Security statistics cleared");
+    std::cout << "info("Security statistics cleared");
 }
 
 bool DhcpSecurityManager::load_security_configuration(const std::string& config_file) {
     // TODO: Implement configuration loading
-    Logger::info("Loading security configuration from: " + config_file);
+    std::cout << "info("Loading security configuration from: " + config_file);
     return true;
 }
 
 bool DhcpSecurityManager::save_security_configuration(const std::string& config_file) {
     // TODO: Implement configuration saving
-    Logger::info("Saving security configuration to: " + config_file);
+    std::cout << "info("Saving security configuration to: " + config_file);
     return true;
 }
 
@@ -429,7 +430,7 @@ void DhcpSecurityManager::start() {
     running_ = true;
     cleanup_thread_ = std::thread(&DhcpSecurityManager::cleanup_worker, this);
     
-    Logger::info("Security manager started");
+    std::cout << "info("Security manager started");
 }
 
 void DhcpSecurityManager::stop() {
@@ -443,7 +444,7 @@ void DhcpSecurityManager::stop() {
         cleanup_thread_.join();
     }
     
-    Logger::info("Security manager stopped");
+    std::cout << "info("Security manager stopped");
 }
 
 void DhcpSecurityManager::cleanup_expired_items() {

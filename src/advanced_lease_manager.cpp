@@ -673,8 +673,24 @@ StaticLease AdvancedLeaseManager::deserialize_static_lease(const std::string& da
     }
     
     StaticLease static_lease;
-    static_lease.mac_address = MacAddress::from_string(tokens[0]);
-    static_lease.ip_address = IpAddress::from_string(tokens[1]);
+    // Parse MAC address (simple implementation)
+    std::istringstream mac_stream(tokens[0]);
+    std::string mac_byte;
+    int i = 0;
+    while (std::getline(mac_stream, mac_byte, ':') && i < 6) {
+        static_lease.mac_address[i++] = static_cast<uint8_t>(std::stoi(mac_byte, nullptr, 16));
+    }
+    
+    // Parse IP address (simple implementation)
+    std::istringstream ip_stream(tokens[1]);
+    std::string ip_byte;
+    uint32_t ip = 0;
+    i = 0;
+    while (std::getline(ip_stream, ip_byte, '.') && i < 4) {
+        ip |= (std::stoi(ip_byte) << (24 - (i * 8)));
+        i++;
+    }
+    static_lease.ip_address = ip;
     static_lease.hostname = tokens[2];
     static_lease.description = tokens[3];
     static_lease.lease_time = std::chrono::seconds(std::stoll(tokens[4]));
