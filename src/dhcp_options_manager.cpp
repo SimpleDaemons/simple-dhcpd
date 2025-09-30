@@ -453,10 +453,10 @@ void DhcpOptionsManager::initialize_standard_options() {
                            OptionTemplate("Domain Name", "Domain name for the client", 
                                         DhcpOptionCode::DOMAIN_NAME));
     
-    register_standard_option(DhcpOptionCode::LEASE_TIME, "IP Address Lease Time", 
+    register_standard_option(DhcpOptionCode::IP_ADDRESS_LEASE_TIME, "IP Address Lease Time", 
                            "Lease time for the IP address", 
                            OptionTemplate("IP Address Lease Time", "Lease time for the IP address", 
-                                        DhcpOptionCode::LEASE_TIME, {}, true));
+                                        DhcpOptionCode::IP_ADDRESS_LEASE_TIME, {}, true));
     
     register_standard_option(DhcpOptionCode::RENEWAL_TIME, "Renewal Time", 
                            "Time at which client should renew its lease", 
@@ -478,20 +478,20 @@ void DhcpOptionsManager::initialize_standard_options() {
                            OptionTemplate("Client Identifier", "Client identifier", 
                                         DhcpOptionCode::CLIENT_IDENTIFIER));
     
-    register_standard_option(DhcpOptionCode::REQUESTED_IP, "Requested IP Address", 
+    register_standard_option(DhcpOptionCode::REQUESTED_IP_ADDRESS, "Requested IP Address", 
                            "Requested IP address", 
                            OptionTemplate("Requested IP Address", "Requested IP address", 
-                                        DhcpOptionCode::REQUESTED_IP));
+                                        DhcpOptionCode::REQUESTED_IP_ADDRESS));
     
     register_standard_option(DhcpOptionCode::SERVER_IDENTIFIER, "Server Identifier", 
                            "Server identifier", 
                            OptionTemplate("Server Identifier", "Server identifier", 
                                         DhcpOptionCode::SERVER_IDENTIFIER));
     
-    register_standard_option(DhcpOptionCode::MESSAGE_TYPE, "DHCP Message Type", 
+    register_standard_option(DhcpOptionCode::DHCP_MESSAGE_TYPE, "DHCP Message Type", 
                            "DHCP message type", 
                            OptionTemplate("DHCP Message Type", "DHCP message type", 
-                                        DhcpOptionCode::MESSAGE_TYPE, {}, true));
+                                        DhcpOptionCode::DHCP_MESSAGE_TYPE, {}, true));
     
     register_standard_option(DhcpOptionCode::PARAMETER_REQUEST_LIST, "Parameter Request List", 
                            "List of requested parameters", 
@@ -503,10 +503,10 @@ void DhcpOptionsManager::initialize_standard_options() {
                            OptionTemplate("Message", "Error message", 
                                         DhcpOptionCode::MESSAGE));
     
-    register_standard_option(DhcpOptionCode::MAXIMUM_MESSAGE_SIZE, "Maximum DHCP Message Size", 
+    register_standard_option(DhcpOptionCode::MAX_DHCP_MESSAGE_SIZE, "Maximum DHCP Message Size", 
                            "Maximum DHCP message size", 
                            OptionTemplate("Maximum DHCP Message Size", "Maximum DHCP message size", 
-                                        DhcpOptionCode::MAXIMUM_MESSAGE_SIZE));
+                                        DhcpOptionCode::MAX_DHCP_MESSAGE_SIZE));
     
     register_standard_option(DhcpOptionCode::VENDOR_CLASS_IDENTIFIER, "Vendor Class Identifier", 
                            "Vendor class identifier", 

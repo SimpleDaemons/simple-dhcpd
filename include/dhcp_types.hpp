@@ -261,15 +261,6 @@ enum class DhcpOptionCode : uint8_t {
     PXE_FD = 128,
     PXE_FE = 128,
     PXE_FF = 128,
-    LEASE_TIME = 51,
-    RENEWAL_TIME = 58,
-    REBINDING_TIME = 59,
-    REQUESTED_IP = 50,
-    SERVER_IDENTIFIER = 54,
-    MESSAGE_TYPE = 53,
-    PARAMETER_REQUEST_LIST = 55,
-    MESSAGE = 56,
-    MAXIMUM_MESSAGE_SIZE = 57,
     END = 255
 };
 

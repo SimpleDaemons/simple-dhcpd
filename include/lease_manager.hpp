@@ -115,7 +115,7 @@ public:
      * @brief Get all active leases
      * @return Vector of active leases
      */
-    std::vector<std::shared_ptr<DhcpLease>> get_active_leases();
+    std::vector<std::shared_ptr<DhcpLease>> get_active_leases() const;
     
     /**
      * @brief Get leases for subnet
@@ -150,7 +150,7 @@ public:
      */
     void save_leases(const std::string& filename);
 
-private:
+protected:
     DhcpConfig config_;
     std::map<MacAddress, std::shared_ptr<DhcpLease>> leases_by_mac_;
     std::map<IpAddress, std::shared_ptr<DhcpLease>> leases_by_ip_;

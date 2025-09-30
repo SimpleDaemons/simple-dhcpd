@@ -198,7 +198,7 @@ bool LeaseManager::is_ip_available(IpAddress ip_address, const std::string& subn
     return true;
 }
 
-std::vector<std::shared_ptr<DhcpLease>> LeaseManager::get_active_leases() {
+std::vector<std::shared_ptr<DhcpLease>> LeaseManager::get_active_leases() const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     std::vector<std::shared_ptr<DhcpLease>> active_leases;
