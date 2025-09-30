@@ -6,7 +6,7 @@
 set -e
 
 PROJECT_NAME="simple-dhcpd"
-VERSION="0.1.0"
+VERSION="0.3.0"
 BUILD_DIR="build"
 DIST_DIR="dist"
 DMG_NAME="${PROJECT_NAME}-${VERSION}-macOS"
@@ -176,7 +176,7 @@ chmod +x "${PROJECT_ROOT}/${DMG_TEMP_DIR}/Uninstall Simple DHCP Daemon.command"
 # Create README
 echo "Creating README..."
 cat > "${PROJECT_ROOT}/${DMG_TEMP_DIR}/README.txt" << 'EOF'
-Simple DHCP Daemon v0.1.0
+Simple DHCP Daemon v0.3.0
 =========================
 
 A lightweight and secure DHCP server daemon for macOS.
@@ -208,10 +208,10 @@ Check status:     sudo launchctl list | grep simple-dhcpd
 
 DOCUMENTATION:
 For detailed documentation, visit:
-https://github.com/simpledaemons/simple-dhcpd
+https://github.com/SimpleDaemons/simple-dhcpd
 
 SUPPORT:
-- GitHub Issues: https://github.com/simpledaemons/simple-dhcpd/issues
+- GitHub Issues: https://github.com/SimpleDaemons/simple-dhcpd/issues
 - Email: support@simpledaemons.com
 
 LICENSE:

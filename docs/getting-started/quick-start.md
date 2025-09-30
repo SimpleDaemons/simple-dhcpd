@@ -263,5 +263,5 @@ Now that you have a basic DHCP server running:
 - **Documentation**: [Full Documentation](../README.md)
 - **Configuration**: [Configuration Guide](../configuration/README.md)
 - **Troubleshooting**: [Troubleshooting Guide](../troubleshooting/README.md)
-- **Community**: [GitHub Discussions](https://github.com/simpledaemons/simple-dhcpd/discussions)
-- **Issues**: [GitHub Issues](https://github.com/simpledaemons/simple-dhcpd/issues)
+- **Community**: [GitHub Discussions](https://github.com/SimpleDaemons/simple-dhcpd/discussions)
+- **Issues**: [GitHub Issues](https://github.com/SimpleDaemons/simple-dhcpd/issues)

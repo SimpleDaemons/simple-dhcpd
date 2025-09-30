@@ -480,8 +480,8 @@ sudo systemctl restart simple-dhcpd
 
 ### Community Support
 
-1. **GitHub Issues**: [Report bugs and request features](https://github.com/simpledaemons/simple-dhcpd/issues)
-2. **GitHub Discussions**: [Ask questions and share experiences](https://github.com/simpledaemons/simple-dhcpd/discussions)
+1. **GitHub Issues**: [Report bugs and request features](https://github.com/SimpleDaemons/simple-dhcpd/issues)
+2. **GitHub Discussions**: [Ask questions and share experiences](https://github.com/SimpleDaemons/simple-dhcpd/discussions)
 3. **Community Forum**: [Join the community](https://community.simpledaemons.com)
 
 ### Professional Support

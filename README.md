@@ -4,7 +4,7 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 [![Build Status](https://travis-ci.org/simpledaemons/simple-dhcpd.svg?branch=main)](https://travis-ci.org/simpledaemons/simple-dhcpd)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/simpledaemons/simple-dhcpd/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
 
 ## Overview
 
@@ -48,7 +48,7 @@ Simple DHCP Daemon is a modern, enterprise-grade DHCP server that provides:
 #### From Source
 
 ```bash
-git clone https://github.com/simpledaemons/simple-dhcpd.git
+git clone https://github.com/SimpleDaemons/simple-dhcpd.git
 cd simple-dhcpd
 mkdir build && cd build
 cmake ..
@@ -402,7 +402,7 @@ services:
 
 ```bash
 # Clone repository
-git clone https://github.com/simpledaemons/simple-dhcpd.git
+git clone https://github.com/SimpleDaemons/simple-dhcpd.git
 cd simple-dhcpd
 
 # Create build directory
@@ -502,8 +502,8 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Support
 
 - **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/simpledaemons/simple-dhcpd/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/simpledaemons/simple-dhcpd/discussions)
+- **Issues**: [GitHub Issues](https://github.com/SimpleDaemons/simple-dhcpd/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/SimpleDaemons/simple-dhcpd/discussions)
 - **Email**: support@simpledaemons.com
 
 ## Roadmap
@@ -518,4 +518,4 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
 
 **Simple DHCP Daemon** - Modern DHCP server for the cloud era.
 
-Made with ❤️ by [SimpleDaemons](https://github.com/simpledaemons)
+Made with ❤️ by [SimpleDaemons](https://github.com/SimpleDaemons)

@@ -54,7 +54,7 @@ We welcome contributions to improve this documentation. Please see our [Contribu
 
 If you find any issues with the documentation or have suggestions for improvement, please:
 
-1. Open an issue on [GitHub](https://github.com/simpledaemons/simple-dhcpd/issues)
+1. Open an issue on [GitHub](https://github.com/SimpleDaemons/simple-dhcpd/issues)
 2. Submit a pull request with your improvements
 3. Contact us at docs@simpledaemons.com
 

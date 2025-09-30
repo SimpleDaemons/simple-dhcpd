@@ -19,10 +19,10 @@ Default configuration files are installed to /etc/simple-dhcpd/
 Example configurations are available in /etc/simple-dhcpd/examples/
 
 Documentation:
-For detailed documentation, visit: https://github.com/simpledaemons/simple-dhcpd
+For detailed documentation, visit: https://github.com/SimpleDaemons/simple-dhcpd
 
 Support:
-- GitHub Issues: https://github.com/simpledaemons/simple-dhcpd/issues
+- GitHub Issues: https://github.com/SimpleDaemons/simple-dhcpd/issues
 - Email: support@simpledaemons.com
 
 Thank you for using Simple DHCP Daemon!

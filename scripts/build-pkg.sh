@@ -6,7 +6,7 @@
 set -e
 
 PROJECT_NAME="simple-dhcpd"
-VERSION="0.1.0"
+VERSION="0.3.0"
 BUILD_DIR="build"
 DIST_DIR="dist"
 PKG_DIR="${BUILD_DIR}/pkg-root"
@@ -89,10 +89,10 @@ Default configuration files are installed to /etc/simple-dhcpd/
 Example configurations are available in /etc/simple-dhcpd/examples/
 
 Documentation:
-For detailed documentation, visit: https://github.com/simpledaemons/simple-dhcpd
+For detailed documentation, visit: https://github.com/SimpleDaemons/simple-dhcpd
 
 Support:
-- GitHub Issues: https://github.com/simpledaemons/simple-dhcpd/issues
+- GitHub Issues: https://github.com/SimpleDaemons/simple-dhcpd/issues
 - Email: support@simpledaemons.com
 
 Thank you for using Simple DHCP Daemon!

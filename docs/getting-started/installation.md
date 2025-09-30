@@ -255,7 +255,7 @@ simple-dhcpd -c /etc/simple-dhcpd/simple-dhcpd.conf --test-config
 
 - Check the [Troubleshooting Guide](../troubleshooting/README.md)
 - View logs: `sudo journalctl -u simple-dhcpd -f`
-- Open an issue on [GitHub](https://github.com/simpledaemons/simple-dhcpd/issues)
+- Open an issue on [GitHub](https://github.com/SimpleDaemons/simple-dhcpd/issues)
 
 ## Next Steps
 

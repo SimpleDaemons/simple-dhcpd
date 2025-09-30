@@ -17,7 +17,7 @@
         <pkg-ref id="com.simpledaemons.simple-dhcpd"/>
     </choice>
     
-    <pkg-ref id="com.simpledaemons.simple-dhcpd" version="0.1.0" onConclusion="none">simple-dhcpd.pkg</pkg-ref>
+    <pkg-ref id="com.simpledaemons.simple-dhcpd" version="0.3.0" onConclusion="none">simple-dhcpd.pkg</pkg-ref>
     
-    <product id="com.simpledaemons.simple-dhcpd" version="0.1.0"/>
+    <product id="com.simpledaemons.simple-dhcpd" version="0.3.0"/>
 </installer-gui-script>
