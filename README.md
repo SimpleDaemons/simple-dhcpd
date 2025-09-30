@@ -100,6 +100,17 @@ sudo systemctl start simple-dhcpd
 - High availability with failover
 - Advanced monitoring and alerting
 
+### Configuration Examples
+
+Simple DHCP Daemon includes comprehensive configuration examples:
+
+- **Simple**: Basic home/office network setup
+- **Advanced**: Multi-subnet enterprise configuration  
+- **Production**: High-availability production environment
+- **Security**: Comprehensive security-focused configuration
+
+See the `config/examples/` directory for detailed examples and the `config/SECURITY_CONFIG.md` for complete security configuration reference.
+
 ### Basic Configuration
 
 Create a minimal configuration file:
@@ -147,6 +158,15 @@ sudo simple-dhcpd -v -c /etc/simple-dhcpd/simple-dhcpd.conf
 - ✅ DHCP Release and Decline handling
 - ✅ DHCP Inform support
 - ✅ Standard DHCP options (1-255)
+
+### Advanced Security Features
+- ✅ DHCP Snooping with trusted interface validation
+- ✅ MAC Address Filtering with wildcard pattern support
+- ✅ IP Address Filtering with exact match capabilities
+- ✅ Rate Limiting with sliding time windows
+- ✅ Option 82 (Relay Agent Information) validation
+- ✅ Client Authentication with HMAC-SHA256
+- ✅ Comprehensive Security Event Logging
 - ✅ Vendor-specific options
 - ✅ Custom option support
 
