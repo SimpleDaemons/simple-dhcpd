@@ -3,7 +3,7 @@
 # Copyright 2024 SimpleDaemons
 
 cmake_minimum_required(VERSION 3.16)
-project(simple-dhcpd VERSION 0.2.1 LANGUAGES CXX)
+project(simple-dhcpd VERSION 0.3.0 LANGUAGES CXX)
 
 # Set project description
 set(PROJECT_DESCRIPTION "A lightweight and secure DHCP server daemon")

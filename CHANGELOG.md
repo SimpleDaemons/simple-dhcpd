@@ -8,10 +8,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Phase 3: Advanced DHCP Features
 - Phase 4: Enterprise Features
 - Phase 5: Performance Optimization
 - Phase 6: Production Readiness
+
+## [0.3.0] - 2024-12-29
+
+### Added
+- **Phase 3: Advanced DHCP Features - COMPLETE! 🎉**
+- **Advanced Lease Management**
+  - Dynamic lease allocation with conflict resolution
+  - Static lease allocation with MAC-to-IP binding
+  - Lease renewal and expiration handling
+  - Lease database management with persistence
+  - Lease history tracking and analytics
+  - Subnet utilization monitoring
+- **Comprehensive DHCP Options System**
+  - Standard DHCP options (1-255) with full support
+  - Vendor-specific options with validation
+  - Custom option support with templates
+  - Option validation with length, format, and range checking
+  - Option inheritance rules (global, subnet, pool, host)
+  - Option 82 (Relay Agent Information) support
+- **Advanced Security Features**
+  - DHCP Snooping with trusted interface validation
+  - MAC Address Filtering with wildcard pattern support
+  - IP Address Filtering with exact match capabilities
+  - Rate Limiting with sliding time windows
+  - Option 82 validation with circuit-id and remote-id checking
+  - Client Authentication with HMAC-SHA256
+  - Security Event Logging with comprehensive audit trails
+  - Trusted Relay Agent management
+  - Client Credential management
+  - Real-time Security Statistics tracking
+- **Security Configuration Examples**
+  - Security-focused configuration example
+  - Enhanced main configuration with all security features
+  - Updated advanced configuration with comprehensive security
+  - Complete security configuration reference documentation
+- **Comprehensive Documentation**
+  - Security configuration reference guide
+  - Security best practices documentation
+  - Security troubleshooting guide
+  - Security compliance features documentation
+
+### Changed
+- Enhanced main configuration with full security feature support
+- Updated advanced configuration with comprehensive security settings
+- Improved README with security features and configuration examples
+
+### Technical Achievements
+- All Phase 3 advanced features fully implemented and functional
+- Complete security framework with production-ready features
+- Comprehensive configuration system supporting all security features
+- Full documentation coverage for all new features
+- Build system updated to version 0.3.0
 
 ## [0.2.1] - 2024-12-29
 
