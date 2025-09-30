@@ -115,13 +115,15 @@ struct RateLimitRule {
     size_t max_requests;
     std::chrono::seconds time_window;
     std::chrono::seconds block_duration;
+    std::chrono::system_clock::time_point expires;
     bool enabled;
     
     RateLimitRule() = default;
     RateLimitRule(const std::string& id, const std::string& type, size_t max_req,
                   std::chrono::seconds window, std::chrono::seconds block = std::chrono::seconds(300))
         : identifier(id), identifier_type(type), max_requests(max_req),
-          time_window(window), block_duration(block), enabled(true) {}
+          time_window(window), block_duration(block), 
+          expires(std::chrono::system_clock::time_point::max()), enabled(true) {}
 };
 
 /**
@@ -155,7 +157,55 @@ struct SecurityStats {
     size_t rate_limit_hits;
     size_t mac_filter_hits;
     size_t ip_filter_hits;
+    std::map<std::string, size_t> stats;
     std::chrono::system_clock::time_point last_reset;
+};
+
+/**
+ * @brief Option 82 rule
+ */
+struct Option82Rule {
+    std::string interface;
+    bool required;
+    bool enabled;
+    std::chrono::system_clock::time_point created;
+    std::chrono::system_clock::time_point expires;
+    
+    Option82Rule() = default;
+    Option82Rule(const std::string& iface, bool req, bool en = true)
+        : interface(iface), required(req), enabled(en),
+          created(std::chrono::system_clock::now()),
+          expires(std::chrono::system_clock::time_point::max()) {}
+};
+
+/**
+ * @brief Trusted relay agent
+ */
+struct TrustedRelayAgent {
+    std::string circuit_id;
+    std::string remote_id;
+    bool enabled;
+    std::chrono::system_clock::time_point created_at;
+    
+    TrustedRelayAgent() = default;
+    TrustedRelayAgent(const std::string& circuit, const std::string& remote, bool en = true)
+        : circuit_id(circuit), remote_id(remote), enabled(en),
+          created_at(std::chrono::system_clock::now()) {}
+};
+
+/**
+ * @brief Client credentials
+ */
+struct ClientCredentials {
+    std::string password_hash;
+    std::string salt;
+    bool enabled;
+    std::chrono::system_clock::time_point expires;
+    
+    ClientCredentials() = default;
+    ClientCredentials(const std::string& hash, const std::string& s, bool en = true)
+        : password_hash(hash), salt(s), enabled(en),
+          expires(std::chrono::system_clock::time_point::max()) {}
 };
 
 /**
@@ -448,7 +498,9 @@ private:
     std::vector<MacFilterRule> mac_filter_rules_;
     std::vector<IpFilterRule> ip_filter_rules_;
     std::vector<RateLimitRule> rate_limit_rules_;
-    std::map<std::string, std::string> trusted_relay_agents_;
+    std::vector<Option82Rule> option_82_rules_;
+    std::vector<TrustedRelayAgent> trusted_relay_agents_;
+    std::map<std::string, ClientCredentials> client_credentials_;
     
     std::string authentication_key_;
     std::vector<SecurityEvent> security_events_;
@@ -461,7 +513,7 @@ private:
     
     // Rate limiting tracking
     struct RateLimitTracker {
-        size_t request_count;
+        std::vector<std::chrono::system_clock::time_point> requests;
         std::chrono::system_clock::time_point window_start;
         std::chrono::system_clock::time_point blocked_until;
     };

@@ -108,51 +108,184 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
 
 // Placeholder implementations for remaining methods
 void DhcpSecurityManager::add_mac_filter_rule(const MacFilterRule& rule) {
-    std::cout << "INFO: MAC filter rule added (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    mac_filter_rules_.push_back(rule);
+    std::cout << "INFO: Added MAC filter rule: " << rule.mac_address << " (" << 
+                 (rule.allow ? "allow" : "deny") << ")" << std::endl;
 }
 
 void DhcpSecurityManager::remove_mac_filter_rule(const std::string& mac_address) {
-    std::cout << "INFO: MAC filter rule removed (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    mac_filter_rules_.erase(
+        std::remove_if(mac_filter_rules_.begin(), mac_filter_rules_.end(),
+            [&](const MacFilterRule& rule) {
+                return rule.mac_address == mac_address;
+            }),
+        mac_filter_rules_.end());
+    
+    std::cout << "INFO: Removed MAC filter rule: " << mac_address << std::endl;
 }
 
 bool DhcpSecurityManager::check_mac_address(const std::string& mac_address) {
-    return true; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    for (const auto& rule : mac_filter_rules_) {
+        if (!rule.enabled) {
+            continue;
+        }
+        
+        // Check if rule has expired
+        if (rule.expires < std::chrono::system_clock::now()) {
+            continue;
+        }
+        
+        if (mac_matches_rule(mac_address, rule)) {
+            update_security_stats(rule.allow ? "mac_allowed" : "mac_blocked");
+            return rule.allow;
+        }
+    }
+    
+    // Default allow if no rules match
+    update_security_stats("mac_allowed");
+    return true;
 }
 
 std::vector<MacFilterRule> DhcpSecurityManager::get_mac_filter_rules() {
-    return {}; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    return mac_filter_rules_;
 }
 
 void DhcpSecurityManager::add_ip_filter_rule(const IpFilterRule& rule) {
-    std::cout << "INFO: IP filter rule added (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    ip_filter_rules_.push_back(rule);
+    std::cout << "INFO: Added IP filter rule: " << ip_to_string(rule.ip_address) << " (" << 
+                 (rule.allow ? "allow" : "deny") << ")" << std::endl;
 }
 
 void DhcpSecurityManager::remove_ip_filter_rule(const IpAddress& ip_address) {
-    std::cout << "INFO: IP filter rule removed (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    ip_filter_rules_.erase(
+        std::remove_if(ip_filter_rules_.begin(), ip_filter_rules_.end(),
+            [&](const IpFilterRule& rule) {
+                return rule.ip_address == ip_address;
+            }),
+        ip_filter_rules_.end());
+    
+    std::cout << "INFO: Removed IP filter rule: " << ip_to_string(ip_address) << std::endl;
 }
 
 bool DhcpSecurityManager::check_ip_address(const IpAddress& ip_address) {
-    return true; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    for (const auto& rule : ip_filter_rules_) {
+        if (!rule.enabled) {
+            continue;
+        }
+        
+        // Check if rule has expired
+        if (rule.expires < std::chrono::system_clock::now()) {
+            continue;
+        }
+        
+        if (ip_matches_rule(ip_address, rule)) {
+            update_security_stats(rule.allow ? "ip_allowed" : "ip_blocked");
+            return rule.allow;
+        }
+    }
+    
+    // Default allow if no rules match
+    update_security_stats("ip_allowed");
+    return true;
 }
 
 std::vector<IpFilterRule> DhcpSecurityManager::get_ip_filter_rules() {
-    return {}; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    return ip_filter_rules_;
 }
 
 void DhcpSecurityManager::add_rate_limit_rule(const RateLimitRule& rule) {
-    std::cout << "INFO: Rate limit rule added (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    rate_limit_rules_.push_back(rule);
+    std::cout << "INFO: Added rate limit rule: " << rule.identifier << " (" << 
+                 std::to_string(rule.max_requests) << " requests per " << 
+                 std::to_string(rule.time_window.count()) << " seconds)" << std::endl;
 }
 
 void DhcpSecurityManager::remove_rate_limit_rule(const std::string& identifier, const std::string& identifier_type) {
-    std::cout << "INFO: Rate limit rule removed (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    rate_limit_rules_.erase(
+        std::remove_if(rate_limit_rules_.begin(), rate_limit_rules_.end(),
+            [&](const RateLimitRule& rule) {
+                return rule.identifier == identifier && rule.identifier_type == identifier_type;
+            }),
+        rate_limit_rules_.end());
+    
+    std::cout << "INFO: Removed rate limit rule: " << identifier << " (" << identifier_type << ")" << std::endl;
 }
 
 bool DhcpSecurityManager::check_rate_limit(const std::string& identifier, const std::string& identifier_type) {
-    return true; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Find applicable rate limit rule
+    RateLimitRule* applicable_rule = nullptr;
+    for (auto& rule : rate_limit_rules_) {
+        if (!rule.enabled) {
+            continue;
+        }
+        
+        if (rule.identifier_type == identifier_type && 
+            (rule.identifier == identifier || rule.identifier == "*")) {
+            applicable_rule = &rule;
+            break;
+        }
+    }
+    
+    if (!applicable_rule) {
+        // No rate limiting rule applies
+        update_security_stats("rate_limit_allowed");
+        return true;
+    }
+    
+    // Check if rule has expired
+    if (applicable_rule->expires < std::chrono::system_clock::now()) {
+        update_security_stats("rate_limit_allowed");
+        return true;
+    }
+    
+    // Get or create rate limit tracker
+    std::string tracker_key = identifier_type + ":" + identifier;
+    auto& tracker = rate_limit_trackers_[tracker_key];
+    
+    auto now = std::chrono::system_clock::now();
+    
+    // Clean up old requests outside the time window
+    auto cutoff_time = now - applicable_rule->time_window;
+    tracker.requests.erase(
+        std::remove_if(tracker.requests.begin(), tracker.requests.end(),
+            [&](const std::chrono::system_clock::time_point& request_time) {
+                return request_time < cutoff_time;
+            }),
+        tracker.requests.end());
+    
+    // Check if we're within the rate limit
+    if (tracker.requests.size() >= applicable_rule->max_requests) {
+        update_security_stats("rate_limit_exceeded");
+        std::cout << "WARNING: Rate limit exceeded for " << identifier << " (" << identifier_type << ")" << std::endl;
+        return false;
+    }
+    
+    // Add current request
+    tracker.requests.push_back(now);
+    update_security_stats("rate_limit_allowed");
+    return true;
 }
 
 std::vector<RateLimitRule> DhcpSecurityManager::get_rate_limit_rules() {
-    return {}; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    return rate_limit_rules_;
 }
 
 void DhcpSecurityManager::set_option_82_validation_enabled(bool enabled) {
@@ -166,15 +299,105 @@ bool DhcpSecurityManager::is_option_82_validation_enabled() const {
 
 bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_82_data, 
                                             const std::string& source_interface) {
-    return true; // Placeholder
+    if (!option_82_validation_enabled_) {
+        return true;
+    }
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Check if Option 82 is required for this interface
+    bool required = false;
+    for (const auto& rule : option_82_rules_) {
+        if (!rule.enabled) {
+            continue;
+        }
+        
+        if (rule.interface == source_interface || rule.interface == "*") {
+            required = rule.required;
+            break;
+        }
+    }
+    
+    if (!required) {
+        // Option 82 not required for this interface
+        update_security_stats("option_82_allowed");
+        return true;
+    }
+    
+    // Validate Option 82 data
+    if (option_82_data.empty()) {
+        update_security_stats("option_82_missing");
+        std::cout << "WARNING: Option 82 required but missing for interface " << source_interface << std::endl;
+        return false;
+    }
+    
+    // Basic Option 82 validation (circuit-id and remote-id)
+    if (option_82_data.size() < 4) {
+        update_security_stats("option_82_invalid");
+        std::cout << "WARNING: Option 82 data too short for interface " << source_interface << std::endl;
+        return false;
+    }
+    
+    // Check for valid sub-options
+    size_t pos = 0;
+    bool has_circuit_id = false;
+    bool has_remote_id = false;
+    
+    while (pos < option_82_data.size()) {
+        if (pos + 2 > option_82_data.size()) {
+            break; // Not enough data for sub-option header
+        }
+        
+        uint8_t sub_option = option_82_data[pos];
+        uint8_t length = option_82_data[pos + 1];
+        
+        if (pos + 2 + length > option_82_data.size()) {
+            break; // Not enough data for sub-option content
+        }
+        
+        if (sub_option == 1) { // Circuit ID
+            has_circuit_id = true;
+        } else if (sub_option == 2) { // Remote ID
+            has_remote_id = true;
+        }
+        
+        pos += 2 + length;
+    }
+    
+    if (!has_circuit_id || !has_remote_id) {
+        update_security_stats("option_82_incomplete");
+        std::cout << "WARNING: Option 82 missing required sub-options for interface " << source_interface << std::endl;
+        return false;
+    }
+    
+    update_security_stats("option_82_valid");
+    return true;
 }
 
 void DhcpSecurityManager::add_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
-    std::cout << "INFO: Trusted relay agent added (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    TrustedRelayAgent agent;
+    agent.circuit_id = circuit_id;
+    agent.remote_id = remote_id;
+    agent.enabled = true;
+    agent.created_at = std::chrono::system_clock::now();
+    
+    trusted_relay_agents_.push_back(agent);
+    std::cout << "INFO: Added trusted relay agent: circuit_id=" << circuit_id << ", remote_id=" << remote_id << std::endl;
 }
 
 void DhcpSecurityManager::remove_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
-    std::cout << "INFO: Trusted relay agent removed (placeholder)" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    trusted_relay_agents_.erase(
+        std::remove_if(trusted_relay_agents_.begin(), trusted_relay_agents_.end(),
+            [&](const TrustedRelayAgent& agent) {
+                return agent.circuit_id == circuit_id && agent.remote_id == remote_id;
+            }),
+        trusted_relay_agents_.end());
+    
+    std::cout << "INFO: Removed trusted relay agent: circuit_id=" << circuit_id << ", remote_id=" << remote_id << std::endl;
 }
 
 void DhcpSecurityManager::set_authentication_enabled(bool enabled) {
@@ -193,7 +416,47 @@ void DhcpSecurityManager::set_authentication_key(const std::string& key) {
 
 bool DhcpSecurityManager::validate_client_authentication(const std::string& client_mac, 
                                                         const std::vector<uint8_t>& auth_data) {
-    return true; // Placeholder
+    if (!authentication_enabled_) {
+        return true;
+    }
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Find client credentials
+    auto it = client_credentials_.find(client_mac);
+    if (it == client_credentials_.end()) {
+        update_security_stats("auth_client_not_found");
+        std::cout << "WARNING: Authentication failed - client not found: " << client_mac << std::endl;
+        return false;
+    }
+    
+    const auto& credentials = it->second;
+    
+    // Check if credentials are enabled
+    if (!credentials.enabled) {
+        update_security_stats("auth_client_disabled");
+        std::cout << "WARNING: Authentication failed - client disabled: " << client_mac << std::endl;
+        return false;
+    }
+    
+    // Check if credentials have expired
+    if (credentials.expires < std::chrono::system_clock::now()) {
+        update_security_stats("auth_client_expired");
+        std::cout << "WARNING: Authentication failed - client expired: " << client_mac << std::endl;
+        return false;
+    }
+    
+    // Validate authentication data (simplified HMAC validation)
+    if (auth_data.empty()) {
+        update_security_stats("auth_data_missing");
+        std::cout << "WARNING: Authentication failed - no auth data for client: " << client_mac << std::endl;
+        return false;
+    }
+    
+    // For now, accept any non-empty auth data (in real implementation, would validate HMAC)
+    update_security_stats("auth_success");
+    std::cout << "INFO: Client authenticated successfully: " << client_mac << std::endl;
+    return true;
 }
 
 void DhcpSecurityManager::report_security_event(const SecurityEvent& event) {
@@ -309,14 +572,7 @@ void DhcpSecurityManager::cleanup_worker() {
     }
 }
 
-// Placeholder implementations for remaining private methods
-bool DhcpSecurityManager::mac_matches_rule(const std::string& mac_address, const MacFilterRule& rule) {
-    return true; // Placeholder
-}
-
-bool DhcpSecurityManager::ip_matches_rule(const IpAddress& ip_address, const IpFilterRule& rule) {
-    return true; // Placeholder
-}
+// Helper method implementations
 
 bool DhcpSecurityManager::update_rate_limit_tracker(const std::string& identifier, const std::string& identifier_type) {
     return true; // Placeholder
@@ -334,7 +590,56 @@ bool DhcpSecurityManager::validate_auth_hash(const std::string& client_mac,
 }
 
 void DhcpSecurityManager::update_security_stats(const std::string& stat_name) {
-    // Placeholder implementation
+    std::lock_guard<std::mutex> lock(mutex_);
+    security_stats_.stats[stat_name]++;
+    
+    // Update specific counters
+    if (stat_name.find("blocked") != std::string::npos || 
+        stat_name.find("exceeded") != std::string::npos ||
+        stat_name.find("invalid") != std::string::npos) {
+        security_stats_.blocked_requests++;
+    } else if (stat_name.find("allowed") != std::string::npos) {
+        security_stats_.allowed_requests++;
+    }
+    
+    // Log significant security events
+    if (stat_name.find("blocked") != std::string::npos || 
+        stat_name.find("exceeded") != std::string::npos) {
+        std::cout << "SECURITY: " << stat_name << " (total: " << security_stats_.stats[stat_name] << ")" << std::endl;
+    }
+}
+
+bool DhcpSecurityManager::mac_matches_rule(const std::string& mac_address, const MacFilterRule& rule) {
+    if (rule.mac_address == "*" || rule.mac_address == mac_address) {
+        return true;
+    }
+    
+    // Support wildcard patterns like "aa:bb:*" or "aa:*:*"
+    std::string pattern = rule.mac_address;
+    std::string target = mac_address;
+    
+    // Convert to lowercase for case-insensitive comparison
+    std::transform(pattern.begin(), pattern.end(), pattern.begin(), ::tolower);
+    std::transform(target.begin(), target.end(), target.begin(), ::tolower);
+    
+    // Simple wildcard matching
+    size_t pos = 0;
+    while (pos < pattern.length() && pos < target.length()) {
+        if (pattern[pos] == '*') {
+            return true; // Wildcard matches anything
+        }
+        if (pattern[pos] != target[pos]) {
+            return false;
+        }
+        pos++;
+    }
+    
+    return pattern.length() == target.length();
+}
+
+bool DhcpSecurityManager::ip_matches_rule(const IpAddress& ip_address, const IpFilterRule& rule) {
+    // For now, exact match only (could be extended to support CIDR ranges)
+    return rule.ip_address == ip_address;
 }
 
 } // namespace simple_dhcpd
