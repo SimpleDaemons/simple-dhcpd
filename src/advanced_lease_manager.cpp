@@ -648,8 +648,8 @@ DhcpLease AdvancedLeaseManager::deserialize_lease(const std::string& data) {
 
 std::string AdvancedLeaseManager::serialize_static_lease(const StaticLease& static_lease) {
     std::ostringstream oss;
-    oss << static_lease.mac_address.to_string() << "|"
-        << static_lease.ip_address.to_string() << "|"
+    oss << mac_to_string(static_lease.mac_address) << "|"
+        << ip_to_string(static_lease.ip_address) << "|"
         << static_lease.hostname << "|"
         << static_lease.description << "|"
         << std::chrono::duration_cast<std::chrono::seconds>(static_lease.lease_time).count() << "|"

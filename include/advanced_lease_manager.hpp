@@ -46,6 +46,7 @@ struct StaticLease {
     std::chrono::seconds lease_time;
     std::map<DhcpOptionCode, std::vector<uint8_t>> options;
     bool enabled;
+    std::string vendor_class;
     
     StaticLease() = default;
     StaticLease(const MacAddress& mac, const IpAddress& ip, 

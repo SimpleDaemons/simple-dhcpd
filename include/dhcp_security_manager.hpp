@@ -467,6 +467,9 @@ private:
     };
     std::map<std::string, RateLimitTracker> rate_limit_trackers_;
     
+    // Helper for updating security statistics
+    void update_security_stats(const std::string& stat_name);
+    
     /**
      * @brief Cleanup expired rules and bindings
      */
