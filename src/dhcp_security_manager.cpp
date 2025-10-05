@@ -603,11 +603,132 @@ void DhcpSecurityManager::clear_security_statistics() {
 
 bool DhcpSecurityManager::load_security_configuration(const std::string& config_file) {
     std::cout << "INFO: Loading security configuration from: " << config_file << std::endl;
+
+    std::ifstream file(config_file);
+    if (!file.is_open()) {
+        std::cerr << "ERROR: Cannot open security configuration: " << config_file << std::endl;
+        return false;
+    }
+    std::stringstream buffer; buffer << file.rdbuf(); file.close();
+    const std::string content = buffer.str();
+
+    // Detect by extension
+    const auto dot = config_file.find_last_of('.');
+    std::string ext = (dot == std::string::npos) ? "" : config_file.substr(dot + 1);
+    for (auto& c : ext) c = static_cast<char>(::tolower(c));
+
+    auto trim = [](std::string s){ size_t a=s.find_first_not_of(" \t\r\n"); if(a==std::string::npos) return std::string(); size_t b=s.find_last_not_of(" \t\r\n"); return s.substr(a,b-a+1); };
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    // Reset existing rules
+    option_82_rules_.clear();
+    trusted_relay_agents_.clear();
+
+    try {
+        if (ext == "json") {
+            Json::Value root;
+            Json::CharReaderBuilder b; std::string errs; std::istringstream in(content);
+            if (!Json::parseFromStream(b, in, &root, &errs)) {
+                std::cerr << "ERROR: Security JSON parse error: " << errs << std::endl;
+                return false;
+            }
+            const Json::Value& opt82 = root.isMember("option_82") ? root["option_82"] : Json::Value(Json::nullValue);
+            if (!opt82.isNull()) {
+                if (opt82.isMember("enabled")) option_82_validation_enabled_ = opt82["enabled"].asBool();
+                if (opt82.isMember("rules")) {
+                    for (const auto& r : opt82["rules"]) {
+                        Option82Rule rule;
+                        rule.interface = r.get("interface","*").asString();
+                        rule.required = r.get("required", true).asBool();
+                        rule.enabled = r.get("enabled", true).asBool();
+                        option_82_rules_.push_back(rule);
+                    }
+                }
+            }
+            const Json::Value& relays = root.isMember("trusted_relay_agents") ? root["trusted_relay_agents"] : Json::Value(Json::nullValue);
+            if (!relays.isNull()) {
+                for (const auto& a : relays) {
+                    TrustedRelayAgent tra;
+                    tra.circuit_id = a.get("circuit_id","" ).asString();
+                    tra.remote_id  = a.get("remote_id", "" ).asString();
+                    tra.enabled    = a.get("enabled", true).asBool();
+                    trusted_relay_agents_.push_back(tra);
+                }
+            }
+        } else {
+            // Minimal YAML/INI parsing: scan for keys we care about
+            std::istringstream in(content); std::string line; std::string section;
+            bool in_rules = false; bool in_relays = false;
+            while (std::getline(in, line)) {
+                std::string t = trim(line);
+                if (t.empty() || t[0]=='#' || t[0]==';') continue;
+                if (t.find("option_82:") == 0) { section = "option_82"; continue; }
+                if (t.find("trusted_relay_agents:") == 0) { section = "trusted_relay_agents"; in_relays=true; continue; }
+                if (section == "option_82") {
+                    if (t.find("enabled:") == 0) {
+                        auto v = trim(t.substr(t.find(':')+1)); option_82_validation_enabled_ = (v=="true"||v=="1");
+                    } else if (t.find("rules:") == 0) { in_rules = true; }
+                    else if (in_rules && t[0]=='-') {
+                        // Expect: - interface: eth0 / required: true
+                        Option82Rule rule; rule.interface="*"; rule.required=true; rule.enabled=true;
+                        // consume following lines until next dash or section
+                        std::string sub;
+                        while (std::getline(in, sub)) {
+                            std::string s = trim(sub); if (s.empty()) break; if (s[0]=='-') { in.seekg(-(static_cast<long>(sub.size())+1), std::ios_base::cur); break; }
+                            auto p = s.find(':'); if (p==std::string::npos) continue; auto key=trim(s.substr(0,p)); auto val=trim(s.substr(p+1));
+                            if (!val.empty() && val.front()=='"') val = val.substr(1, val.size()-2);
+                            if (key=="interface") rule.interface = val; else if (key=="required") rule.required = (val=="true"||val=="1"); else if (key=="enabled") rule.enabled=(val=="true"||val=="1");
+                        }
+                        option_82_rules_.push_back(rule);
+                    }
+                } else if (section == "trusted_relay_agents") {
+                    if (t[0]=='-') {
+                        TrustedRelayAgent tra; tra.enabled=true;
+                        std::string sub;
+                        while (std::getline(in, sub)) {
+                            std::string s = trim(sub); if (s.empty()) break; if (s[0]=='-') { in.seekg(-(static_cast<long>(sub.size())+1), std::ios_base::cur); break; }
+                            auto p = s.find(':'); if (p==std::string::npos) continue; auto key=trim(s.substr(0,p)); auto val=trim(s.substr(p+1));
+                            if (!val.empty() && val.front()=='"') val = val.substr(1, val.size()-2);
+                            if (key=="circuit_id") tra.circuit_id = val; else if (key=="remote_id") tra.remote_id = val; else if (key=="enabled") tra.enabled=(val=="true"||val=="1");
+                        }
+                        trusted_relay_agents_.push_back(tra);
+                    }
+                }
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "ERROR: Failed loading security configuration: " << e.what() << std::endl;
+        return false;
+    }
+
+    std::cout << "INFO: Security configuration loaded (" << option_82_rules_.size() << " opt82 rules, "
+              << trusted_relay_agents_.size() << " trusted relays)" << std::endl;
     return true;
 }
 
 bool DhcpSecurityManager::save_security_configuration(const std::string& config_file) {
     std::cout << "INFO: Saving security configuration to: " << config_file << std::endl;
+    Json::Value root;
+    Json::Value opt82(Json::objectValue);
+    opt82["enabled"] = static_cast<bool>(option_82_validation_enabled_);
+    Json::Value rules(Json::arrayValue);
+    for (const auto& r : option_82_rules_) {
+        Json::Value jr; jr["interface"] = r.interface; jr["required"] = r.required; jr["enabled"] = r.enabled; rules.append(jr);
+    }
+    opt82["rules"] = rules; root["option_82"] = opt82;
+
+    Json::Value relays(Json::arrayValue);
+    for (const auto& a : trusted_relay_agents_) {
+        Json::Value ja; ja["circuit_id"] = a.circuit_id; ja["remote_id"] = a.remote_id; ja["enabled"] = a.enabled; relays.append(ja);
+    }
+    root["trusted_relay_agents"] = relays;
+
+    std::ofstream out(config_file);
+    if (!out.is_open()) return false;
+    Json::StreamWriterBuilder wb; wb["indentation"] = "  ";
+    std::unique_ptr<Json::StreamWriter> w(wb.newStreamWriter());
+    w->write(root, &out);
+    out.close();
     return true;
 }
 
