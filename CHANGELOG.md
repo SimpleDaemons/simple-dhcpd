@@ -39,12 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Option inheritance rules (global, subnet, pool, host)
   - Option 82 (Relay Agent Information) support
 - **Advanced Security Features**
-  - DHCP Snooping with trusted interface validation
-  - MAC Address Filtering with wildcard pattern support
-  - IP Address Filtering with exact match capabilities
-  - Rate Limiting with sliding time windows
-  - Option 82 validation with circuit-id and remote-id checking
-  - Client Authentication with HMAC-SHA256
+  - DHCP Snooping with trusted interface validation and monitoring
+  - MAC Address Filtering with wildcard/regex matching and management events
+  - IP Address Filtering with CIDR/mask support and management events
+  - Rate Limiting with sliding windows, block windows, and event reporting
+  - Option 82: implementation, configuration, management, and monitoring
+  - Client Authentication with HMAC-SHA256 and time-window validation
   - Security Event Logging with comprehensive audit trails
   - Trusted Relay Agent management
   - Client Credential management
