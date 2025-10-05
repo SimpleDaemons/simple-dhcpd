@@ -283,6 +283,24 @@ sudo simple-dhcpd -c /etc/simple-dhcpd/debug.conf -f -v
 sudo journalctl -u simple-dhcpd -f
 ```
 
+### Google Test Filters
+
+Use `--gtest_filter` to include or exclude tests when running the test binary:
+
+```bash
+# Single test
+./build/tests/simple_dhcpd_tests --gtest_filter=SecurityTest.MacFilterAllowDeny
+
+# Include suites
+./build/tests/simple_dhcpd_tests --gtest_filter='SecurityTest.*:DhcpParserTest.*'
+
+# Exclude patterns (negative filter)
+./build/tests/simple_dhcpd_tests --gtest_filter='-SecurityTest.MacFilterAllowDeny:DhcpParserTest.Slow*'
+
+# List all tests
+./build/tests/simple_dhcpd_tests --gtest_list_tests
+```
+
 ### Performance Monitoring
 
 ```bash
