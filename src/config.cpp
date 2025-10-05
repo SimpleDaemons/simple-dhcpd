@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <json/json.h>
+#include <map>
 
 namespace simple_dhcpd {
 
@@ -33,7 +34,35 @@ void ConfigManager::load_config(const std::string& config_file) {
     buffer << file.rdbuf();
     file.close();
     
-    load_config_from_json(buffer.str());
+    // Detect format by extension; fallback to content sniffing
+    const auto ext_pos = config_file.find_last_of('.');
+    std::string ext = (ext_pos == std::string::npos) ? "" : config_file.substr(ext_pos + 1);
+    for (auto& c : ext) c = static_cast<char>(::tolower(c));
+
+    const std::string content = buffer.str();
+
+    try {
+        if (ext == "json") {
+            load_config_from_json(content);
+        } else if (ext == "yaml" || ext == "yml") {
+            load_config_from_yaml(content);
+        } else if (ext == "ini" || ext == "conf") {
+            load_config_from_ini(content);
+        } else {
+            // Simple sniffing: JSON starts with '{' or '['; YAML often has ':' on top lines
+            std::string trimmed = content;
+            trimmed.erase(0, trimmed.find_first_not_of(" \t\n\r"));
+            if (!trimmed.empty() && (trimmed[0] == '{' || trimmed[0] == '[')) {
+                load_config_from_json(content);
+            } else if (content.find(":") != std::string::npos) {
+                load_config_from_yaml(content);
+            } else {
+                load_config_from_ini(content);
+            }
+        }
+    } catch (const std::exception& e) {
+        throw ConfigException(std::string("Configuration parse error: ") + e.what());
+    }
     loaded_ = true;
     
     LOG_INFO("Configuration loaded from: " + config_file);
@@ -50,6 +79,18 @@ void ConfigManager::load_config_from_json(const std::string& json_config) {
     }
     
     parse_json_config(json_config);
+}
+
+void ConfigManager::load_config_from_yaml(const std::string& yaml_config) {
+    // Parse YAML via a minimal bridge: use JSONCPP after converting YAML->JSON with a simple heuristic
+    // For full fidelity, integrate yaml-cpp; this fallback expects YAML keys similar to JSON structure.
+    // Here we just call parse_yaml_config which maps to internal structures.
+    parse_yaml_config(yaml_config);
+}
+
+void ConfigManager::load_config_from_ini(const std::string& ini_config) {
+    // Minimal INI parser: line-based, [sections], key=value; maps into internal config
+    parse_ini_config(ini_config);
 }
 
 void ConfigManager::save_config(const std::string& config_file) const {
@@ -235,6 +276,124 @@ void ConfigManager::parse_json_config(const std::string& json_config) {
             }
         }
     }
+}
+
+void ConfigManager::parse_yaml_config(const std::string& yaml_config) {
+    // Very light YAML support without external deps: expect top-level keys like 'server', 'subnets', 'global_options'
+    // Strategy: Convert a constrained subset of YAML to JSON-like text and reuse existing JSON parsing helpers.
+    // Note: For production, replace with yaml-cpp.
+
+    // Simple conversion: replace YAML list dashes with JSON array markers is non-trivial; instead implement direct mapping.
+    // We'll parse line-by-line for a constrained schema used in our examples.
+    DhcpConfig parsed = get_default_config();
+
+    std::istringstream in(yaml_config);
+    std::string line;
+    std::string current_section;
+
+    auto trim = [](std::string s) {
+        size_t a = s.find_first_not_of(" \t\r\n");
+        if (a == std::string::npos) return std::string();
+        size_t b = s.find_last_not_of(" \t\r\n");
+        return s.substr(a, b - a + 1);
+    };
+
+    auto parse_ip = [](const std::string& s) -> IpAddress { return string_to_ip(s); };
+
+    DhcpSubnet* current_subnet = nullptr;
+    bool in_subnets = false;
+
+    while (std::getline(in, line)) {
+        std::string t = trim(line);
+        if (t.empty() || t[0] == '#') continue;
+
+        if (t.rfind("server:", 0) == 0) { current_section = "server"; continue; }
+        if (t.rfind("subnets:", 0) == 0) { current_section = "subnets"; in_subnets = true; continue; }
+        if (t.rfind("global_options:", 0) == 0) { current_section = "global_options"; continue; }
+
+        if (current_section == "server") {
+            // key: value
+            auto pos = t.find(":");
+            if (pos == std::string::npos) continue;
+            std::string key = trim(t.substr(0, pos));
+            std::string val = trim(t.substr(pos + 1));
+            if (!val.empty() && val[0] == '"') val = val.substr(1, val.size() - 2);
+            if (key == "enable_logging") parsed.enable_logging = (val == "true");
+            else if (key == "enable_security") parsed.enable_security = (val == "true");
+            else if (key == "max_leases") parsed.max_leases = static_cast<uint32_t>(std::stoul(val));
+        } else if (current_section == "subnets") {
+            if (t[0] == '-') {
+                // Start new subnet
+                parsed.subnets.emplace_back();
+                current_subnet = &parsed.subnets.back();
+                continue;
+            }
+            if (!current_subnet) continue;
+            auto pos = t.find(":");
+            if (pos == std::string::npos) continue;
+            std::string key = trim(t.substr(0, pos));
+            std::string val = trim(t.substr(pos + 1));
+            if (!val.empty() && val[0] == '"') val = val.substr(1, val.size() - 2);
+            if (key == "name") current_subnet->name = val;
+            else if (key == "network") current_subnet->network = parse_ip(val);
+            else if (key == "prefix_length") current_subnet->prefix_length = static_cast<uint8_t>(std::stoi(val));
+            else if (key == "range_start") current_subnet->range_start = parse_ip(val);
+            else if (key == "range_end") current_subnet->range_end = parse_ip(val);
+            else if (key == "gateway") current_subnet->gateway = parse_ip(val);
+            else if (key == "domain_name") current_subnet->domain_name = val;
+            else if (key == "lease_time") current_subnet->lease_time = static_cast<uint32_t>(std::stoul(val));
+            else if (key == "max_lease_time") current_subnet->max_lease_time = static_cast<uint32_t>(std::stoul(val));
+        }
+    }
+
+    set_config(parsed);
+    loaded_ = true;
+}
+
+void ConfigManager::parse_ini_config(const std::string& ini_config) {
+    // Minimal INI parsing that supports sections like [server], [subnet:name]
+    DhcpConfig parsed = get_default_config();
+    std::istringstream in(ini_config);
+    std::string line;
+    std::string section;
+    auto trim = [](std::string s) {
+        size_t a = s.find_first_not_of(" \t\r\n");
+        if (a == std::string::npos) return std::string();
+        size_t b = s.find_last_not_of(" \t\r\n");
+        return s.substr(a, b - a + 1);
+    };
+    auto parse_ip = [](const std::string& s) -> IpAddress { return string_to_ip(s); };
+    while (std::getline(in, line)) {
+        std::string t = trim(line);
+        if (t.empty() || t[0] == ';' || t[0] == '#') continue;
+        if (t.front() == '[' && t.back() == ']') { section = t.substr(1, t.size() - 2); continue; }
+        auto pos = t.find('=');
+        if (pos == std::string::npos) continue;
+        std::string key = trim(t.substr(0, pos));
+        std::string val = trim(t.substr(pos + 1));
+        if (section == "server") {
+            if (key == "enable_logging") parsed.enable_logging = (val == "true");
+            else if (key == "enable_security") parsed.enable_security = (val == "true");
+            else if (key == "max_leases") parsed.max_leases = static_cast<uint32_t>(std::stoul(val));
+        } else if (section.rfind("subnet:", 0) == 0) {
+            // Ensure subnet exists
+            std::string name = section.substr(7);
+            auto it = std::find_if(parsed.subnets.begin(), parsed.subnets.end(), [&](const DhcpSubnet& s){return s.name==name;});
+            if (it == parsed.subnets.end()) { parsed.subnets.push_back(DhcpSubnet{}); parsed.subnets.back().name = name; it = std::prev(parsed.subnets.end()); }
+            DhcpSubnet& s = *it;
+            if (key == "network") s.network = parse_ip(val);
+            else if (key == "prefix_length") s.prefix_length = static_cast<uint8_t>(std::stoi(val));
+            else if (key == "range_start") s.range_start = parse_ip(val);
+            else if (key == "range_end") s.range_end = parse_ip(val);
+            else if (key == "gateway") s.gateway = parse_ip(val);
+            else if (key == "domain_name") s.domain_name = val;
+            else if (key == "lease_time") s.lease_time = static_cast<uint32_t>(std::stoul(val));
+            else if (key == "max_lease_time") s.max_lease_time = static_cast<uint32_t>(std::stoul(val));
+        }
+    }
+
+    set_config(parsed);
+    loaded_ = true;
 }
 
 DhcpSubnet ConfigManager::parse_subnet_config(const std::string& subnet_json) {

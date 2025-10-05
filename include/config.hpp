@@ -59,6 +59,8 @@ public:
      * @throws ConfigException if configuration cannot be parsed
      */
     void load_config_from_json(const std::string& json_config);
+    void load_config_from_yaml(const std::string& yaml_config);
+    void load_config_from_ini(const std::string& ini_config);
     
     /**
      * @brief Save configuration to file
@@ -114,6 +116,8 @@ private:
      * @throws ConfigException if parsing fails
      */
     void parse_json_config(const std::string& json_config);
+    void parse_yaml_config(const std::string& yaml_config);
+    void parse_ini_config(const std::string& ini_config);
     
     /**
      * @brief Parse subnet configuration
