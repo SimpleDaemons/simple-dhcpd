@@ -14,12 +14,12 @@ using namespace simple_dhcpd;
 class SecurityTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Fresh manager per test
+        // Fresh manager per test (no background threads by default)
         manager = std::make_unique<DhcpSecurityManager>();
-        manager->start();
     }
 
     void TearDown() override {
+        // Ensure clean shutdown if a test started the manager
         if (manager) manager->stop();
     }
 
@@ -27,13 +27,19 @@ protected:
 };
 
 TEST_F(SecurityTest, MacFilterAllowDeny) {
-    MacFilterRule allow_rule{"00:11:22:33:44:55", true, "allow test"};
-    MacFilterRule deny_rule{"aa:bb:cc:*", false, "deny pattern"};
-    manager->add_mac_filter_rule(allow_rule);
-    manager->add_mac_filter_rule(deny_rule);
+    using namespace std::chrono_literals;
+    auto fut = std::async(std::launch::async, [&] {
+        MacFilterRule allow_rule{"00:11:22:33:44:55", true, "allow test"};
+        MacFilterRule deny_rule{"aa:bb:cc:*", false, "deny pattern"};
+        manager->add_mac_filter_rule(allow_rule);
+        manager->add_mac_filter_rule(deny_rule);
 
-    EXPECT_TRUE(manager->check_mac_address("00:11:22:33:44:55"));
-    EXPECT_FALSE(manager->check_mac_address("aa:bb:cc:00:00:01"));
+        EXPECT_TRUE(manager->check_mac_address("00:11:22:33:44:55"));
+        EXPECT_FALSE(manager->check_mac_address("aa:bb:cc:00:00:01"));
+        return true;
+    });
+    ASSERT_EQ(fut.wait_for(10s), std::future_status::ready) << "Test timed out after 10s";
+    ASSERT_TRUE(fut.get());
 }
 
 TEST_F(SecurityTest, IpFilterAllowDenyExact) {
