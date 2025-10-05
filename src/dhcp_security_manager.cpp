@@ -15,6 +15,7 @@
 #include <regex>
 #include <openssl/sha.h>
 #include <openssl/hmac.h>
+#include <json/json.h>
 
 namespace simple_dhcpd {
 
