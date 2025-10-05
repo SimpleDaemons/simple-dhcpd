@@ -1,402 +1,173 @@
-# Production Environment Configuration
+# Production Configurations
 
-This configuration is designed for large enterprise environments with high availability, security, and performance requirements.
+This directory contains enterprise-grade production configurations designed for mission-critical environments with high availability, security, and performance requirements.
 
-## Overview
+## Files
 
-- **Networks**: 4 subnets (corporate LAN, guest WiFi, IoT devices, DMZ servers)
-- **IP Ranges**: Multiple ranges across different subnets
-- **Lease Times**: Varying based on subnet purpose and security requirements
-- **Security**: Comprehensive security with MAC filtering, rate limiting, Option 82, authentication, and access control
-- **Logging**: JSON format with multiple specialized log files and custom formats
-- **Database**: MySQL with connection pooling and optimization
-- **Monitoring**: Prometheus metrics, health checks, and alerting
-- **High Availability**: Active-passive failover configuration
+### enterprise.yaml
+Comprehensive enterprise configuration with full feature set:
+- **6 VLANs**: Core infrastructure, production servers, development, user workstations, guest access, IoT/BYOD
+- **High Capacity**: 50,000+ leases supported
+- **Advanced Security**: Comprehensive MAC filtering, rate limiting, DHCP snooping
+- **Static Reservations**: Critical infrastructure and server devices
+- **Enterprise Features**: NetBIOS support, comprehensive logging, audit trails
+- **Compliance Ready**: Detailed logging for regulatory compliance
 
-## Features
+**Use case**: Large enterprises, corporate networks, mission-critical applications
 
-### Network Configuration
+### datacenter.yaml
+High-performance data center configuration:
+- **7 VLANs**: Management, web tier, app tier, database tier, storage, development, backup/DR
+- **Massive Scale**: 100,000+ leases supported
+- **Tiered Architecture**: Separate networks for different application tiers
+- **Long-term Leases**: Extended lease times for stability
+- **Performance Optimized**: High-throughput configuration
+- **Disaster Recovery**: Backup/DR network included
 
-#### Corporate LAN Subnet (172.16.1.0/24)
-- **Range**: 172.16.1.100 - 172.16.1.200
-- **Lease Time**: 6 hours (21600 seconds)
-- **Purpose**: Corporate workstations and servers
-- **DNS**: Internal DNS servers with NTP support
-- **Features**: PXE boot support, TFTP server integration
+**Use case**: Data centers, cloud providers, high-scale applications
 
-#### Guest WiFi Subnet (172.16.2.0/24)
-- **Range**: 172.16.2.100 - 172.16.2.200
-- **Lease Time**: 30 minutes (1800 seconds)
-- **Purpose**: Guest WiFi access
-- **DNS**: Public DNS servers only
-- **Security**: Isolated from corporate network
+## Key Features
 
-#### IoT Devices Subnet (172.16.3.0/24)
-- **Range**: 172.16.3.100 - 172.16.3.200
-- **Lease Time**: 7 days (604800 seconds)
-- **Purpose**: IoT devices and sensors
-- **DNS**: Internal DNS servers
-- **Security**: Restricted access with static reservations
-
-#### DMZ Servers Subnet (172.16.4.0/24)
-- **Range**: 172.16.4.100 - 172.16.4.200
-- **Lease Time**: 24 hours (86400 seconds)
-- **Purpose**: DMZ servers and services
-- **DNS**: Internal DNS servers
-- **Security**: Controlled access with reservations
-
-### Security Features
-
-#### MAC Address Filtering
-- **Mode**: Allow list
-- **Management**: Centralized device management
-- **Audit**: Regular security audits
-
-#### Rate Limiting
-- **Requests per minute**: 2000
-- **Burst size**: 200
-- **Per MAC/IP**: Enabled
-- **Purpose**: Prevent DHCP flooding attacks
-
-#### Option 82 Support
-- **Validation**: Enabled
-- **Logging**: Enabled
-- **Required**: True
-- **Circuit ID**: Enabled
-- **Remote ID**: Enabled
-- **Vendor ID**: Enabled
-
-#### Authentication
-- **Method**: Option 82
-- **Fallback**: Disabled
-- **Purpose**: Ensure only authorized relay agents
-
-#### Access Control Lists
-- **Corporate LAN**: Allow
-- **Guest WiFi**: Allow
-- **IoT Devices**: Allow
-- **DMZ Servers**: Allow
-- **Default**: Deny
-
-### Performance Optimization
-
-#### Database Configuration
-- **Type**: MySQL
-- **Host**: 172.16.1.50
-- **Port**: 3306
-- **Database**: dhcp_leases
-- **Backup**: Every 30 minutes
-- **Retention**: 30 days
-- **Connection Pool**: 10-100 connections
-
-#### Caching
-- **Size**: 1GB
-- **TTL**: 30 minutes
-- **Compression**: Enabled
-- **Cache Types**: Leases, options, reservations, global options
-
-#### Connection Pooling
-- **Max connections**: 5000
-- **Idle timeout**: 5 minutes
-- **Keep alive**: Enabled
-- **Max requests per connection**: 1000
-
-#### Threading
-- **Worker threads**: 16
-- **IO threads**: 8
-- **Queue size**: 10,000
-
-### Monitoring and Alerting
-
-#### Metrics
-- **Format**: Prometheus
-- **Interval**: 30 seconds
-- **Exporters**: Prometheus, InfluxDB
-- **Custom metrics**: Enabled
-- **Business metrics**: Enabled
-
-#### Health Checks
-- **Memory threshold**: 85%
-- **CPU threshold**: 90%
-- **Lease threshold**: 50,000
-- **Database threshold**: 1000ms
-- **Disk space threshold**: 90%
-- **Interval**: 15 seconds
-
-#### Alerting
-- **Email**: admin@company.com, ops@company.com
-- **Slack**: #alerts channel
-- **PagerDuty**: Integration for critical alerts
+### Enterprise-Grade Security
+- **DHCP Snooping**: Protection against rogue DHCP servers
+- **MAC Filtering**: Granular access control based on MAC addresses
+- **Rate Limiting**: Protection against DHCP flooding attacks
+- **Audit Logging**: Comprehensive security event logging
+- **Compliance**: Detailed logs for regulatory requirements
 
 ### High Availability
+- **Redundancy**: Multiple DHCP servers for failover
+- **Load Balancing**: Traffic distribution across servers
+- **Monitoring**: Comprehensive health monitoring
+- **Alerting**: Automated alerting for issues
 
-#### Failover Configuration
-- **Mode**: Active-passive
-- **Peer server**: 172.16.1.2
-- **Timeout**: 30 seconds
-- **Retry interval**: 10 seconds
-- **Max retries**: 3
+### Performance Optimization
+- **High Throughput**: Optimized for high request volumes
+- **Efficient Leasing**: Optimized lease management
+- **Resource Management**: Efficient memory and CPU usage
+- **Scalability**: Support for large numbers of clients
 
-#### Load Balancing
-- **Enabled**: False (active-passive mode)
-- **Purpose**: Single active server with standby
+### Enterprise Features
+- **Static Reservations**: Guaranteed IP addresses for critical devices
+- **IP Exclusions**: Reserved ranges for infrastructure
+- **Advanced Options**: Custom DHCP options for specific needs
+- **Comprehensive Logging**: Detailed logs for troubleshooting and compliance
+- **Monitoring Integration**: Ready for enterprise monitoring systems
 
-## Usage
+## Configuration Guidelines
+
+### Network Architecture
+1. **Core Infrastructure**: Management and monitoring systems
+2. **Production Servers**: Business-critical applications
+3. **Development**: Development and testing environments
+4. **User Workstations**: End-user devices
+5. **Guest Access**: Public access with limited privileges
+6. **IoT/BYOD**: Internet of Things and bring-your-own-device
+
+### IP Address Planning
+- **Static Reservations**: Use for critical infrastructure
+- **DHCP Ranges**: Use for dynamic devices
+- **Exclusions**: Reserve ranges for future static assignments
+- **Documentation**: Maintain detailed IP address documentation
+
+### Security Implementation
+- **Network Segmentation**: Isolate different types of traffic
+- **Access Control**: Implement appropriate restrictions per VLAN
+- **Monitoring**: Enable comprehensive logging and monitoring
+- **Regular Audits**: Review and update security policies
+
+### Performance Tuning
+- **Lease Times**: Optimize based on device types and usage patterns
+- **Rate Limiting**: Configure appropriate limits for your environment
+- **Monitoring**: Monitor performance metrics and adjust as needed
+- **Capacity Planning**: Plan for growth and peak usage
+
+## Deployment
 
 ### Prerequisites
-
-#### Database Setup
-```sql
--- Create database
-CREATE DATABASE dhcp_leases;
-
--- Create user
-CREATE USER 'dhcp_user'@'%' IDENTIFIED BY 'secure_password';
-GRANT ALL PRIVILEGES ON dhcp_leases.* TO 'dhcp_user'@'%';
-FLUSH PRIVILEGES;
-```
-
-#### Log Directories
-```bash
-# Create log directories
-sudo mkdir -p /var/log/simple-dhcpd
-sudo chown -R dhcpd:dhcpd /var/log/simple-dhcpd
-sudo chmod 755 /var/log/simple-dhcpd
-```
+- Enterprise network infrastructure
+- High-availability DHCP server setup
+- Monitoring and logging infrastructure
+- Security policies and procedures
+- Network documentation
 
 ### Installation
-```bash
-# Copy configuration
-sudo cp config/examples/production/simple-dhcpd.conf /etc/simple-dhcpd/
-
-# Set permissions
-sudo chown -R dhcpd:dhcpd /etc/simple-dhcpd
-sudo chmod 644 /etc/simple-dhcpd/simple-dhcpd.conf
-
-# Start service
-sudo systemctl start simple-dhcpd
-sudo systemctl enable simple-dhcpd
-```
-
-### Testing
-```bash
-# Test configuration
-simple-dhcpd -c /etc/simple-dhcpd/simple-dhcpd.conf --test-config
-
-# Check status
-sudo systemctl status simple-dhcpd
-
-# View logs
-sudo journalctl -u simple-dhcpd -f
-```
+1. Choose the appropriate configuration
+2. Customize for your specific environment
+3. Configure network infrastructure
+4. Deploy DHCP servers with redundancy
+5. Configure monitoring and alerting
+6. Test failover and performance
 
 ### Monitoring
-```bash
-# Show active leases
-sudo simple-dhcpd --show-leases
-
-# Show statistics
-sudo simple-dhcpd --stats
-
-# Check metrics endpoint
-curl http://localhost:8080/metrics
-
-# Check health endpoint
-curl http://localhost:8080/health
-```
-
-## Customization
-
-### Adding New Subnets
-```json
-{
-  "name": "new-subnet",
-  "network": "172.16.5.0/24",
-  "range": "172.16.5.100-172.16.5.200",
-  "gateway": "172.16.5.1",
-  "dns_servers": ["172.16.1.10", "172.16.1.11"],
-  "domain_name": "new.company.com",
-  "lease_time": 86400
-}
-```
-
-### Adding MAC Addresses
-```json
-"allow_list": [
-  "00:11:22:33:44:55",
-  "00:11:22:33:44:56",
-  "AA:BB:CC:DD:EE:FF"  // Add new MAC
-]
-```
-
-### Adjusting Performance Settings
-```json
-"caching": {
-  "cache_size": "2GB",  // Increase cache size
-  "ttl": 1800  // Decrease TTL to 30 minutes
-}
-```
-
-### Adding Alerting Endpoints
-```json
-"alerting": {
-  "endpoints": [
-    {
-      "type": "webhook",
-      "url": "https://hooks.slack.com/services/...",
-      "channel": "#alerts"
-    }
-  ]
-}
-```
+- Monitor DHCP server performance
+- Track lease utilization and trends
+- Monitor security events
+- Regular log analysis and reporting
+- Capacity planning and optimization
 
 ## Security Considerations
 
-### MAC Address Management
-- Maintain allow list of authorized devices
-- Regular audit of connected devices
-- Remove unused MAC addresses
-- Consider device registration process
+### Network Security
+- Implement proper network segmentation
+- Use appropriate access controls
+- Monitor for security threats
+- Regular security audits
 
-### Rate Limiting
-- Monitor for rate limit violations
-- Adjust limits based on usage patterns
-- Consider per-subnet rate limiting
-- Implement progressive penalties
+### DHCP Security
+- Enable DHCP snooping
+- Implement MAC filtering
+- Configure rate limiting
+- Monitor for rogue servers
 
-### Option 82 Validation
-- Ensure relay agents are properly configured
-- Monitor for validation failures
-- Consider making Option 82 required
-- Implement relay agent authentication
-
-### Access Control
-- Regular review of access control rules
-- Monitor for unauthorized access attempts
-- Implement network segmentation
-- Consider zero-trust networking
-
-## Performance Tuning
-
-### Database Optimization
-- Regular database maintenance
-- Monitor backup performance
-- Consider read replicas for large deployments
-- Implement connection pooling
-
-### Caching
-- Monitor cache hit rates
-- Adjust cache size based on usage
-- Consider cache warming strategies
-- Implement cache invalidation
-
-### Connection Pooling
-- Monitor connection usage
-- Adjust pool size based on load
-- Consider connection timeouts
-- Implement connection health checks
-
-### Threading
-- Monitor thread usage
-- Adjust thread counts based on load
-- Consider CPU affinity
-- Implement thread monitoring
-
-## High Availability
-
-### Failover Testing
-- Regular failover tests
-- Monitor failover times
-- Test network connectivity
-- Verify data consistency
-
-### Load Balancing
-- Consider active-active mode
-- Implement health checks
-- Monitor load distribution
-- Test failover scenarios
-
-### Data Replication
-- Ensure data consistency
-- Monitor replication lag
-- Test disaster recovery
-- Implement backup strategies
+### Compliance
+- Maintain detailed audit logs
+- Implement data retention policies
+- Regular compliance reviews
+- Document security procedures
 
 ## Troubleshooting
 
 ### Common Issues
-1. **MAC filtering too restrictive**: Check allow list
-2. **Rate limiting too aggressive**: Adjust limits
-3. **Performance issues**: Check database and caching
-4. **Option 82 validation failures**: Check relay configuration
-5. **High availability issues**: Check failover configuration
+- **Performance**: Monitor server load and response times
+- **Security**: Check for unauthorized access attempts
+- **Capacity**: Monitor lease utilization and plan for growth
+- **Failover**: Test and verify failover procedures
 
 ### Debug Commands
 ```bash
+# Validate configuration
+./simple-dhcpd -c config.yaml --validate
+
 # Run with debug logging
-sudo simple-dhcpd -f -v
+./simple-dhcpd -c config.yaml --verbose --log-level DEBUG
 
-# Check specific subnet
-sudo simple-dhcpd --show-leases --subnet corporate-lan
+# Monitor leases
+tail -f /var/log/simple-dhcpd/simple-dhcpd.log | grep "lease"
 
-# Monitor network traffic
-sudo tcpdump -i eth0 port 67
-
-# Check database connectivity
-mysql -h 172.16.1.50 -u dhcp_user -p dhcp_leases
-```
-
-### Log Analysis
-```bash
-# Check security logs
-grep -i "security" /var/log/simple-dhcpd/security.log
-
-# Check rate limiting
-grep -i "rate" /var/log/simple-dhcpd/access.log
-
-# Check Option 82
-grep -i "option.82" /var/log/simple-dhcpd/access.log
-
-# Check audit logs
-grep -i "audit" /var/log/simple-dhcpd/audit.log
-```
-
-### Performance Monitoring
-```bash
-# Check metrics
-curl http://localhost:8080/metrics | grep dhcp
-
-# Check health
-curl http://localhost:8080/health | jq
-
-# Monitor database
-mysqladmin -h 172.16.1.50 -u dhcp_user -p status
+# Check security events
+tail -f /var/log/simple-dhcpd/simple-dhcpd.log | grep "security"
 ```
 
 ## Maintenance
 
 ### Regular Tasks
-- **Daily**: Check logs for errors
-- **Weekly**: Review security logs
-- **Monthly**: Audit MAC address list
-- **Quarterly**: Performance review
+- Review and update security policies
+- Monitor performance metrics
+- Update documentation
+- Test failover procedures
+- Review and rotate logs
 
-### Backup Procedures
-- **Database**: Automated every 30 minutes
-- **Configuration**: Version controlled
-- **Logs**: Rotated and compressed
-- **Disaster Recovery**: Tested quarterly
-
-### Updates
-- **Security**: Apply security patches immediately
-- **Features**: Test in staging environment
-- **Database**: Plan maintenance windows
-- **Monitoring**: Update alerting rules
+### Capacity Planning
+- Monitor lease utilization
+- Plan for growth
+- Optimize configuration
+- Upgrade hardware as needed
 
 ## Next Steps
 
-For additional enterprise features, consider:
-- [High Availability Setup](../../../docs/deployment/ha.md)
-- [Security Hardening](../../../docs/configuration/security.md)
-- [Performance Tuning](../../../docs/deployment/production.md)
-- [Disaster Recovery](../../../docs/deployment/disaster-recovery.md)
+For specialized requirements, consider:
+- `../security/` - Security-focused configurations
+- Custom configurations for specific needs
+- Integration with enterprise monitoring systems
+- Compliance and audit procedures

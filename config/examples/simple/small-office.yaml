@@ -1,0 +1,58 @@
+# Small Office Configuration
+# Suitable for small businesses with basic networking needs
+
+server:
+  listen_addresses: ["0.0.0.0:67"]
+  enable_logging: true
+  enable_security: true
+  max_leases: 500
+
+subnets:
+  - name: "office"
+    network: "192.168.10.0"
+    prefix_length: 24
+    range_start: "192.168.10.50"
+    range_end: "192.168.10.200"
+    gateway: "192.168.10.1"
+    dns_servers: ["192.168.10.1", "8.8.8.8", "8.8.4.4"]
+    domain_name: "office.local"
+    lease_time: 43200
+    max_lease_time: 86400
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.10.1,8.8.8.8"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "office.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.10.1"
+    reservations:
+      - mac_address: "00:11:22:33:44:55"
+        ip_address: "192.168.10.10"
+        hostname: "server-01"
+        is_static: true
+      - mac_address: "00:11:22:33:44:56"
+        ip_address: "192.168.10.11"
+        hostname: "printer-01"
+        is_static: true
+    exclusions:
+      - start: "192.168.10.1"
+        end: "192.168.10.49"
+      - start: "192.168.10.201"
+        end: "192.168.10.254"
+
+  - name: "guest"
+    network: "192.168.20.0"
+    prefix_length: 24
+    range_start: "192.168.20.10"
+    range_end: "192.168.20.100"
+    gateway: "192.168.20.1"
+    dns_servers: ["192.168.20.1", "8.8.8.8"]
+    domain_name: "guest.local"
+    lease_time: 3600
+    max_lease_time: 7200
+    exclusions:
+      - start: "192.168.20.1"
+        end: "192.168.20.9"

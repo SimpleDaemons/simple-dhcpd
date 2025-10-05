@@ -1,130 +1,181 @@
-# Security-Focused Configuration Example
+# Security Configurations
 
-This configuration example demonstrates the comprehensive security features available in Simple DHCP Daemon, showcasing all Phase 3 advanced security capabilities.
+This directory contains security-focused configuration examples designed for environments with high security requirements, compliance needs, and threat protection.
 
-## Security Features Demonstrated
+## Files
 
-### 1. DHCP Snooping
-- **Enabled**: Validates DHCP messages against trusted bindings
-- **Trusted Interfaces**: Only `eth0` is trusted for DHCP server communication
-- **Logging**: All snooping events are logged for security analysis
-- **Validation**: Strict validation of DHCP message sources
+### high-security.yaml
+Maximum security configuration with comprehensive protection:
+- **4 VLANs**: Secure management, secure production, secure users, isolated guest
+- **Enhanced Security**: MAC filtering, rate limiting, DHCP snooping, intrusion detection
+- **Short Leases**: 15-30 minute lease times for maximum security
+- **Strict Access Control**: Whitelist-only MAC addresses
+- **Comprehensive Logging**: Detailed audit trails and security event logging
+- **Authentication**: MAC-based authentication required
 
-### 2. MAC Address Filtering
-- **Mode**: Allow-list (only explicitly allowed MACs can get leases)
-- **Wildcard Support**: Supports patterns like `00:11:22:33:44:*` for vendor filtering
-- **Rule Management**: Individual rules can be enabled/disabled
-- **Descriptions**: Each rule has a descriptive name for management
+**Use case**: High-security environments, government networks, financial institutions
 
-### 3. IP Address Filtering
-- **Mode**: Allow-list (only explicitly allowed IPs can be assigned)
-- **Exact Matching**: Supports specific IP address filtering
-- **Rule Management**: Granular control over IP filtering rules
+### zero-trust.yaml
+Zero trust security configuration with maximum verification:
+- **4 VLANs**: Zero trust management, production, users, guest
+- **Zero Trust Principles**: Verify every request, block unknown devices
+- **Certificate Authentication**: Certificate-based device authentication
+- **Device Registration**: Require device registration before access
+- **Ultra-Short Leases**: 10-15 minute lease times
+- **Maximum Logging**: Log all activity for analysis
 
-### 4. Rate Limiting
-- **Multi-dimensional**: Separate limits for MAC addresses and IP addresses
-- **Sliding Windows**: Uses time-based sliding windows for accurate rate limiting
-- **Per-client Overrides**: Specific clients can have higher limits
-- **Block Duration**: Configurable blocking period after limit exceeded
+**Use case**: Zero trust networks, highly sensitive environments, compliance-critical systems
 
-### 5. Option 82 (Relay Agent Information) Support
-- **Validation**: Validates Option 82 data for circuit-id and remote-id
-- **Interface-specific Rules**: Different requirements per interface
-- **Trusted Relay Agents**: Pre-configured trusted relay agent combinations
-- **Required vs Optional**: Some interfaces require Option 82, others don't
+## Key Security Features
 
-### 6. Client Authentication
-- **HMAC-based**: Uses HMAC-SHA256 for client authentication
-- **Credential Management**: Per-client password hashes and salts
-- **Key Management**: Centralized authentication key configuration
-- **Expiration Support**: Credentials can have expiration times
+### Advanced Authentication
+- **MAC-Based**: Device authentication based on MAC addresses
+- **Certificate-Based**: Certificate validation for device authentication
+- **Device Registration**: Require devices to be registered before access
+- **Multi-Factor**: Multiple layers of authentication
 
-### 7. Security Event Logging
-- **Comprehensive Logging**: All security events are logged
-- **Alert Thresholds**: Configurable thresholds for security alerts
-- **Retention**: 90-day log retention for compliance
-- **JSON Format**: Structured logging for easy parsing
+### Intrusion Detection
+- **Suspicious Activity**: Alert on unusual DHCP patterns
+- **Rate Limiting**: Prevent DHCP flooding attacks
+- **MAC Blocking**: Block suspicious or unknown MAC addresses
+- **Real-time Monitoring**: Continuous security monitoring
 
-## Configuration Highlights
+### Access Control
+- **Whitelist Only**: Only pre-approved devices allowed
+- **MAC Filtering**: Granular control based on MAC addresses
+- **Network Segmentation**: Isolated networks for different security levels
+- **Dynamic Blocking**: Automatic blocking of suspicious devices
 
-### MAC Filtering Rules
-```json
-"mac_filtering": {
-  "enabled": true,
-  "mode": "allow",
-  "rules": [
-    {
-      "mac_address": "00:11:22:33:44:*",
-      "allow": true,
-      "description": "Corporate devices",
-      "enabled": true
-    }
-  ]
-}
-```
-
-### Rate Limiting Configuration
-```json
-"rate_limiting": {
-  "enabled": true,
-  "rules": [
-    {
-      "identifier": "*",
-      "identifier_type": "mac",
-      "max_requests": 50,
-      "time_window": 60,
-      "block_duration": 300,
-      "enabled": true
-    }
-  ]
-}
-```
-
-### Option 82 Validation
-```json
-"option_82": {
-  "enabled": true,
-  "validation": true,
-  "rules": [
-    {
-      "interface": "eth1",
-      "required": true,
-      "enabled": true
-    }
-  ]
-}
-```
+### Audit and Compliance
+- **Comprehensive Logging**: Log all DHCP activity
+- **Security Events**: Detailed security event logging
+- **Audit Trails**: Complete audit trails for compliance
+- **Real-time Alerts**: Immediate notification of security events
 
 ## Security Best Practices
 
-1. **Enable DHCP Snooping**: Always enable on production networks
-2. **Use MAC Filtering**: Implement allow-lists for known devices
-3. **Configure Rate Limiting**: Prevent DHCP exhaustion attacks
-4. **Validate Option 82**: Ensure relay agent information is valid
-5. **Enable Authentication**: Use client authentication for sensitive networks
-6. **Monitor Security Events**: Set up alerting for security violations
-7. **Regular Log Review**: Review security logs for suspicious activity
+### Network Segmentation
+1. **Management Network**: Isolated infrastructure management
+2. **Production Network**: Secure business-critical systems
+3. **User Network**: Controlled user access
+4. **Guest Network**: Isolated public access
 
-## Use Cases
+### Access Control
+- **Principle of Least Privilege**: Minimum necessary access
+- **Regular Audits**: Regular review of access permissions
+- **Device Management**: Strict device registration and management
+- **Monitoring**: Continuous monitoring of network activity
 
-This configuration is ideal for:
-- **Corporate Networks**: High-security environments with strict access control
-- **Government Networks**: Compliance requirements and audit trails
-- **Financial Institutions**: Multi-layered security approach
-- **Healthcare Networks**: HIPAA compliance and device validation
-- **Critical Infrastructure**: Industrial control systems and SCADA networks
+### Threat Protection
+- **DHCP Snooping**: Protection against rogue DHCP servers
+- **Rate Limiting**: Prevention of flooding attacks
+- **Intrusion Detection**: Real-time threat detection
+- **Response Procedures**: Defined incident response procedures
+
+### Compliance
+- **Audit Logging**: Comprehensive logging for compliance
+- **Data Retention**: Appropriate log retention policies
+- **Regular Reviews**: Regular security policy reviews
+- **Documentation**: Detailed security documentation
+
+## Deployment
+
+### Prerequisites
+- High-security network infrastructure
+- Security monitoring systems
+- Incident response procedures
+- Compliance requirements
+- Security policies and procedures
+
+### Installation
+1. Choose the appropriate security configuration
+2. Customize for your security requirements
+3. Configure network infrastructure with security controls
+4. Deploy DHCP servers with security hardening
+5. Configure monitoring and alerting
+6. Test security controls and incident response
+
+### Security Hardening
+- **Server Hardening**: Secure DHCP server configuration
+- **Network Hardening**: Secure network infrastructure
+- **Monitoring**: Comprehensive security monitoring
+- **Response**: Incident response procedures
 
 ## Monitoring and Alerting
 
-The configuration includes comprehensive monitoring:
-- **Security Event Thresholds**: Automatic alerting for suspicious activity
-- **Rate Limit Monitoring**: Track and alert on rate limit violations
-- **Authentication Failures**: Monitor failed authentication attempts
-- **Filter Violations**: Track blocked MAC addresses and IP addresses
+### Security Monitoring
+- Monitor for unauthorized access attempts
+- Track suspicious DHCP activity
+- Monitor rate limit violations
+- Alert on security events
 
-## Compliance Features
+### Compliance Monitoring
+- Monitor audit log completeness
+- Track access control effectiveness
+- Monitor security policy compliance
+- Generate compliance reports
 
-- **Audit Logging**: Complete audit trail of all DHCP operations
-- **Data Retention**: 90-day log retention for compliance
-- **Encrypted Storage**: Lease database encryption for sensitive data
-- **Access Control**: Granular access control through filtering rules
+### Incident Response
+- Define incident response procedures
+- Configure automated alerting
+- Establish escalation procedures
+- Regular incident response testing
+
+## Troubleshooting
+
+### Security Issues
+- **Unauthorized Access**: Check MAC filtering and authentication
+- **Rate Limiting**: Review rate limit configuration
+- **Intrusion Detection**: Investigate security alerts
+- **Authentication**: Verify device authentication
+
+### Debug Commands
+```bash
+# Validate security configuration
+./simple-dhcpd -c config.yaml --validate --security-check
+
+# Run with security debug logging
+./simple-dhcpd -c config.yaml --verbose --log-level DEBUG --security-debug
+
+# Monitor security events
+tail -f /var/log/simple-dhcpd/simple-dhcpd.log | grep "security"
+
+# Check authentication events
+tail -f /var/log/simple-dhcpd/simple-dhcpd.log | grep "auth"
+```
+
+## Compliance
+
+### Regulatory Requirements
+- **HIPAA**: Healthcare data protection
+- **SOX**: Financial reporting compliance
+- **PCI DSS**: Payment card data security
+- **GDPR**: Data privacy protection
+
+### Audit Requirements
+- **Comprehensive Logging**: Complete audit trails
+- **Data Retention**: Appropriate log retention
+- **Access Control**: Documented access controls
+- **Incident Response**: Documented procedures
+
+## Maintenance
+
+### Security Updates
+- Regular security updates
+- Security patch management
+- Configuration updates
+- Policy reviews
+
+### Monitoring
+- Continuous security monitoring
+- Regular security assessments
+- Incident response testing
+- Compliance audits
+
+## Next Steps
+
+For additional security requirements:
+- Custom security configurations
+- Integration with SIEM systems
+- Advanced threat protection
+- Compliance automation

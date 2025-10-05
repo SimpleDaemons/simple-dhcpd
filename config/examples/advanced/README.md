@@ -1,238 +1,120 @@
-# Advanced Environment Configuration
+# Advanced Configurations
 
-This configuration is designed for medium to large office environments with multiple subnets, security requirements, and performance optimization.
+This directory contains advanced configuration examples for complex networking scenarios requiring sophisticated DHCP setups.
 
-## Overview
+## Files
 
-- **Networks**: 3 subnets (main office, guest, IoT)
-- **IP Ranges**: Multiple ranges across different subnets
-- **Lease Times**: Varying based on subnet purpose
-- **Security**: MAC filtering, rate limiting, Option 82 support
-- **Logging**: JSON format with multiple log files
-- **Database**: SQLite with optimization and caching
+### multi-vlan.yaml
+Complex multi-VLAN setup with advanced features:
+- **5 VLANs**: Management, Production, Development, Guest, IoT
+- **Static Reservations**: Critical infrastructure devices
+- **IP Exclusions**: Reserved ranges for static devices
+- **Advanced Security**: MAC filtering, rate limiting, DHCP snooping
+- **Comprehensive Logging**: File rotation, syslog integration
 
-## Features
+**Use case**: Enterprise networks, data centers, complex office environments
 
-### Network Configuration
+### load-balanced.yaml
+High-availability setup with multiple DHCP servers:
+- **Load Balancing**: Multiple DHCP servers for redundancy
+- **Failover Support**: Backup servers for critical services
+- **High Capacity**: 10,000+ leases supported
+- **Advanced Monitoring**: Comprehensive logging and rotation
+- **Production Ready**: Enterprise-grade configuration
 
-#### Main Office Subnet (10.0.1.0/24)
-- **Range**: 10.0.1.100 - 10.0.1.200
-- **Lease Time**: 12 hours (43200 seconds)
-- **Purpose**: Corporate workstations and servers
-- **DNS**: Internal DNS servers + public fallback
+**Use case**: Large enterprises, mission-critical applications, high-availability environments
 
-#### Guest Network Subnet (10.0.2.0/24)
-- **Range**: 10.0.2.100 - 10.0.2.200
-- **Lease Time**: 1 hour (3600 seconds)
-- **Purpose**: Guest WiFi access
-- **DNS**: Public DNS servers only
+## Key Features
 
-#### IoT Devices Subnet (10.0.3.0/24)
-- **Range**: 10.0.3.100 - 10.0.3.200
-- **Lease Time**: 7 days (604800 seconds)
-- **Purpose**: IoT devices and sensors
-- **DNS**: Internal DNS servers
+### Multi-VLAN Architecture
+- **Segmentation**: Separate VLANs for different purposes
+- **Security**: Isolated networks with controlled access
+- **Scalability**: Support for hundreds of devices per VLAN
+- **Management**: Centralized configuration with VLAN-specific settings
 
-### Security Features
+### High Availability
+- **Redundancy**: Multiple DHCP servers prevent single points of failure
+- **Load Distribution**: Traffic spread across multiple servers
+- **Failover**: Automatic failover when primary servers fail
+- **Monitoring**: Comprehensive logging for troubleshooting
 
-#### MAC Address Filtering
-- **Mode**: Allow list
-- **Purpose**: Only allow known devices
-- **Management**: Centralized device management
+### Advanced Security
+- **DHCP Snooping**: Protection against rogue DHCP servers
+- **MAC Filtering**: Whitelist/blacklist based on MAC addresses
+- **Rate Limiting**: Protection against DHCP flooding attacks
+- **Access Control**: Granular control over network access
 
-#### Rate Limiting
-- **Requests per minute**: 1000
-- **Burst size**: 100
-- **Per MAC/IP**: Enabled
-- **Purpose**: Prevent DHCP flooding attacks
+### Enterprise Features
+- **Static Reservations**: Guaranteed IP addresses for critical devices
+- **IP Exclusions**: Reserved ranges for infrastructure
+- **Advanced Options**: Custom DHCP options for specific needs
+- **Comprehensive Logging**: Detailed logs for compliance and troubleshooting
 
-#### Option 82 Support
-- **Validation**: Enabled
-- **Logging**: Enabled
-- **Required**: Optional
-- **Purpose**: Relay agent information validation
+## Configuration Guidelines
 
-### Performance Optimization
+### VLAN Planning
+1. **Management VLAN**: Infrastructure devices (switches, routers, servers)
+2. **Production VLAN**: Business-critical applications and servers
+3. **Development VLAN**: Development and testing environments
+4. **Guest VLAN**: Public access with limited privileges
+5. **IoT VLAN**: Internet of Things devices with restricted access
 
-#### Database Configuration
-- **Type**: SQLite
-- **Backup**: Every hour
-- **Retention**: 7 days
-- **Compression**: Enabled
-- **Optimization**: Enabled
+### IP Address Allocation
+- **Static Reservations**: Use for critical infrastructure
+- **DHCP Ranges**: Use for dynamic devices
+- **Exclusions**: Reserve ranges for future static assignments
+- **Documentation**: Keep detailed records of all assignments
 
-#### Caching
-- **Size**: 200MB
-- **TTL**: 1 hour
-- **Compression**: Enabled
-- **Cache Types**: Leases, options, reservations
+### Security Considerations
+- **Network Segmentation**: Isolate different types of traffic
+- **Access Control**: Implement appropriate restrictions per VLAN
+- **Monitoring**: Enable comprehensive logging and monitoring
+- **Regular Audits**: Review and update security policies
 
-#### Connection Pooling
-- **Max connections**: 1000
-- **Idle timeout**: 5 minutes
-- **Keep alive**: Enabled
-- **Purpose**: Handle high request volumes
+## Deployment
 
-### Monitoring
-
-#### Metrics
-- **Format**: Prometheus
-- **Interval**: 60 seconds
-- **Custom metrics**: Enabled
-- **Business metrics**: Enabled
-
-#### Health Checks
-- **Memory threshold**: 80%
-- **CPU threshold**: 90%
-- **Lease threshold**: 10,000
-- **Interval**: 30 seconds
-
-## Usage
+### Prerequisites
+- Network infrastructure supporting VLANs
+- Switches with DHCP relay capability
+- Monitoring and logging infrastructure
+- Network security policies
 
 ### Installation
-```bash
-# Copy configuration
-sudo cp config/examples/advanced/simple-dhcpd.conf /etc/simple-dhcpd/
-
-# Create log directories
-sudo mkdir -p /var/log/simple-dhcpd
-
-# Set permissions
-sudo chown -R dhcpd:dhcpd /var/log/simple-dhcpd
-
-# Start service
-sudo systemctl start simple-dhcpd
-sudo systemctl enable simple-dhcpd
-```
-
-### Testing
-```bash
-# Test configuration
-simple-dhcpd -c /etc/simple-dhcpd/simple-dhcpd.conf --test-config
-
-# Check status
-sudo systemctl status simple-dhcpd
-
-# View logs
-sudo journalctl -u simple-dhcpd -f
-```
+1. Choose the appropriate configuration
+2. Customize IP ranges and VLANs for your environment
+3. Configure network infrastructure (switches, routers)
+4. Deploy DHCP servers with load balancing
+5. Test failover and monitoring
 
 ### Monitoring
-```bash
-# Show active leases
-sudo simple-dhcpd --show-leases
-
-# Show statistics
-sudo simple-dhcpd --stats
-
-# Check metrics endpoint
-curl http://localhost:8080/metrics
-
-# Check health endpoint
-curl http://localhost:8080/health
-```
-
-## Customization
-
-### Adding New Subnets
-```json
-{
-  "name": "new-subnet",
-  "network": "10.0.4.0/24",
-  "range": "10.0.4.100-10.0.4.200",
-  "gateway": "10.0.4.1",
-  "dns_servers": ["10.0.1.10", "10.0.1.11"],
-  "domain_name": "new.company.local",
-  "lease_time": 86400
-}
-```
-
-### Adding MAC Addresses
-```json
-"allow_list": [
-  "00:11:22:33:44:55",
-  "00:11:22:33:44:56",
-  "AA:BB:CC:DD:EE:FF"  // Add new MAC
-]
-```
-
-### Adjusting Performance Settings
-```json
-"caching": {
-  "cache_size": "500MB",  // Increase cache size
-  "ttl": 7200  // Increase TTL to 2 hours
-}
-```
-
-## Security Considerations
-
-### MAC Address Management
-- Maintain allow list of authorized devices
-- Regular audit of connected devices
-- Remove unused MAC addresses
-
-### Rate Limiting
-- Monitor for rate limit violations
-- Adjust limits based on usage patterns
-- Consider per-subnet rate limiting
-
-### Option 82 Validation
-- Ensure relay agents are properly configured
-- Monitor for validation failures
-- Consider making Option 82 required
-
-## Performance Tuning
-
-### Database Optimization
-- Regular database maintenance
-- Monitor backup performance
-- Consider migration to MySQL/PostgreSQL for large deployments
-
-### Caching
-- Monitor cache hit rates
-- Adjust cache size based on usage
-- Consider cache warming strategies
-
-### Connection Pooling
-- Monitor connection usage
-- Adjust pool size based on load
-- Consider connection timeouts
+- Monitor DHCP server performance
+- Track lease utilization
+- Monitor security events
+- Regular log analysis
 
 ## Troubleshooting
 
 ### Common Issues
-1. **MAC filtering too restrictive**: Check allow list
-2. **Rate limiting too aggressive**: Adjust limits
-3. **Performance issues**: Check database and caching
-4. **Option 82 validation failures**: Check relay configuration
+- **VLAN Isolation**: Ensure proper switch configuration
+- **DHCP Relay**: Verify relay agent configuration
+- **Security Policies**: Check MAC filtering and access control
+- **Performance**: Monitor server load and response times
 
 ### Debug Commands
 ```bash
+# Check configuration
+./simple-dhcpd -c config.yaml --validate
+
 # Run with debug logging
-sudo simple-dhcpd -f -v
+./simple-dhcpd -c config.yaml --verbose --log-level DEBUG
 
-# Check specific subnet
-sudo simple-dhcpd --show-leases --subnet main-office
-
-# Monitor network traffic
-sudo tcpdump -i eth0 port 67
-```
-
-### Log Analysis
-```bash
-# Check security logs
-grep -i "security" /var/log/simple-dhcpd/security.log
-
-# Check rate limiting
-grep -i "rate" /var/log/simple-dhcpd/access.log
-
-# Check Option 82
-grep -i "option.82" /var/log/simple-dhcpd/access.log
+# Monitor leases
+tail -f /var/log/simple-dhcpd/simple-dhcpd.log | grep "lease"
 ```
 
 ## Next Steps
 
-For enterprise-level features, consider:
-- [Production Configuration](../production/README.md)
-- [High Availability Setup](../../../docs/deployment/ha.md)
-- [Security Hardening](../../../docs/configuration/security.md)
+For even more advanced scenarios, consider:
+- `../production/` - Enterprise-grade configurations
+- `../security/` - Security-focused setups
+- Custom configurations for specific requirements

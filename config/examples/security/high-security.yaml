@@ -1,0 +1,215 @@
+# High Security Configuration
+# Maximum security setup with comprehensive protection
+
+server:
+  listen_addresses: ["0.0.0.0:67", "::67"]
+  config_file: "/etc/simple-dhcpd/high-security.yaml"
+  lease_file: "/var/lib/simple-dhcpd/dhcpd.leases"
+  log_file: "/var/log/simple-dhcpd/simple-dhcpd.log"
+  enable_logging: true
+  enable_security: true
+  max_leases: 10000
+
+global_options:
+  - code: 6
+    name: "DNS_SERVERS"
+    data: "10.0.1.10,10.0.1.11"
+  - code: 15
+    name: "DOMAIN_NAME"
+    data: "secure.company.com"
+  - code: 42
+    name: "NTP_SERVERS"
+    data: "10.0.1.10,10.0.1.11"
+  - code: 3
+    name: "ROUTER"
+    data: "10.0.1.1"
+
+subnets:
+  # Secure Management Network
+  - name: "secure-management"
+    network: "10.0.1.0"
+    prefix_length: 24
+    range_start: "10.0.1.100"
+    range_end: "10.0.1.150"
+    gateway: "10.0.1.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11"]
+    domain_name: "mgmt.secure.company.com"
+    lease_time: 3600
+    max_lease_time: 7200
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "mgmt.secure.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.1.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "10.0.1.10,10.0.1.11"
+    reservations:
+      - mac_address: "00:11:22:33:44:55"
+        ip_address: "10.0.1.10"
+        hostname: "secure-switch-01"
+        is_static: true
+      - mac_address: "00:11:22:33:44:56"
+        ip_address: "10.0.1.11"
+        hostname: "secure-switch-02"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:01"
+        ip_address: "10.0.1.20"
+        hostname: "security-monitor-01"
+        is_static: true
+    exclusions:
+      - start: "10.0.1.1"
+        end: "10.0.1.99"
+      - start: "10.0.1.151"
+        end: "10.0.1.254"
+
+  # Secure Production Network
+  - name: "secure-production"
+    network: "10.0.10.0"
+    prefix_length: 24
+    range_start: "10.0.10.100"
+    range_end: "10.0.10.150"
+    gateway: "10.0.10.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11"]
+    domain_name: "prod.secure.company.com"
+    lease_time: 1800
+    max_lease_time: 3600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "prod.secure.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.10.1"
+    reservations:
+      - mac_address: "BB:CC:DD:EE:FF:01"
+        ip_address: "10.0.10.10"
+        hostname: "secure-web-01"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:02"
+        ip_address: "10.0.10.11"
+        hostname: "secure-app-01"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:03"
+        ip_address: "10.0.10.12"
+        hostname: "secure-db-01"
+        is_static: true
+    exclusions:
+      - start: "10.0.10.1"
+        end: "10.0.10.99"
+      - start: "10.0.10.151"
+        end: "10.0.10.254"
+
+  # Secure User Network
+  - name: "secure-users"
+    network: "10.0.20.0"
+    prefix_length: 24
+    range_start: "10.0.20.100"
+    range_end: "10.0.20.150"
+    gateway: "10.0.20.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11"]
+    domain_name: "users.secure.company.com"
+    lease_time: 1800
+    max_lease_time: 3600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "users.secure.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.20.1"
+    exclusions:
+      - start: "10.0.20.1"
+        end: "10.0.20.99"
+      - start: "10.0.20.151"
+        end: "10.0.20.254"
+
+  # Isolated Guest Network
+  - name: "isolated-guest"
+    network: "10.0.100.0"
+    prefix_length: 24
+    range_start: "10.0.100.10"
+    range_end: "10.0.100.50"
+    gateway: "10.0.100.1"
+    dns_servers: ["8.8.8.8", "8.8.4.4"]
+    domain_name: "guest.secure.company.com"
+    lease_time: 900
+    max_lease_time: 1800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "8.8.8.8,8.8.4.4"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "guest.secure.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.100.1"
+    exclusions:
+      - start: "10.0.100.1"
+        end: "10.0.100.9"
+      - start: "10.0.100.51"
+        end: "10.0.100.254"
+
+security:
+  dhcp_snooping: true
+  mac_filtering: true
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 30
+    max_requests_per_hour: 500
+  allowed_mac_addresses:
+    - "00:11:22:33:44:55"  # Secure switch 01
+    - "00:11:22:33:44:56"  # Secure switch 02
+    - "AA:BB:CC:DD:EE:01"  # Security monitor
+    - "BB:CC:DD:EE:FF:01"  # Secure web server
+    - "BB:CC:DD:EE:FF:02"  # Secure app server
+    - "BB:CC:DD:EE:FF:03"  # Secure database
+  blocked_mac_addresses:
+    - "ff:ff:ff:ff:ff:ff"
+    - "00:00:00:00:00:00"
+    - "01:00:5e:*"  # Multicast addresses
+    - "33:33:*"    # IPv6 multicast
+    - "02:*"       # Locally administered addresses
+    - "06:*"       # Locally administered addresses
+    - "0A:*"       # Locally administered addresses
+    - "0E:*"       # Locally administered addresses
+  authentication:
+    enabled: true
+    method: "mac-based"
+    require_authentication: true
+  intrusion_detection:
+    enabled: true
+    alert_on_suspicious_activity: true
+    block_suspicious_macs: true
+  audit_logging:
+    enabled: true
+    log_all_requests: true
+    log_security_events: true
+    log_failed_attempts: true
+
+logging:
+  level: "DEBUG"
+  file_rotation:
+    enabled: true
+    max_size_mb: 100
+    max_files: 30
+  console_output: false
+  syslog:
+    enabled: true
+    facility: "daemon"
+  audit_logging: true
+  security_logging: true
+  performance_logging: true
+  intrusion_detection_logging: true

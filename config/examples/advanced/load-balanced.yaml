@@ -1,0 +1,203 @@
+# Load-Balanced DHCP Configuration
+# High-availability setup with multiple DHCP servers
+
+server:
+  listen_addresses: ["0.0.0.0:67", "::67"]
+  config_file: "/etc/simple-dhcpd/load-balanced.yaml"
+  lease_file: "/var/lib/simple-dhcpd/dhcpd.leases"
+  log_file: "/var/log/simple-dhcpd/simple-dhcpd.log"
+  enable_logging: true
+  enable_security: true
+  max_leases: 10000
+
+global_options:
+  - code: 6
+    name: "DNS_SERVERS"
+    data: "8.8.8.8,8.8.4.4,1.1.1.1,1.0.0.1"
+  - code: 15
+    name: "DOMAIN_NAME"
+    data: "company.local"
+  - code: 42
+    name: "NTP_SERVERS"
+    data: "pool.ntp.org,time.nist.gov"
+  - code: 3
+    name: "ROUTER"
+    data: "192.168.1.1"
+
+subnets:
+  # Primary Production Network
+  - name: "production"
+    network: "192.168.1.0"
+    prefix_length: 24
+    range_start: "192.168.1.100"
+    range_end: "192.168.1.200"
+    gateway: "192.168.1.1"
+    dns_servers: ["192.168.1.10", "192.168.1.11", "8.8.8.8"]
+    domain_name: "prod.company.local"
+    lease_time: 43200
+    max_lease_time: 86400
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.1.10,192.168.1.11,8.8.8.8"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "prod.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.1.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "192.168.1.10,pool.ntp.org"
+      - code: 28
+        name: "BROADCAST_ADDRESS"
+        data: "192.168.1.255"
+    reservations:
+      - mac_address: "00:11:22:33:44:55"
+        ip_address: "192.168.1.10"
+        hostname: "dhcp-server-01"
+        is_static: true
+      - mac_address: "00:11:22:33:44:56"
+        ip_address: "192.168.1.11"
+        hostname: "dhcp-server-02"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:01"
+        ip_address: "192.168.1.20"
+        hostname: "web-server-01"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:02"
+        ip_address: "192.168.1.21"
+        hostname: "web-server-02"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:03"
+        ip_address: "192.168.1.30"
+        hostname: "db-server-01"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:04"
+        ip_address: "192.168.1.31"
+        hostname: "db-server-02"
+        is_static: true
+    exclusions:
+      - start: "192.168.1.1"
+        end: "192.168.1.99"
+      - start: "192.168.1.201"
+        end: "192.168.1.254"
+
+  # Backup/DR Network
+  - name: "backup"
+    network: "192.168.2.0"
+    prefix_length: 24
+    range_start: "192.168.2.100"
+    range_end: "192.168.2.200"
+    gateway: "192.168.2.1"
+    dns_servers: ["192.168.2.10", "192.168.2.11", "8.8.8.8"]
+    domain_name: "backup.company.local"
+    lease_time: 86400
+    max_lease_time: 172800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.2.10,192.168.2.11,8.8.8.8"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "backup.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.2.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "192.168.2.10,pool.ntp.org"
+    reservations:
+      - mac_address: "00:11:22:33:44:77"
+        ip_address: "192.168.2.10"
+        hostname: "backup-dhcp-01"
+        is_static: true
+      - mac_address: "00:11:22:33:44:88"
+        ip_address: "192.168.2.11"
+        hostname: "backup-dhcp-02"
+        is_static: true
+    exclusions:
+      - start: "192.168.2.1"
+        end: "192.168.2.99"
+      - start: "192.168.2.201"
+        end: "192.168.2.254"
+
+  # Development/Testing Network
+  - name: "development"
+    network: "192.168.10.0"
+    prefix_length: 24
+    range_start: "192.168.10.50"
+    range_end: "192.168.10.150"
+    gateway: "192.168.10.1"
+    dns_servers: ["192.168.10.10", "8.8.8.8"]
+    domain_name: "dev.company.local"
+    lease_time: 21600
+    max_lease_time: 43200
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.10.10,8.8.8.8"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "dev.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.10.1"
+    exclusions:
+      - start: "192.168.10.1"
+        end: "192.168.10.49"
+      - start: "192.168.10.151"
+        end: "192.168.10.254"
+
+  # Guest/Public Network
+  - name: "guest"
+    network: "192.168.100.0"
+    prefix_length: 24
+    range_start: "192.168.100.10"
+    range_end: "192.168.100.100"
+    gateway: "192.168.100.1"
+    dns_servers: ["8.8.8.8", "8.8.4.4"]
+    domain_name: "guest.company.local"
+    lease_time: 1800
+    max_lease_time: 3600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "8.8.8.8,8.8.4.4"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "guest.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.100.1"
+    exclusions:
+      - start: "192.168.100.1"
+        end: "192.168.100.9"
+      - start: "192.168.100.101"
+        end: "192.168.100.254"
+
+security:
+  dhcp_snooping: true
+  mac_filtering: true
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 200
+    max_requests_per_hour: 5000
+  allowed_mac_addresses:
+    - "00:11:22:33:44:*"  # DHCP servers
+    - "AA:BB:CC:DD:EE:*"  # Production servers
+    - "BB:CC:DD:EE:FF:*"  # Development servers
+  blocked_mac_addresses:
+    - "ff:ff:ff:ff:ff:ff"
+    - "00:00:00:00:00:00"
+
+logging:
+  level: "INFO"
+  file_rotation:
+    enabled: true
+    max_size_mb: 1000
+    max_files: 20
+  console_output: false
+  syslog:
+    enabled: true
+    facility: "daemon"

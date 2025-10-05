@@ -1,0 +1,211 @@
+# Multi-VLAN Advanced Configuration
+# Complex network setup with multiple VLANs and advanced features
+
+server:
+  listen_addresses: ["0.0.0.0:67", "::67"]
+  config_file: "/etc/simple-dhcpd/multi-vlan.yaml"
+  lease_file: "/var/lib/simple-dhcpd/dhcpd.leases"
+  log_file: "/var/log/simple-dhcpd/simple-dhcpd.log"
+  enable_logging: true
+  enable_security: true
+  max_leases: 5000
+
+global_options:
+  - code: 6
+    name: "DNS_SERVERS"
+    data: "8.8.8.8,8.8.4.4,1.1.1.1"
+  - code: 15
+    name: "DOMAIN_NAME"
+    data: "company.local"
+  - code: 42
+    name: "NTP_SERVERS"
+    data: "192.168.1.10,pool.ntp.org"
+
+subnets:
+  # Management VLAN
+  - name: "mgmt-vlan"
+    network: "192.168.1.0"
+    prefix_length: 24
+    range_start: "192.168.1.100"
+    range_end: "192.168.1.150"
+    gateway: "192.168.1.1"
+    dns_servers: ["192.168.1.10", "192.168.1.11"]
+    domain_name: "mgmt.company.local"
+    lease_time: 86400
+    max_lease_time: 172800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.1.10,192.168.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "mgmt.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.1.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "192.168.1.10"
+    reservations:
+      - mac_address: "00:11:22:33:44:55"
+        ip_address: "192.168.1.10"
+        hostname: "core-switch"
+        is_static: true
+      - mac_address: "00:11:22:33:44:56"
+        ip_address: "192.168.1.11"
+        hostname: "backup-switch"
+        is_static: true
+    exclusions:
+      - start: "192.168.1.1"
+        end: "192.168.1.99"
+
+  # Production Servers VLAN
+  - name: "prod-servers"
+    network: "192.168.10.0"
+    prefix_length: 24
+    range_start: "192.168.10.100"
+    range_end: "192.168.10.200"
+    gateway: "192.168.10.1"
+    dns_servers: ["192.168.1.10", "192.168.1.11"]
+    domain_name: "prod.company.local"
+    lease_time: 604800
+    max_lease_time: 1209600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.1.10,192.168.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "prod.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.10.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "192.168.1.10"
+    reservations:
+      - mac_address: "AA:BB:CC:DD:EE:01"
+        ip_address: "192.168.10.10"
+        hostname: "web-server-01"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:02"
+        ip_address: "192.168.10.11"
+        hostname: "db-server-01"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:03"
+        ip_address: "192.168.10.12"
+        hostname: "app-server-01"
+        is_static: true
+    exclusions:
+      - start: "192.168.10.1"
+        end: "192.168.10.99"
+
+  # Development VLAN
+  - name: "dev-environment"
+    network: "192.168.20.0"
+    prefix_length: 24
+    range_start: "192.168.20.50"
+    range_end: "192.168.20.150"
+    gateway: "192.168.20.1"
+    dns_servers: ["192.168.1.10", "8.8.8.8"]
+    domain_name: "dev.company.local"
+    lease_time: 43200
+    max_lease_time: 86400
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.1.10,8.8.8.8"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "dev.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.20.1"
+    exclusions:
+      - start: "192.168.20.1"
+        end: "192.168.20.49"
+
+  # Guest/Public VLAN
+  - name: "guest-wifi"
+    network: "192.168.100.0"
+    prefix_length: 24
+    range_start: "192.168.100.10"
+    range_end: "192.168.100.100"
+    gateway: "192.168.100.1"
+    dns_servers: ["8.8.8.8", "8.8.4.4"]
+    domain_name: "guest.company.local"
+    lease_time: 3600
+    max_lease_time: 7200
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "8.8.8.8,8.8.4.4"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "guest.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.100.1"
+    exclusions:
+      - start: "192.168.100.1"
+        end: "192.168.100.9"
+
+  # IoT Devices VLAN
+  - name: "iot-devices"
+    network: "192.168.50.0"
+    prefix_length: 24
+    range_start: "192.168.50.20"
+    range_end: "192.168.50.100"
+    gateway: "192.168.50.1"
+    dns_servers: ["192.168.1.10", "1.1.1.1"]
+    domain_name: "iot.company.local"
+    lease_time: 86400
+    max_lease_time: 172800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "192.168.1.10,1.1.1.1"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "iot.company.local"
+      - code: 3
+        name: "ROUTER"
+        data: "192.168.50.1"
+    reservations:
+      - mac_address: "BB:CC:DD:EE:FF:01"
+        ip_address: "192.168.50.10"
+        hostname: "smart-switch-01"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:02"
+        ip_address: "192.168.50.11"
+        hostname: "smart-bulb-01"
+        is_static: true
+    exclusions:
+      - start: "192.168.50.1"
+        end: "192.168.50.19"
+
+security:
+  dhcp_snooping: true
+  mac_filtering: true
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 100
+    max_requests_per_hour: 2000
+  allowed_mac_addresses:
+    - "00:11:22:33:44:*"  # Management devices
+    - "AA:BB:CC:DD:EE:*"  # Production servers
+    - "BB:CC:DD:EE:FF:*"  # IoT devices
+  blocked_mac_addresses:
+    - "ff:ff:ff:ff:ff:ff"
+    - "00:00:00:00:00:00"
+
+logging:
+  level: "INFO"
+  file_rotation:
+    enabled: true
+    max_size_mb: 500
+    max_files: 10
+  console_output: false
+  syslog:
+    enabled: true
+    facility: "daemon"

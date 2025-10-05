@@ -1,132 +1,77 @@
-# Simple Environment Configuration
+# Simple Configurations
 
-This configuration is designed for small home networks or basic office environments with minimal requirements.
+This directory contains simple, easy-to-understand configuration examples for basic networking scenarios.
 
-## Overview
+## Files
 
-- **Network**: Single subnet (192.168.1.0/24)
-- **IP Range**: 192.168.1.100 - 192.168.1.200
-- **Lease Time**: 24 hours (86400 seconds)
-- **Security**: Basic (no MAC filtering or rate limiting)
-- **Logging**: Simple text format
-- **Database**: File-based SQLite
+### home-network.yaml
+Perfect for basic home networks with minimal complexity:
+- Single subnet (192.168.1.0/24)
+- Basic DHCP options
+- No security features
+- Simple logging
 
-## Features
+**Use case**: Home users, small apartments, basic setups
 
-### Network Configuration
-- Single home network subnet
-- 100 IP addresses available for dynamic allocation
-- Static reservations for router and NAS
-- IP exclusions for infrastructure devices
+### small-office.yaml
+Suitable for small businesses with basic networking needs:
+- Two subnets (office + guest)
+- Static IP reservations
+- Basic security enabled
+- IP exclusions
 
-### DHCP Options
-- Subnet mask (255.255.255.0)
-- Default gateway (192.168.1.1)
-- DNS servers (8.8.8.8, 8.8.4.4)
-- Domain name (home.local)
-- Broadcast address
-- NTP servers (pool.ntp.org)
+**Use case**: Small offices, home offices, basic business networks
 
-### Static Reservations
-- **Router**: 192.168.1.10 (00:11:22:33:44:55)
-- **NAS**: 192.168.1.20 (00:11:22:33:44:56)
+## Quick Start
 
-### IP Exclusions
-- **Infrastructure**: 192.168.1.1 - 192.168.1.10
-- **Reserved**: 192.168.1.250 - 192.168.1.254
-
-## Usage
-
-### Installation
-```bash
-# Copy configuration
-sudo cp config/examples/simple/simple-dhcpd.conf /etc/simple-dhcpd/
-
-# Start service
-sudo systemctl start simple-dhcpd
-sudo systemctl enable simple-dhcpd
-```
-
-### Testing
-```bash
-# Test configuration
-simple-dhcpd -c /etc/simple-dhcpd/simple-dhcpd.conf --test-config
-
-# Check status
-sudo systemctl status simple-dhcpd
-
-# View logs
-sudo journalctl -u simple-dhcpd -f
-```
+1. Choose the configuration that matches your needs
+2. Copy it to your preferred location:
+   ```bash
+   cp home-network.yaml /etc/simple-dhcpd/config.yaml
+   ```
+3. Modify the IP addresses to match your network
+4. Start the daemon:
+   ```bash
+   ./simple-dhcpd -c /etc/simple-dhcpd/config.yaml
+   ```
 
 ## Customization
 
-### Adding More Reservations
-```json
-{
-  "mac_address": "AA:BB:CC:DD:EE:FF",
-  "ip_address": "192.168.1.30",
-  "hostname": "printer",
-  "description": "Network Printer"
-}
+### Changing IP Ranges
+Edit the `network`, `range_start`, and `range_end` values to match your network:
+
+```yaml
+subnets:
+  - name: "home"
+    network: "10.0.0.0"        # Your network
+    range_start: "10.0.0.100"  # Start of DHCP range
+    range_end: "10.0.0.200"    # End of DHCP range
+    gateway: "10.0.0.1"        # Your router/gateway
 ```
 
-### Changing Lease Time
-```json
-"lease_time": 43200,  // 12 hours
-"max_lease_time": 86400  // 24 hours
+### Adding Static Reservations
+Add devices that should always get the same IP:
+
+```yaml
+reservations:
+  - mac_address: "AA:BB:CC:DD:EE:FF"
+    ip_address: "192.168.1.50"
+    hostname: "my-device"
+    is_static: true
 ```
 
-### Adding Custom Options
-```json
-{
-  "name": "custom-option-100",
-  "value": "custom-value"
-}
-```
+### Excluding IP Ranges
+Reserve IP ranges that shouldn't be assigned by DHCP:
 
-## Monitoring
-
-### Basic Monitoring
-```bash
-# Show active leases
-sudo simple-dhcpd --show-leases
-
-# Show statistics
-sudo simple-dhcpd --stats
-
-# Check log file
-tail -f /var/log/simple-dhcpd.log
-```
-
-### Log Rotation
-The configuration includes automatic log rotation:
-- Maximum file size: 50MB
-- Maximum files: 5
-- Compression enabled
-
-## Troubleshooting
-
-### Common Issues
-1. **Permission denied**: Check file permissions
-2. **Port in use**: Stop conflicting DHCP services
-3. **No IPs assigned**: Check network connectivity
-
-### Debug Commands
-```bash
-# Run in foreground with verbose logging
-sudo simple-dhcpd -f -v
-
-# Test network connectivity
-ping 192.168.1.1
-
-# Check port binding
-sudo netstat -tulpn | grep :67
+```yaml
+exclusions:
+  - start: "192.168.1.1"
+    end: "192.168.1.10"
 ```
 
 ## Next Steps
 
-For more advanced features, consider:
-- [Advanced Configuration](../advanced/README.md)
-- [Production Configuration](../production/README.md)
-- [Security Configuration](../../../docs/configuration/security.md)
+If you need more advanced features, check out:
+- `../advanced/` - Advanced networking features
+- `../production/` - Enterprise-grade configurations
+- `../security/` - Security-focused setups

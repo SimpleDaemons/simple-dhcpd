@@ -1,222 +1,232 @@
 # Simple DHCP Daemon Configuration Examples
 
-This directory contains example configuration files for the Simple DHCP Daemon in multiple formats.
+This directory contains comprehensive configuration examples for the Simple DHCP Daemon, organized by use case and complexity level.
 
-## Configuration Formats
+## Directory Structure
 
-The Simple DHCP Daemon supports three configuration formats:
+```
+config/examples/
+├── README.md                    # This file
+├── validate_config.sh           # Configuration validation script
+├── convert_config.py            # Format conversion utility
+├── Makefile                     # Management commands
+├── simple-dhcpd.json           # Full-featured JSON configuration
+├── simple-dhcpd.yaml           # Full-featured YAML configuration
+├── simple-dhcpd.ini            # Full-featured INI configuration
+├── minimal.json                # Minimal JSON configuration
+├── minimal.yaml                # Minimal YAML configuration
+├── minimal.ini                 # Minimal INI configuration
+├── simple/                     # Simple configurations
+│   ├── README.md
+│   ├── home-network.yaml
+│   └── small-office.yaml
+├── advanced/                   # Advanced configurations
+│   ├── README.md
+│   ├── multi-vlan.yaml
+│   └── load-balanced.yaml
+├── production/                 # Production configurations
+│   ├── README.md
+│   ├── enterprise.yaml
+│   └── datacenter.yaml
+└── security/                   # Security configurations
+    ├── README.md
+    ├── high-security.yaml
+    └── zero-trust.yaml
+```
 
+## Quick Start
+
+### 1. Choose Your Configuration
+
+**For beginners:**
+- Start with `simple/` directory
+- Use `minimal.yaml` for basic setups
+
+**For advanced users:**
+- Use `advanced/` for complex networks
+- Use `production/` for enterprise environments
+- Use `security/` for high-security requirements
+
+### 2. Select Your Format
+
+The daemon supports three configuration formats:
 - **JSON** (`.json`) - JavaScript Object Notation
-- **YAML** (`.yaml` or `.yml`) - YAML Ain't Markup Language  
+- **YAML** (`.yaml` or `.yml`) - YAML Ain't Markup Language
 - **INI** (`.ini`) - Windows-style configuration files
 
-## Example Files
-
-### Comprehensive Examples
-
-- `simple-dhcpd.json` - Full-featured JSON configuration
-- `simple-dhcpd.yaml` - Full-featured YAML configuration  
-- `simple-dhcpd.ini` - Full-featured INI configuration
-
-### Minimal Examples
-
-- `minimal.json` - Minimal JSON configuration
-- `minimal.yaml` - Minimal YAML configuration
-- `minimal.ini` - Minimal INI configuration
-
-## Configuration Structure
-
-### Server Configuration
-
-```yaml
-server:
-  listen_addresses: ["0.0.0.0:67", "::67"]  # Server listening addresses
-  config_file: "/etc/simple-dhcpd/config.yaml"  # Config file path
-  lease_file: "/var/lib/simple-dhcpd/dhcpd.leases"  # Lease database file
-  log_file: "/var/log/simple-dhcpd/simple-dhcpd.log"  # Log file path
-  enable_logging: true  # Enable logging
-  enable_security: true  # Enable security features
-  max_leases: 10000  # Maximum number of leases
-```
-
-### Subnet Configuration
-
-```yaml
-subnets:
-  - name: "main-lan"  # Subnet name
-    network: "192.168.1.0"  # Network address
-    prefix_length: 24  # Subnet mask (CIDR notation)
-    range_start: "192.168.1.100"  # Start of IP range
-    range_end: "192.168.1.200"  # End of IP range
-    gateway: "192.168.1.1"  # Default gateway
-    dns_servers:  # DNS servers
-      - "192.168.1.1"
-      - "8.8.8.8"
-    domain_name: "home.local"  # Domain name
-    lease_time: 86400  # Default lease time (seconds)
-    max_lease_time: 172800  # Maximum lease time (seconds)
-```
-
-### DHCP Options
-
-```yaml
-options:
-  - code: 6  # DHCP option code
-    name: "DNS_SERVERS"  # Option name
-    data: "192.168.1.1,8.8.8.8"  # Option data
-```
-
-### Static Reservations
-
-```yaml
-reservations:
-  - mac_address: "00:11:22:33:44:55"  # Client MAC address
-    ip_address: "192.168.1.10"  # Reserved IP address
-    hostname: "server-01"  # Hostname
-    is_static: true  # Static reservation
-```
-
-### IP Exclusions
-
-```yaml
-exclusions:
-  - start: "192.168.1.1"  # Start of excluded range
-    end: "192.168.1.10"  # End of excluded range
-```
-
-## Usage
-
-### Command Line
+### 3. Validate Your Configuration
 
 ```bash
-# Use JSON configuration
-./simple-dhcpd -c /path/to/simple-dhcpd.json
+# Validate a configuration file
+./validate_config.sh your-config.yaml
 
-# Use YAML configuration  
-./simple-dhcpd -c /path/to/simple-dhcpd.yaml
-
-# Use INI configuration
-./simple-dhcpd -c /path/to/simple-dhcpd.ini
+# Validate all configurations
+make validate
 ```
 
-### Environment Variables
+### 4. Convert Between Formats
 
 ```bash
-# Set configuration file via environment
-export SIMPLE_DHCPD_CONFIG=/etc/simple-dhcpd/simple-dhcpd.yaml
-./simple-dhcpd
+# Convert JSON to YAML
+python3 convert_config.py config.json config.yaml
+
+# Convert using Makefile
+make convert INPUT=config.json OUTPUT=config.yaml
 ```
 
-## Configuration Validation
+## Configuration Categories
 
-The daemon will validate your configuration on startup and report any errors:
+### Simple Configurations (`simple/`)
+Perfect for basic networking scenarios:
+- **home-network.yaml** - Basic home network setup
+- **small-office.yaml** - Small business configuration
 
+**Use cases**: Home users, small offices, basic setups
+
+### Advanced Configurations (`advanced/`)
+Complex networking scenarios with advanced features:
+- **multi-vlan.yaml** - Multi-VLAN enterprise setup
+- **load-balanced.yaml** - High-availability configuration
+
+**Use cases**: Enterprise networks, data centers, complex office environments
+
+### Production Configurations (`production/`)
+Enterprise-grade configurations for mission-critical environments:
+- **enterprise.yaml** - Comprehensive enterprise setup
+- **datacenter.yaml** - High-performance data center configuration
+
+**Use cases**: Large enterprises, mission-critical applications, high-availability environments
+
+### Security Configurations (`security/`)
+High-security configurations with comprehensive protection:
+- **high-security.yaml** - Maximum security setup
+- **zero-trust.yaml** - Zero trust security configuration
+
+**Use cases**: High-security environments, government networks, financial institutions
+
+## Configuration Features
+
+### Supported Features
+- **Multi-Format Support**: JSON, YAML, and INI formats
+- **Multiple Subnets**: Support for complex network topologies
+- **Static Reservations**: Guaranteed IP addresses for critical devices
+- **IP Exclusions**: Reserved ranges for infrastructure
+- **DHCP Options**: Global and subnet-specific options
+- **Security Features**: MAC filtering, rate limiting, DHCP snooping
+- **Advanced Logging**: Comprehensive logging and monitoring
+- **High Availability**: Load balancing and failover support
+
+### Security Features
+- **DHCP Snooping**: Protection against rogue DHCP servers
+- **MAC Filtering**: Whitelist/blacklist based on MAC addresses
+- **Rate Limiting**: Protection against DHCP flooding attacks
+- **Intrusion Detection**: Real-time threat detection
+- **Authentication**: Device authentication and registration
+- **Audit Logging**: Comprehensive security event logging
+
+## Usage Examples
+
+### Basic Usage
 ```bash
+# Use a specific configuration file
+./simple-dhcpd -c /path/to/config.yaml
+
+# Validate configuration without starting
 ./simple-dhcpd -c /path/to/config.yaml --validate
+
+# Run with debug logging
+./simple-dhcpd -c /path/to/config.yaml --verbose --log-level DEBUG
 ```
 
-## Common DHCP Options
+### Configuration Management
+```bash
+# Validate all configurations
+make validate
 
-| Code | Name | Description |
-|------|------|-------------|
-| 1 | SUBNET_MASK | Subnet mask |
-| 3 | ROUTER | Default gateway |
-| 6 | DNS_SERVERS | DNS servers |
-| 15 | DOMAIN_NAME | Domain name |
-| 28 | BROADCAST_ADDRESS | Broadcast address |
-| 42 | NTP_SERVERS | NTP servers |
-| 51 | IP_ADDRESS_LEASE_TIME | Lease time |
-| 54 | SERVER_IDENTIFIER | DHCP server identifier |
+# Convert between formats
+make convert INPUT=config.json OUTPUT=config.yaml
 
-## Security Features
+# Install examples to system
+make install
 
-### MAC Address Filtering
-
-```yaml
-security:
-  mac_filtering: true
-  allowed_mac_addresses:
-    - "00:11:22:33:44:55"
-    - "aa:bb:cc:dd:ee:*"  # Wildcard pattern
-  blocked_mac_addresses:
-    - "ff:ff:ff:ff:ff:ff"
+# Show configuration information
+make info
 ```
 
-### Rate Limiting
+### Customization
+1. **Copy an example**: `cp simple/home-network.yaml my-config.yaml`
+2. **Edit the configuration**: Modify IP ranges, subnets, and options
+3. **Validate**: `./validate_config.sh my-config.yaml`
+4. **Deploy**: `./simple-dhcpd -c my-config.yaml`
 
-```yaml
-security:
-  rate_limiting:
-    enabled: true
-    max_requests_per_minute: 60
-    max_requests_per_hour: 1000
-```
+## Best Practices
 
-### DHCP Snooping
+### Network Planning
+- **Document Everything**: Keep detailed records of all configurations
+- **Plan for Growth**: Design for future expansion
+- **Security First**: Implement appropriate security controls
+- **Regular Audits**: Review and update configurations regularly
 
-```yaml
-security:
-  dhcp_snooping: true
-```
+### Configuration Management
+- **Version Control**: Use version control for configurations
+- **Backup**: Regular backup of configuration files
+- **Testing**: Test configurations in non-production environments
+- **Documentation**: Maintain detailed documentation
 
-## Logging Configuration
-
-```yaml
-logging:
-  level: "INFO"  # DEBUG, INFO, WARN, ERROR
-  file_rotation:
-    enabled: true
-    max_size_mb: 100
-    max_files: 5
-  console_output: true
-  syslog:
-    enabled: true
-    facility: "daemon"
-```
+### Security
+- **Principle of Least Privilege**: Minimum necessary access
+- **Network Segmentation**: Isolate different types of traffic
+- **Monitoring**: Continuous security monitoring
+- **Incident Response**: Defined procedures for security incidents
 
 ## Troubleshooting
 
 ### Common Issues
+- **Invalid IP addresses**: Ensure all IP addresses are valid and properly formatted
+- **Invalid MAC addresses**: Use format `XX:XX:XX:XX:XX:XX` (uppercase)
+- **Invalid lease times**: Lease times must be in seconds (positive integers)
+- **Invalid subnet ranges**: Ensure `range_start` < `range_end` and both are within the subnet
 
-1. **Invalid IP addresses**: Ensure all IP addresses are valid and properly formatted
-2. **Invalid MAC addresses**: Use format `XX:XX:XX:XX:XX:XX` (uppercase)
-3. **Invalid lease times**: Lease times must be in seconds (positive integers)
-4. **Invalid subnet ranges**: Ensure `range_start` < `range_end` and both are within the subnet
-
-### Debug Mode
-
-Run with debug logging to troubleshoot issues:
-
+### Debug Commands
 ```bash
-./simple-dhcpd -c /path/to/config.yaml --verbose --log-level DEBUG
+# Check configuration syntax
+./validate_config.sh config.yaml
+
+# Run with debug logging
+./simple-dhcpd -c config.yaml --verbose --log-level DEBUG
+
+# Monitor DHCP activity
+tail -f /var/log/simple-dhcpd/simple-dhcpd.log
 ```
 
-### Configuration Test
+### Getting Help
+- Check the specific README files in each subdirectory
+- Review the main project documentation
+- Create an issue on GitHub for bugs or feature requests
+- Check the troubleshooting guide in the main documentation
 
-Test your configuration without starting the daemon:
+## Contributing
 
-```bash
-./simple-dhcpd -c /path/to/config.yaml --test-config
-```
+### Adding New Examples
+1. Create a new configuration file in the appropriate directory
+2. Add a description to the relevant README.md
+3. Test the configuration thoroughly
+4. Submit a pull request
 
-## Examples by Use Case
+### Improving Existing Examples
+1. Test the existing configuration
+2. Make improvements or fixes
+3. Update documentation as needed
+4. Submit a pull request
 
-### Home Network
+## License
 
-Use `minimal.yaml` as a starting point for a simple home network.
-
-### Small Office
-
-Use `simple-dhcpd.yaml` and modify the subnets for your office network.
-
-### Enterprise
-
-Use `simple-dhcpd.yaml` and add additional subnets, security features, and logging configuration.
-
-### IoT Network
-
-Create a separate subnet for IoT devices with shorter lease times and restricted access.
+These configuration examples are provided under the same license as the Simple DHCP Daemon project.
 
 ## Support
 
-For more information, see the main project documentation or create an issue on GitHub.
+For more information, see:
+- Main project documentation
+- GitHub repository
+- Issue tracker for bugs and feature requests
+- Community forums for discussions

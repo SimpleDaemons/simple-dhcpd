@@ -1,0 +1,294 @@
+# Enterprise Production Configuration
+# Mission-critical setup with comprehensive monitoring and security
+
+server:
+  listen_addresses: ["0.0.0.0:67", "::67"]
+  config_file: "/etc/simple-dhcpd/enterprise.yaml"
+  lease_file: "/var/lib/simple-dhcpd/dhcpd.leases"
+  log_file: "/var/log/simple-dhcpd/simple-dhcpd.log"
+  enable_logging: true
+  enable_security: true
+  max_leases: 50000
+
+global_options:
+  - code: 6
+    name: "DNS_SERVERS"
+    data: "10.0.1.10,10.0.1.11,10.0.1.12,8.8.8.8"
+  - code: 15
+    name: "DOMAIN_NAME"
+    data: "company.com"
+  - code: 42
+    name: "NTP_SERVERS"
+    data: "10.0.1.10,pool.ntp.org,time.nist.gov"
+  - code: 3
+    name: "ROUTER"
+    data: "10.0.1.1"
+  - code: 44
+    name: "NETBIOS_NAME_SERVERS"
+    data: "10.0.1.20,10.0.1.21"
+  - code: 46
+    name: "NETBIOS_NODE_TYPE"
+    data: "0x8"
+
+subnets:
+  # Core Infrastructure VLAN
+  - name: "core-infrastructure"
+    network: "10.0.1.0"
+    prefix_length: 24
+    range_start: "10.0.1.100"
+    range_end: "10.0.1.200"
+    gateway: "10.0.1.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11", "10.0.1.12"]
+    domain_name: "core.company.com"
+    lease_time: 604800
+    max_lease_time: 1209600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11,10.0.1.12"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "core.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.1.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "10.0.1.10,pool.ntp.org"
+      - code: 44
+        name: "NETBIOS_NAME_SERVERS"
+        data: "10.0.1.20,10.0.1.21"
+      - code: 46
+        name: "NETBIOS_NODE_TYPE"
+        data: "0x8"
+    reservations:
+      - mac_address: "00:11:22:33:44:55"
+        ip_address: "10.0.1.10"
+        hostname: "core-switch-01"
+        is_static: true
+      - mac_address: "00:11:22:33:44:56"
+        ip_address: "10.0.1.11"
+        hostname: "core-switch-02"
+        is_static: true
+      - mac_address: "00:11:22:33:44:57"
+        ip_address: "10.0.1.12"
+        hostname: "core-switch-03"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:01"
+        ip_address: "10.0.1.20"
+        hostname: "dc-01.company.com"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:02"
+        ip_address: "10.0.1.21"
+        hostname: "dc-02.company.com"
+        is_static: true
+    exclusions:
+      - start: "10.0.1.1"
+        end: "10.0.1.99"
+      - start: "10.0.1.201"
+        end: "10.0.1.254"
+
+  # Production Servers VLAN
+  - name: "production-servers"
+    network: "10.0.10.0"
+    prefix_length: 24
+    range_start: "10.0.10.100"
+    range_end: "10.0.10.200"
+    gateway: "10.0.10.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11", "10.0.1.12"]
+    domain_name: "prod.company.com"
+    lease_time: 1209600
+    max_lease_time: 2592000
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11,10.0.1.12"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "prod.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.10.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "10.0.1.10,pool.ntp.org"
+    reservations:
+      - mac_address: "BB:CC:DD:EE:FF:01"
+        ip_address: "10.0.10.10"
+        hostname: "web-prod-01.company.com"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:02"
+        ip_address: "10.0.10.11"
+        hostname: "web-prod-02.company.com"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:03"
+        ip_address: "10.0.10.20"
+        hostname: "app-prod-01.company.com"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:04"
+        ip_address: "10.0.10.21"
+        hostname: "app-prod-02.company.com"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:05"
+        ip_address: "10.0.10.30"
+        hostname: "db-prod-01.company.com"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:06"
+        ip_address: "10.0.10.31"
+        hostname: "db-prod-02.company.com"
+        is_static: true
+    exclusions:
+      - start: "10.0.10.1"
+        end: "10.0.10.99"
+      - start: "10.0.10.201"
+        end: "10.0.10.254"
+
+  # Development/Testing VLAN
+  - name: "development"
+    network: "10.0.20.0"
+    prefix_length: 24
+    range_start: "10.0.20.50"
+    range_end: "10.0.20.150"
+    gateway: "10.0.20.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11"]
+    domain_name: "dev.company.com"
+    lease_time: 86400
+    max_lease_time: 172800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "dev.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.20.1"
+    exclusions:
+      - start: "10.0.20.1"
+        end: "10.0.20.49"
+      - start: "10.0.20.151"
+        end: "10.0.20.254"
+
+  # User Workstations VLAN
+  - name: "user-workstations"
+    network: "10.0.30.0"
+    prefix_length: 24
+    range_start: "10.0.30.100"
+    range_end: "10.0.30.200"
+    gateway: "10.0.30.1"
+    dns_servers: ["10.0.1.10", "10.0.1.11", "10.0.1.12"]
+    domain_name: "company.com"
+    lease_time: 43200
+    max_lease_time: 86400
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,10.0.1.11,10.0.1.12"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.30.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "10.0.1.10,pool.ntp.org"
+      - code: 44
+        name: "NETBIOS_NAME_SERVERS"
+        data: "10.0.1.20,10.0.1.21"
+      - code: 46
+        name: "NETBIOS_NODE_TYPE"
+        data: "0x8"
+    exclusions:
+      - start: "10.0.30.1"
+        end: "10.0.30.99"
+      - start: "10.0.30.201"
+        end: "10.0.30.254"
+
+  # Guest/Public Access VLAN
+  - name: "guest-access"
+    network: "10.0.100.0"
+    prefix_length: 24
+    range_start: "10.0.100.10"
+    range_end: "10.0.100.100"
+    gateway: "10.0.100.1"
+    dns_servers: ["8.8.8.8", "8.8.4.4"]
+    domain_name: "guest.company.com"
+    lease_time: 1800
+    max_lease_time: 3600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "8.8.8.8,8.8.4.4"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "guest.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.100.1"
+    exclusions:
+      - start: "10.0.100.1"
+        end: "10.0.100.9"
+      - start: "10.0.100.101"
+        end: "10.0.100.254"
+
+  # IoT and BYOD VLAN
+  - name: "iot-byod"
+    network: "10.0.50.0"
+    prefix_length: 24
+    range_start: "10.0.50.20"
+    range_end: "10.0.50.100"
+    gateway: "10.0.50.1"
+    dns_servers: ["10.0.1.10", "1.1.1.1"]
+    domain_name: "iot.company.com"
+    lease_time: 86400
+    max_lease_time: 172800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "10.0.1.10,1.1.1.1"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "iot.company.com"
+      - code: 3
+        name: "ROUTER"
+        data: "10.0.50.1"
+    exclusions:
+      - start: "10.0.50.1"
+        end: "10.0.50.19"
+      - start: "10.0.50.101"
+        end: "10.0.50.254"
+
+security:
+  dhcp_snooping: true
+  mac_filtering: true
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 500
+    max_requests_per_hour: 10000
+  allowed_mac_addresses:
+    - "00:11:22:33:44:*"  # Core infrastructure
+    - "AA:BB:CC:DD:EE:*"  # Domain controllers
+    - "BB:CC:DD:EE:FF:*"  # Production servers
+    - "CC:DD:EE:FF:00:*"  # Development servers
+    - "DD:EE:FF:00:11:*"  # User workstations
+    - "EE:FF:00:11:22:*"  # IoT devices
+  blocked_mac_addresses:
+    - "ff:ff:ff:ff:ff:ff"
+    - "00:00:00:00:00:00"
+    - "01:00:5e:*"  # Multicast addresses
+    - "33:33:*"    # IPv6 multicast
+
+logging:
+  level: "INFO"
+  file_rotation:
+    enabled: true
+    max_size_mb: 2000
+    max_files: 50
+  console_output: false
+  syslog:
+    enabled: true
+    facility: "daemon"
+  audit_logging: true
+  security_logging: true

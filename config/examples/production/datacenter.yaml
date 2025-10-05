@@ -1,0 +1,333 @@
+# Data Center Production Configuration
+# High-performance setup for data center environments
+
+server:
+  listen_addresses: ["0.0.0.0:67", "::67"]
+  config_file: "/etc/simple-dhcpd/datacenter.yaml"
+  lease_file: "/var/lib/simple-dhcpd/dhcpd.leases"
+  log_file: "/var/log/simple-dhcpd/simple-dhcpd.log"
+  enable_logging: true
+  enable_security: true
+  max_leases: 100000
+
+global_options:
+  - code: 6
+    name: "DNS_SERVERS"
+    data: "172.16.1.10,172.16.1.11,172.16.1.12,172.16.1.13"
+  - code: 15
+    name: "DOMAIN_NAME"
+    data: "datacenter.local"
+  - code: 42
+    name: "NTP_SERVERS"
+    data: "172.16.1.10,172.16.1.11,pool.ntp.org"
+  - code: 3
+    name: "ROUTER"
+    data: "172.16.1.1"
+
+subnets:
+  # Management Network
+  - name: "management"
+    network: "172.16.1.0"
+    prefix_length: 24
+    range_start: "172.16.1.100"
+    range_end: "172.16.1.200"
+    gateway: "172.16.1.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11", "172.16.1.12"]
+    domain_name: "mgmt.datacenter.local"
+    lease_time: 604800
+    max_lease_time: 1209600
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11,172.16.1.12"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "mgmt.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.1.1"
+      - code: 42
+        name: "NTP_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+    reservations:
+      - mac_address: "00:11:22:33:44:55"
+        ip_address: "172.16.1.10"
+        hostname: "core-switch-01"
+        is_static: true
+      - mac_address: "00:11:22:33:44:56"
+        ip_address: "172.16.1.11"
+        hostname: "core-switch-02"
+        is_static: true
+      - mac_address: "00:11:22:33:44:57"
+        ip_address: "172.16.1.12"
+        hostname: "core-switch-03"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:01"
+        ip_address: "172.16.1.20"
+        hostname: "monitoring-01"
+        is_static: true
+      - mac_address: "AA:BB:CC:DD:EE:02"
+        ip_address: "172.16.1.21"
+        hostname: "monitoring-02"
+        is_static: true
+    exclusions:
+      - start: "172.16.1.1"
+        end: "172.16.1.99"
+      - start: "172.16.1.201"
+        end: "172.16.1.254"
+
+  # Production Servers - Web Tier
+  - name: "web-tier"
+    network: "172.16.10.0"
+    prefix_length: 24
+    range_start: "172.16.10.100"
+    range_end: "172.16.10.200"
+    gateway: "172.16.10.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11"]
+    domain_name: "web.datacenter.local"
+    lease_time: 1209600
+    max_lease_time: 2592000
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "web.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.10.1"
+    reservations:
+      - mac_address: "BB:CC:DD:EE:FF:01"
+        ip_address: "172.16.10.10"
+        hostname: "web-01.datacenter.local"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:02"
+        ip_address: "172.16.10.11"
+        hostname: "web-02.datacenter.local"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:03"
+        ip_address: "172.16.10.12"
+        hostname: "web-03.datacenter.local"
+        is_static: true
+      - mac_address: "BB:CC:DD:EE:FF:04"
+        ip_address: "172.16.10.13"
+        hostname: "web-04.datacenter.local"
+        is_static: true
+    exclusions:
+      - start: "172.16.10.1"
+        end: "172.16.10.99"
+      - start: "172.16.10.201"
+        end: "172.16.10.254"
+
+  # Production Servers - Application Tier
+  - name: "app-tier"
+    network: "172.16.20.0"
+    prefix_length: 24
+    range_start: "172.16.20.100"
+    range_end: "172.16.20.200"
+    gateway: "172.16.20.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11"]
+    domain_name: "app.datacenter.local"
+    lease_time: 1209600
+    max_lease_time: 2592000
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "app.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.20.1"
+    reservations:
+      - mac_address: "CC:DD:EE:FF:00:01"
+        ip_address: "172.16.20.10"
+        hostname: "app-01.datacenter.local"
+        is_static: true
+      - mac_address: "CC:DD:EE:FF:00:02"
+        ip_address: "172.16.20.11"
+        hostname: "app-02.datacenter.local"
+        is_static: true
+      - mac_address: "CC:DD:EE:FF:00:03"
+        ip_address: "172.16.20.12"
+        hostname: "app-03.datacenter.local"
+        is_static: true
+    exclusions:
+      - start: "172.16.20.1"
+        end: "172.16.20.99"
+      - start: "172.16.20.201"
+        end: "172.16.20.254"
+
+  # Production Servers - Database Tier
+  - name: "db-tier"
+    network: "172.16.30.0"
+    prefix_length: 24
+    range_start: "172.16.30.100"
+    range_end: "172.16.30.200"
+    gateway: "172.16.30.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11"]
+    domain_name: "db.datacenter.local"
+    lease_time: 2592000
+    max_lease_time: 5184000
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "db.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.30.1"
+    reservations:
+      - mac_address: "DD:EE:FF:00:11:01"
+        ip_address: "172.16.30.10"
+        hostname: "db-primary.datacenter.local"
+        is_static: true
+      - mac_address: "DD:EE:FF:00:11:02"
+        ip_address: "172.16.30.11"
+        hostname: "db-secondary.datacenter.local"
+        is_static: true
+      - mac_address: "DD:EE:FF:00:11:03"
+        ip_address: "172.16.30.12"
+        hostname: "db-replica-01.datacenter.local"
+        is_static: true
+      - mac_address: "DD:EE:FF:00:11:04"
+        ip_address: "172.16.30.13"
+        hostname: "db-replica-02.datacenter.local"
+        is_static: true
+    exclusions:
+      - start: "172.16.30.1"
+        end: "172.16.30.99"
+      - start: "172.16.30.201"
+        end: "172.16.30.254"
+
+  # Storage Network
+  - name: "storage"
+    network: "172.16.40.0"
+    prefix_length: 24
+    range_start: "172.16.40.100"
+    range_end: "172.16.40.200"
+    gateway: "172.16.40.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11"]
+    domain_name: "storage.datacenter.local"
+    lease_time: 2592000
+    max_lease_time: 5184000
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "storage.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.40.1"
+    reservations:
+      - mac_address: "EE:FF:00:11:22:01"
+        ip_address: "172.16.40.10"
+        hostname: "san-01.datacenter.local"
+        is_static: true
+      - mac_address: "EE:FF:00:11:22:02"
+        ip_address: "172.16.40.11"
+        hostname: "san-02.datacenter.local"
+        is_static: true
+      - mac_address: "EE:FF:00:11:22:03"
+        ip_address: "172.16.40.12"
+        hostname: "nas-01.datacenter.local"
+        is_static: true
+    exclusions:
+      - start: "172.16.40.1"
+        end: "172.16.40.99"
+      - start: "172.16.40.201"
+        end: "172.16.40.254"
+
+  # Development/Testing Environment
+  - name: "development"
+    network: "172.16.100.0"
+    prefix_length: 24
+    range_start: "172.16.100.50"
+    range_end: "172.16.100.150"
+    gateway: "172.16.100.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11"]
+    domain_name: "dev.datacenter.local"
+    lease_time: 86400
+    max_lease_time: 172800
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "dev.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.100.1"
+    exclusions:
+      - start: "172.16.100.1"
+        end: "172.16.100.49"
+      - start: "172.16.100.151"
+        end: "172.16.100.254"
+
+  # Backup/DR Environment
+  - name: "backup-dr"
+    network: "172.16.200.0"
+    prefix_length: 24
+    range_start: "172.16.200.100"
+    range_end: "172.16.200.200"
+    gateway: "172.16.200.1"
+    dns_servers: ["172.16.1.10", "172.16.1.11"]
+    domain_name: "backup.datacenter.local"
+    lease_time: 1209600
+    max_lease_time: 2592000
+    options:
+      - code: 6
+        name: "DNS_SERVERS"
+        data: "172.16.1.10,172.16.1.11"
+      - code: 15
+        name: "DOMAIN_NAME"
+        data: "backup.datacenter.local"
+      - code: 3
+        name: "ROUTER"
+        data: "172.16.200.1"
+    exclusions:
+      - start: "172.16.200.1"
+        end: "172.16.200.99"
+      - start: "172.16.200.201"
+        end: "172.16.200.254"
+
+security:
+  dhcp_snooping: true
+  mac_filtering: true
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 1000
+    max_requests_per_hour: 50000
+  allowed_mac_addresses:
+    - "00:11:22:33:44:*"  # Core infrastructure
+    - "AA:BB:CC:DD:EE:*"  # Monitoring systems
+    - "BB:CC:DD:EE:FF:*"  # Web tier servers
+    - "CC:DD:EE:FF:00:*"  # Application tier servers
+    - "DD:EE:FF:00:11:*"  # Database tier servers
+    - "EE:FF:00:11:22:*"  # Storage systems
+  blocked_mac_addresses:
+    - "ff:ff:ff:ff:ff:ff"
+    - "00:00:00:00:00:00"
+    - "01:00:5e:*"  # Multicast addresses
+    - "33:33:*"    # IPv6 multicast
+
+logging:
+  level: "INFO"
+  file_rotation:
+    enabled: true
+    max_size_mb: 5000
+    max_files: 100
+  console_output: false
+  syslog:
+    enabled: true
+    facility: "daemon"
+  audit_logging: true
+  security_logging: true
+  performance_logging: true

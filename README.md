@@ -48,11 +48,23 @@ Simple DHCP Daemon supports multiple configuration formats for maximum flexibili
 
 ### Configuration Examples
 
-Comprehensive configuration examples are available in the `config/examples/` directory:
+Comprehensive configuration examples are organized by use case in the `config/examples/` directory:
 
 ```bash
 # View available examples
 ls config/examples/
+
+# Simple configurations for basic setups
+ls config/examples/simple/
+
+# Advanced configurations for complex networks
+ls config/examples/advanced/
+
+# Production configurations for enterprise environments
+ls config/examples/production/
+
+# Security configurations for high-security requirements
+ls config/examples/security/
 
 # Validate a configuration file
 ./config/examples/validate_config.sh simple-dhcpd.yaml
@@ -60,6 +72,20 @@ ls config/examples/
 # Convert between formats
 python3 config/examples/convert_config.py simple-dhcpd.json simple-dhcpd.yaml
 ```
+
+### Organized Examples
+
+The configuration examples are organized by use case:
+
+- **`simple/`** - Basic configurations for home networks and small offices
+- **`advanced/`** - Complex multi-VLAN and load-balanced setups
+- **`production/`** - Enterprise-grade configurations for mission-critical environments
+- **`security/`** - High-security configurations with comprehensive protection
+
+Each directory contains:
+- Configuration files in JSON, YAML, and INI formats
+- Detailed README files with usage instructions
+- Specific examples for different scenarios
 
 ### Quick Configuration
 
