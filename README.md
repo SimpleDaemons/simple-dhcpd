@@ -4,7 +4,7 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 [![Build Status](https://travis-ci.org/simpledaemons/simple-dhcpd.svg?branch=main)](https://travis-ci.org/simpledaemons/simple-dhcpd)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
+[![Version](https://img.shields.io/badge/version-0.2.0--beta-blue.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
 
 ## Overview
 
@@ -19,23 +19,24 @@ Simple DHCP Daemon is a modern, enterprise-grade DHCP server that provides:
 - **DHCP Options**: Comprehensive options system with validation and inheritance
 - **Production Ready**: Enterprise features with monitoring, logging, and compliance support
 
-## 🚧 Version 0.1.0-alpha - Early Development
+## 🚀 Version 0.2.0-beta - Core Protocol Complete
 
-**Current Status**: Phase 1 Complete, Phase 2 In Progress
+**Current Status**: Phase 1 & 2 Complete, Phase 3 In Progress
 
 ### What's Currently Implemented:
-- ✅ **Basic Daemon Framework**: Signal handling, configuration management, logging
-- ✅ **Core DHCP Protocol Structure**: Message parsing, basic DORA process
-- ✅ **Simple Lease Management**: Basic IP allocation and lease tracking
+- ✅ **Complete Daemon Framework**: Signal handling, configuration management, logging
+- ✅ **Full DHCP Protocol Implementation**: Complete DORA process with all message types
+- ✅ **Advanced Lease Management**: IP allocation, renewal, release, conflict resolution
 - ✅ **UDP Socket Handling**: Network communication infrastructure
-- ✅ **Configuration System**: Multi-format configuration with comprehensive examples
+- ✅ **Multi-Format Configuration**: JSON, YAML, and INI with comprehensive examples
 - ✅ **Build System**: Cross-platform CMake build with packaging support
+- ✅ **Testing Framework**: Google Test integration with comprehensive test suite
 
 ### In Development:
-- 🚧 **DHCP Protocol Implementation**: Core DORA process completion
-- 🚧 **Security Features**: Basic MAC filtering and rate limiting (placeholder implementations)
-- 🚧 **Advanced Lease Management**: Database persistence and conflict resolution
-- 🚧 **Testing Framework**: Unit and integration tests
+- 🚧 **Advanced Security Features**: Enhanced MAC filtering, rate limiting, DHCP snooping
+- 🚧 **Database Persistence**: Lease database with file-based storage
+- 🚧 **Performance Optimization**: High-throughput optimizations
+- 🚧 **Integration Testing**: End-to-end testing framework
 
 ## Configuration
 

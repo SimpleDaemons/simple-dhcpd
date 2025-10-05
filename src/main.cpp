@@ -75,7 +75,7 @@ void print_usage(const char* program_name) {
  * @brief Print version information
  */
 void print_version() {
-    std::cout << "Simple DHCP Daemon v0.1.0-alpha\n"
+    std::cout << "Simple DHCP Daemon v0.2.0-beta\n"
               << "Copyright 2024 SimpleDaemons\n"
               << "License: Apache-2.0\n"
               << std::endl;
