@@ -350,6 +350,9 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
     if (!required) {
         // Option 82 not required for this interface
         update_security_stats("option_82_allowed");
+        report_security_event(SecurityEvent(SecurityEventType::SUSPICIOUS_ACTIVITY, ThreatLevel::LOW,
+                                            "Option 82 not required on interface",
+                                            "", "", source_interface));
         return true;
     }
     
@@ -357,6 +360,8 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
     if (option_82_data.empty()) {
         update_security_stats("option_82_missing");
         std::cout << "WARNING: Option 82 required but missing for interface " << source_interface << std::endl;
+        report_security_event(SecurityEvent(SecurityEventType::INVALID_OPTION_82, ThreatLevel::MEDIUM,
+                                            "Option 82 required but missing", "", "", source_interface));
         return false;
     }
     
@@ -364,6 +369,8 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
     if (option_82_data.size() < 4) {
         update_security_stats("option_82_invalid");
         std::cout << "WARNING: Option 82 data too short for interface " << source_interface << std::endl;
+        report_security_event(SecurityEvent(SecurityEventType::INVALID_OPTION_82, ThreatLevel::MEDIUM,
+                                            "Option 82 data too short", "", "", source_interface));
         return false;
     }
     
@@ -396,10 +403,14 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
     if (!has_circuit_id || !has_remote_id) {
         update_security_stats("option_82_incomplete");
         std::cout << "WARNING: Option 82 missing required sub-options for interface " << source_interface << std::endl;
+        report_security_event(SecurityEvent(SecurityEventType::INVALID_OPTION_82, ThreatLevel::MEDIUM,
+                                            "Option 82 missing required sub-options", "", "", source_interface));
         return false;
     }
     
     update_security_stats("option_82_valid");
+    report_security_event(SecurityEvent(SecurityEventType::SUSPICIOUS_ACTIVITY, ThreatLevel::LOW,
+                                        "Option 82 validation passed", "", "", source_interface));
     return true;
 }
 
