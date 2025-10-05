@@ -146,7 +146,7 @@
 
 ## Phase 3: Advanced DHCP Features 🚧 IN PROGRESS
 **Timeline**: 6-8 weeks
-**Status**: 40% Complete
+**Status**: 85% Complete
 **Target**: Q2 2025
 **Start Date**: December 2024
 
@@ -218,18 +218,18 @@
 - [⚠️] DHCP snooping
   - [x] Basic DHCP snooping implementation
   - [x] Trusted interface management
-  - [ ] Advanced snooping validation
-  - [ ] Snooping monitoring
+  - [x] Advanced snooping validation
+  - [x] Snooping monitoring
 - [⚠️] MAC address filtering
   - [x] Basic MAC filtering implementation
   - [x] MAC filtering configuration
-  - [ ] Advanced pattern matching
-  - [ ] Filtering management
+  - [x] Advanced pattern matching (wildcards/regex)
+  - [x] Filtering management and event reporting
 - [⚠️] IP address filtering
   - [x] Basic IP filtering implementation
   - [x] IP filtering configuration
-  - [ ] Advanced IP filtering
-  - [ ] Filtering management
+  - [x] Advanced IP filtering (CIDR/mask matching)
+  - [x] Filtering management and event reporting
 - [⚠️] Option 82 support
   - [x] Option 82 implementation
   - [ ] Option 82 configuration
@@ -239,12 +239,12 @@
   - [x] Basic authentication framework
   - [x] Authentication configuration
   - [x] HMAC-SHA256 implementation
-  - [ ] Authentication management
+  - [x] Authentication management and validation window
 - [⚠️] Rate limiting
   - [x] Basic rate limiting implementation
   - [x] Rate limiting configuration
-  - [ ] Advanced rate limiting
-  - [ ] Rate limiting management
+  - [x] Advanced rate limiting (block windows)
+  - [x] Rate limiting management and event reporting
 - [x] Security event logging
   - [x] Security event logging implementation
   - [x] Security event logging configuration
@@ -272,6 +272,8 @@
   - [x] Enhanced main configuration with security features
   - [x] Updated advanced configuration with security settings
   - [x] Security configuration reference documentation
+  - [x] Transparent multi-format config loader (JSON/YAML/INI)
+  - [x] YAML/INI coverage for server/subnets/global options/security/logging
 - [x] Security documentation
   - [x] Security configuration reference guide
   - [x] Security best practices documentation

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Transparent configuration loading for JSON, YAML, and INI
+- YAML/INI coverage for server, subnets, global options, security, logging
+- Advanced snooping validation and monitoring hooks
+- MAC filtering wildcard/regex matching
+- IP filtering with CIDR/mask support
+- Rate limiting block windows and event reporting
+
 ### Planned
 - Phase 4: Enterprise Features
 - Phase 5: Performance Optimization
