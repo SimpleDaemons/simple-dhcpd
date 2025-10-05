@@ -100,7 +100,7 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
             binding.ip_address == message.client_ip) {
             // Ensure binding's learned interface matches the source interface
             if (binding.interface == source_interface) {
-                return true;
+            return true;
             }
             report_security_event(SecurityEvent(SecurityEventType::SUSPICIOUS_ACTIVITY, ThreatLevel::MEDIUM,
                                                 "Snooping binding interface mismatch",
@@ -290,10 +290,20 @@ bool DhcpSecurityManager::check_rate_limit(const std::string& identifier, const 
             }),
         tracker.requests.end());
     
+    // Check if currently blocked
+    if (tracker.blocked_until > now) {
+        update_security_stats("rate_limit_blocked");
+        report_security_event(SecurityEvent(SecurityEventType::RATE_LIMIT_EXCEEDED, ThreatLevel::MEDIUM,
+                                            "Rate limit active: request blocked", identifier));
+        return false;
+    }
+    
     // Check if we're within the rate limit
     if (tracker.requests.size() >= applicable_rule->max_requests) {
+        tracker.blocked_until = now + applicable_rule->block_duration;
         update_security_stats("rate_limit_exceeded");
-        std::cout << "WARNING: Rate limit exceeded for " << identifier << " (" << identifier_type << ")" << std::endl;
+        report_security_event(SecurityEvent(SecurityEventType::RATE_LIMIT_EXCEEDED, ThreatLevel::MEDIUM,
+                                            "Rate limit exceeded: activating block window", identifier));
         return false;
     }
     
@@ -492,22 +502,22 @@ bool DhcpSecurityManager::validate_client_authentication(const std::string& clie
         std::cout << "WARNING: Authentication failed - client expired: " << client_mac << std::endl;
         return false;
     }
-
+    
     if (auth_data.empty()) {
         update_security_stats("auth_data_missing");
         std::cout << "WARNING: Authentication failed - no auth data for client: " << client_mac << std::endl;
         return false;
     }
-
+    
     // Validate HMAC using current time window (allow small skew of +/-60s)
     const auto now = std::chrono::system_clock::now();
     const std::array<int,3> offsets = {0, -60, 60};
     for (int offset : offsets) {
         const auto ts = now + std::chrono::seconds(offset);
         if (validate_auth_hash(client_mac, auth_data, ts)) {
-            update_security_stats("auth_success");
-            std::cout << "INFO: Client authenticated successfully: " << client_mac << std::endl;
-            return true;
+    update_security_stats("auth_success");
+    std::cout << "INFO: Client authenticated successfully: " << client_mac << std::endl;
+    return true;
         }
     }
 
@@ -819,7 +829,7 @@ bool DhcpSecurityManager::mac_matches_rule(const std::string& mac_address, const
     if (pattern == "*" || pattern == target) {
         return true;
     }
-
+    
     // Wildcard to regex: '*' -> ".*", '?' -> '.'
     std::string regex_str;
     regex_str.reserve(pattern.size() * 2);
@@ -835,7 +845,7 @@ bool DhcpSecurityManager::mac_matches_rule(const std::string& mac_address, const
         std::regex re(regex_str);
         return std::regex_match(target, re);
     } catch (...) {
-        return false;
+            return false;
     }
 }
 
