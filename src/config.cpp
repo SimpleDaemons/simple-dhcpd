@@ -302,14 +302,20 @@ void ConfigManager::parse_yaml_config(const std::string& yaml_config) {
 
     DhcpSubnet* current_subnet = nullptr;
     bool in_subnets = false;
+    bool in_dns_servers = false;
+    bool in_global_options = false;
+    bool in_logging = false;
+    bool in_security = false;
 
     while (std::getline(in, line)) {
         std::string t = trim(line);
         if (t.empty() || t[0] == '#') continue;
 
-        if (t.rfind("server:", 0) == 0) { current_section = "server"; continue; }
-        if (t.rfind("subnets:", 0) == 0) { current_section = "subnets"; in_subnets = true; continue; }
-        if (t.rfind("global_options:", 0) == 0) { current_section = "global_options"; continue; }
+        if (t.rfind("server:", 0) == 0) { current_section = "server"; in_logging=false; in_security=false; continue; }
+        if (t.rfind("subnets:", 0) == 0) { current_section = "subnets"; in_subnets = true; in_dns_servers=false; continue; }
+        if (t.rfind("global_options:", 0) == 0) { current_section = "global_options"; in_global_options = true; continue; }
+        if (t.rfind("logging:", 0) == 0) { current_section = "logging"; in_logging = true; continue; }
+        if (t.rfind("security:", 0) == 0) { current_section = "security"; in_security = true; continue; }
 
         if (current_section == "server") {
             // key: value
@@ -343,6 +349,47 @@ void ConfigManager::parse_yaml_config(const std::string& yaml_config) {
             else if (key == "domain_name") current_subnet->domain_name = val;
             else if (key == "lease_time") current_subnet->lease_time = static_cast<uint32_t>(std::stoul(val));
             else if (key == "max_lease_time") current_subnet->max_lease_time = static_cast<uint32_t>(std::stoul(val));
+            else if (key == "dns_servers") { in_dns_servers = true; continue; }
+            else if (in_dns_servers && t[0] == '-') { current_subnet->dns_servers.push_back(parse_ip(trim(t.substr(1)))); continue; }
+            else { in_dns_servers = false; }
+        } else if (current_section == "global_options") {
+            // Expect entries like: - code: 6 / name: DNS_SERVERS / data: "1.1.1.1,8.8.8.8"
+            if (t[0] == '-') { continue; }
+            auto pos = t.find(":"); if (pos == std::string::npos) continue;
+            static std::string last_key; static std::string name; static std::string data;
+            std::string key = trim(t.substr(0, pos));
+            std::string val = trim(t.substr(pos + 1));
+            if (!val.empty() && val[0] == '"') val = val.substr(1, val.size() - 2);
+            if (key == "name") { name = val; last_key = key; }
+            else if (key == "data") { data = val; last_key = key; }
+            else if (key == "code") { last_key = key; }
+            // Once name and data captured, push a simple textual option (store as raw DhcpOption with bytes)
+            if (!name.empty() && !data.empty()) {
+                DhcpOption opt; opt.code = DhcpOptionCode::DOMAIN_SERVER; // best-effort default
+                // Map known names
+                if (name == "DNS_SERVERS" || name == "DOMAIN_SERVER") opt.code = DhcpOptionCode::DOMAIN_SERVER;
+                else if (name == "ROUTER") opt.code = DhcpOptionCode::ROUTER;
+                else if (name == "DOMAIN_NAME") opt.code = DhcpOptionCode::DOMAIN_NAME;
+                opt.data.assign(data.begin(), data.end());
+                parsed.global_options.push_back(opt);
+                name.clear(); data.clear();
+            }
+        } else if (current_section == "logging") {
+            auto pos = t.find(":"); if (pos == std::string::npos) continue;
+            std::string key = trim(t.substr(0, pos));
+            std::string val = trim(t.substr(pos + 1));
+            if (!val.empty() && val[0] == '"') val = val.substr(1, val.size() - 2);
+            if (key == "level") { /* could map to config_.log level string elsewhere */ }
+            else if (key == "console_output") { /* optional */ }
+            else if (key == "syslog") { /* optional nested */ }
+            else if (key == "file_rotation") { /* optional nested */ }
+        } else if (current_section == "security") {
+            auto pos = t.find(":"); if (pos == std::string::npos) continue;
+            std::string key = trim(t.substr(0, pos));
+            std::string val = trim(t.substr(pos + 1));
+            if (!val.empty() && val[0] == '"') val = val.substr(1, val.size() - 2);
+            if (key == "dhcp_snooping") parsed.enable_security = (val == "true");
+            // Additional keys can be mapped to dedicated structures in DhcpConfig if present
         }
     }
 
@@ -375,6 +422,16 @@ void ConfigManager::parse_ini_config(const std::string& ini_config) {
             if (key == "enable_logging") parsed.enable_logging = (val == "true");
             else if (key == "enable_security") parsed.enable_security = (val == "true");
             else if (key == "max_leases") parsed.max_leases = static_cast<uint32_t>(std::stoul(val));
+        } else if (section == "global_options") {
+            // Expect lines like: dns_servers = 6:1.1.1.1,8.8.8.8 or domain_name = 15:example.com
+            auto colon = val.find(':');
+            std::string data = (colon == std::string::npos) ? val : val.substr(colon + 1);
+            DhcpOption opt; opt.code = DhcpOptionCode::DOMAIN_SERVER;
+            if (key == "dns_servers") opt.code = DhcpOptionCode::DOMAIN_SERVER;
+            else if (key == "router") opt.code = DhcpOptionCode::ROUTER;
+            else if (key == "domain_name") opt.code = DhcpOptionCode::DOMAIN_NAME;
+            opt.data.assign(data.begin(), data.end());
+            parsed.global_options.push_back(opt);
         } else if (section.rfind("subnet:", 0) == 0) {
             // Ensure subnet exists
             std::string name = section.substr(7);
@@ -389,6 +446,11 @@ void ConfigManager::parse_ini_config(const std::string& ini_config) {
             else if (key == "domain_name") s.domain_name = val;
             else if (key == "lease_time") s.lease_time = static_cast<uint32_t>(std::stoul(val));
             else if (key == "max_lease_time") s.max_lease_time = static_cast<uint32_t>(std::stoul(val));
+            else if (key == "dns_servers") {
+                // comma-separated IPs
+                std::istringstream ss(val); std::string tok;
+                while (std::getline(ss, tok, ',')) { s.dns_servers.push_back(parse_ip(trim(tok))); }
+            }
         }
     }
 
