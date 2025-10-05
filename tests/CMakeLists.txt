@@ -11,6 +11,7 @@ if(GTest_FOUND)
     # Create test executable using Google Test
     add_executable(simple_dhcpd_tests 
         test_simple_dhcpd.cpp
+        test_security.cpp
     )
     
     # Link libraries

@@ -559,7 +559,57 @@ void DhcpSecurityManager::stop() {
 }
 
 void DhcpSecurityManager::cleanup_expired_items() {
-    // Placeholder implementation
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    const auto now = std::chrono::system_clock::now();
+
+    // Expire MAC filter rules
+    mac_filter_rules_.erase(
+        std::remove_if(mac_filter_rules_.begin(), mac_filter_rules_.end(),
+            [&](const MacFilterRule& rule) { return rule.expires < now; }),
+        mac_filter_rules_.end());
+
+    // Expire IP filter rules
+    ip_filter_rules_.erase(
+        std::remove_if(ip_filter_rules_.begin(), ip_filter_rules_.end(),
+            [&](const IpFilterRule& rule) { return rule.expires < now; }),
+        ip_filter_rules_.end());
+
+    // Expire Option82 rules
+    option_82_rules_.erase(
+        std::remove_if(option_82_rules_.begin(), option_82_rules_.end(),
+            [&](const Option82Rule& rule) { return rule.expires < now; }),
+        option_82_rules_.end());
+
+    // Expire trusted relay agents
+    trusted_relay_agents_.erase(
+        std::remove_if(trusted_relay_agents_.begin(), trusted_relay_agents_.end(),
+            [&](const TrustedRelayAgent& /*agent*/) { return false; }),
+        trusted_relay_agents_.end());
+
+    // Expire rate limit rules
+    rate_limit_rules_.erase(
+        std::remove_if(rate_limit_rules_.begin(), rate_limit_rules_.end(),
+            [&](const RateLimitRule& rule) { return rule.expires < now; }),
+        rate_limit_rules_.end());
+
+    // Clean old entries from trackers and drop blocked entries that have unblocked
+    for (auto it = rate_limit_trackers_.begin(); it != rate_limit_trackers_.end(); ) {
+        auto& tracker = it->second;
+        // Drop request timestamps older than 1 hour
+        const auto cutoff = now - std::chrono::hours(1);
+        tracker.requests.erase(
+            std::remove_if(tracker.requests.begin(), tracker.requests.end(),
+                [&](const auto& t) { return t < cutoff; }),
+            tracker.requests.end());
+
+        // Remove empty trackers that are not blocked
+        if (tracker.requests.empty() && tracker.blocked_until <= now) {
+            it = rate_limit_trackers_.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void DhcpSecurityManager::cleanup_worker() {
@@ -575,18 +625,107 @@ void DhcpSecurityManager::cleanup_worker() {
 // Helper method implementations
 
 bool DhcpSecurityManager::update_rate_limit_tracker(const std::string& identifier, const std::string& identifier_type) {
-    return true; // Placeholder
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    auto now = std::chrono::system_clock::now();
+    std::string tracker_key = identifier_type + ":" + identifier;
+    auto& tracker = rate_limit_trackers_[tracker_key];
+    
+    // Clean up old entries (older than 1 hour)
+    auto cutoff = now - std::chrono::hours(1);
+    tracker.requests.erase(std::remove_if(tracker.requests.begin(), tracker.requests.end(),
+        [cutoff](const auto& entry) { return entry < cutoff; }), tracker.requests.end());
+    
+    // Add current request
+    tracker.requests.push_back(now);
+    
+    // Check rate limits
+    auto minute_ago = now - std::chrono::minutes(1);
+    auto hour_ago = now - std::chrono::hours(1);
+    
+    size_t requests_last_minute = std::count_if(tracker.requests.begin(), tracker.requests.end(),
+        [minute_ago](const auto& entry) { return entry >= minute_ago; });
+    
+    size_t requests_last_hour = std::count_if(tracker.requests.begin(), tracker.requests.end(),
+        [hour_ago](const auto& entry) { return entry >= hour_ago; });
+    
+    // Check if limits are exceeded (using default values for now)
+    const size_t max_requests_per_minute = 100;
+    const size_t max_requests_per_hour = 1000;
+    
+    if (requests_last_minute > max_requests_per_minute || 
+        requests_last_hour > max_requests_per_hour) {
+        std::cout << "WARNING: Rate limit exceeded for " << identifier_type 
+                  << " " << identifier << " (minute: " << requests_last_minute 
+                  << ", hour: " << requests_last_hour << ")" << std::endl;
+        return false;
+    }
+    
+    return true;
 }
 
 std::string DhcpSecurityManager::generate_auth_hash(const std::string& client_mac, 
                                                    std::chrono::system_clock::time_point timestamp) {
-    return "placeholder_hash"; // Placeholder
+    // HMAC-SHA256 over (client_mac | timestamp_seconds) using authentication_key_
+    // If no key is set, return empty string to indicate invalid/non-configured
+    if (authentication_key_.empty()) {
+        return std::string();
+    }
+
+    // Prepare message bytes
+    const auto seconds_since_epoch = std::chrono::duration_cast<std::chrono::seconds>(
+        timestamp.time_since_epoch()).count();
+
+    std::string message = client_mac + ":" + std::to_string(seconds_since_epoch);
+
+    unsigned char digest[EVP_MAX_MD_SIZE];
+    unsigned int digest_len = 0;
+
+    HMAC(EVP_sha256(), authentication_key_.data(), static_cast<int>(authentication_key_.size()),
+         reinterpret_cast<const unsigned char*>(message.data()), message.size(), digest, &digest_len);
+
+    // Return raw bytes as hex string
+    static const char hex_chars[] = "0123456789abcdef";
+    std::string hex;
+    hex.reserve(digest_len * 2);
+    for (unsigned int i = 0; i < digest_len; ++i) {
+        hex.push_back(hex_chars[(digest[i] >> 4) & 0x0F]);
+        hex.push_back(hex_chars[digest[i] & 0x0F]);
+    }
+    return hex;
 }
 
 bool DhcpSecurityManager::validate_auth_hash(const std::string& client_mac, 
                                             const std::vector<uint8_t>& auth_data,
                                             std::chrono::system_clock::time_point timestamp) {
-    return true; // Placeholder
+    if (authentication_key_.empty()) {
+        return false;
+    }
+
+    // Compute expected hex digest
+    const std::string expected_hex = generate_auth_hash(client_mac, timestamp);
+    if (expected_hex.empty()) {
+        return false;
+    }
+
+    // auth_data could be raw bytes of HMAC or hex-encoded; support both.
+    // If raw bytes length matches SHA-256 (32), convert to hex for compare.
+    std::string provided_hex;
+    if (auth_data.size() == 32) {
+        static const char hex_chars[] = "0123456789abcdef";
+        provided_hex.reserve(64);
+        for (uint8_t b : auth_data) {
+            provided_hex.push_back(hex_chars[(b >> 4) & 0x0F]);
+            provided_hex.push_back(hex_chars[b & 0x0F]);
+        }
+    } else {
+        // Treat as hex bytes
+        provided_hex.assign(auth_data.begin(), auth_data.end());
+        // Normalize to lowercase
+        std::transform(provided_hex.begin(), provided_hex.end(), provided_hex.begin(), ::tolower);
+    }
+
+    return provided_hex == expected_hex;
 }
 
 void DhcpSecurityManager::update_security_stats(const std::string& stat_name) {
