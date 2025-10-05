@@ -311,7 +311,6 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
         if (!rule.enabled) {
             continue;
         }
-        
         if (rule.interface == source_interface || rule.interface == "*") {
             required = rule.required;
             break;
@@ -374,6 +373,36 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
     return true;
 }
 
+// Option 82 rule management
+void DhcpSecurityManager::add_option_82_rule(const Option82Rule& rule) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    option_82_rules_.push_back(rule);
+}
+
+void DhcpSecurityManager::clear_option_82_rules() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    option_82_rules_.clear();
+}
+
+std::vector<Option82Rule> DhcpSecurityManager::get_option_82_rules() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return option_82_rules_;
+}
+
+void DhcpSecurityManager::set_option_82_required_for_interface(const std::string& interface, bool required) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    // Try to update existing
+    for (auto& rule : option_82_rules_) {
+        if (rule.interface == interface) {
+            rule.required = required;
+            rule.enabled = true;
+            return;
+        }
+    }
+    // Otherwise add
+    option_82_rules_.push_back(Option82Rule{interface, required, true});
+}
+
 void DhcpSecurityManager::add_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -432,31 +461,39 @@ bool DhcpSecurityManager::validate_client_authentication(const std::string& clie
     
     const auto& credentials = it->second;
     
-    // Check if credentials are enabled
     if (!credentials.enabled) {
         update_security_stats("auth_client_disabled");
         std::cout << "WARNING: Authentication failed - client disabled: " << client_mac << std::endl;
         return false;
     }
     
-    // Check if credentials have expired
     if (credentials.expires < std::chrono::system_clock::now()) {
         update_security_stats("auth_client_expired");
         std::cout << "WARNING: Authentication failed - client expired: " << client_mac << std::endl;
         return false;
     }
-    
-    // Validate authentication data (simplified HMAC validation)
+
     if (auth_data.empty()) {
         update_security_stats("auth_data_missing");
         std::cout << "WARNING: Authentication failed - no auth data for client: " << client_mac << std::endl;
         return false;
     }
-    
-    // For now, accept any non-empty auth data (in real implementation, would validate HMAC)
-    update_security_stats("auth_success");
-    std::cout << "INFO: Client authenticated successfully: " << client_mac << std::endl;
-    return true;
+
+    // Validate HMAC using current time window (allow small skew of +/-60s)
+    const auto now = std::chrono::system_clock::now();
+    const std::array<int,3> offsets = {0, -60, 60};
+    for (int offset : offsets) {
+        const auto ts = now + std::chrono::seconds(offset);
+        if (validate_auth_hash(client_mac, auth_data, ts)) {
+            update_security_stats("auth_success");
+            std::cout << "INFO: Client authenticated successfully: " << client_mac << std::endl;
+            return true;
+        }
+    }
+
+    update_security_stats("auth_failed");
+    std::cout << "WARNING: Authentication failed - invalid HMAC for client: " << client_mac << std::endl;
+    return false;
 }
 
 void DhcpSecurityManager::report_security_event(const SecurityEvent& event) {

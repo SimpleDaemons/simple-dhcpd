@@ -385,6 +385,18 @@ public:
                            const std::string& source_interface);
     
     /**
+     * @brief Manage Option 82 interface rules
+     */
+    void add_option_82_rule(const Option82Rule& rule);
+    void clear_option_82_rules();
+    std::vector<Option82Rule> get_option_82_rules() const;
+    
+    /**
+     * @brief Convenience: set Option82 required flag for an interface
+     */
+    void set_option_82_required_for_interface(const std::string& interface, bool required);
+    
+    /**
      * @brief Add trusted relay agent
      * @param circuit_id Circuit ID
      * @param remote_id Remote ID
