@@ -4,7 +4,7 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 [![Build Status](https://travis-ci.org/simpledaemons/simple-dhcpd.svg?branch=main)](https://travis-ci.org/simpledaemons/simple-dhcpd)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.3.0-green.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
+[![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
 
 ## Overview
 
@@ -13,33 +13,90 @@ Simple DHCP Daemon is a modern, enterprise-grade DHCP server that provides:
 - **High Performance**: Handles 50,000+ requests per second with advanced optimizations
 - **Cross-Platform**: Runs on Linux, macOS, and Windows with native packaging
 - **Modern C++**: Built with C++17 for reliability, performance, and maintainability
-- **JSON Configuration**: Easy-to-use JSON-based configuration with comprehensive examples
+- **Multi-Format Configuration**: Support for JSON, YAML, and INI configuration formats
 - **Advanced Security**: Complete security framework with snooping, filtering, and authentication
 - **Lease Management**: Advanced lease management with conflict resolution and database persistence
 - **DHCP Options**: Comprehensive options system with validation and inheritance
 - **Production Ready**: Enterprise features with monitoring, logging, and compliance support
 
-## 🎉 Version 0.3.0 - Phase 3 Complete!
+## 🚧 Version 0.1.0-alpha - Early Development
 
-**Major Release**: Complete Phase 3 Advanced DHCP Features
+**Current Status**: Phase 1 Complete, Phase 2 In Progress
 
-### What's New in v0.3.0:
-- ✅ **Advanced Security Framework**: DHCP snooping, MAC/IP filtering, rate limiting
-- ✅ **Client Authentication**: HMAC-SHA256 authentication with credential management
-- ✅ **Option 82 Support**: Relay agent information validation and trusted agent management
-- ✅ **Advanced Lease Management**: Conflict resolution, database persistence, analytics
-- ✅ **Comprehensive Options System**: Validation, inheritance, and custom option support
-- ✅ **Security Configuration Examples**: Production-ready security configurations
-- ✅ **Complete Documentation**: Security guides, best practices, and troubleshooting
+### What's Currently Implemented:
+- ✅ **Basic Daemon Framework**: Signal handling, configuration management, logging
+- ✅ **Core DHCP Protocol Structure**: Message parsing, basic DORA process
+- ✅ **Simple Lease Management**: Basic IP allocation and lease tracking
+- ✅ **UDP Socket Handling**: Network communication infrastructure
+- ✅ **Configuration System**: Multi-format configuration with comprehensive examples
+- ✅ **Build System**: Cross-platform CMake build with packaging support
 
-### Security Features:
-- **DHCP Snooping** with trusted interface validation
-- **MAC Address Filtering** with wildcard pattern support (`00:11:22:33:44:*`)
-- **IP Address Filtering** with exact match capabilities
-- **Rate Limiting** with sliding time windows and per-client overrides
-- **Option 82 Validation** with circuit-id and remote-id checking
-- **Client Authentication** with HMAC-SHA256 and credential management
-- **Security Event Logging** with comprehensive audit trails and alerting
+### In Development:
+- 🚧 **DHCP Protocol Implementation**: Core DORA process completion
+- 🚧 **Security Features**: Basic MAC filtering and rate limiting (placeholder implementations)
+- 🚧 **Advanced Lease Management**: Database persistence and conflict resolution
+- 🚧 **Testing Framework**: Unit and integration tests
+
+## Configuration
+
+Simple DHCP Daemon supports multiple configuration formats for maximum flexibility:
+
+### Supported Formats
+- **JSON** (`.json`) - JavaScript Object Notation
+- **YAML** (`.yaml` or `.yml`) - YAML Ain't Markup Language  
+- **INI** (`.ini`) - Windows-style configuration files
+
+### Configuration Examples
+
+Comprehensive configuration examples are available in the `config/examples/` directory:
+
+```bash
+# View available examples
+ls config/examples/
+
+# Validate a configuration file
+./config/examples/validate_config.sh simple-dhcpd.yaml
+
+# Convert between formats
+python3 config/examples/convert_config.py simple-dhcpd.json simple-dhcpd.yaml
+```
+
+### Quick Configuration
+
+Create a minimal configuration file:
+
+```yaml
+# minimal.yaml
+server:
+  listen_addresses: ["0.0.0.0:67"]
+  enable_logging: true
+  enable_security: false
+
+subnets:
+  - name: "default"
+    network: "192.168.1.0"
+    prefix_length: 24
+    range_start: "192.168.1.100"
+    range_end: "192.168.1.200"
+    gateway: "192.168.1.1"
+    dns_servers: ["192.168.1.1", "8.8.8.8"]
+    domain_name: "local"
+    lease_time: 86400
+    max_lease_time: 172800
+```
+
+### Running with Configuration
+
+```bash
+# Use specific configuration file
+./simple-dhcpd -c /path/to/config.yaml
+
+# Validate configuration without starting
+./simple-dhcpd -c /path/to/config.yaml --validate
+
+# Run with debug logging
+./simple-dhcpd -c /path/to/config.yaml --verbose --log-level DEBUG
+```
 
 ## Quick Start
 

@@ -83,6 +83,14 @@ public:
      * @throws DhcpParserException if parsing fails
      */
     static DhcpMessageType get_message_type(const uint8_t* data, size_t size);
+    
+    /**
+     * @brief Find option in options list
+     * @param options Options list
+     * @param code Option code to find
+     * @return Pointer to option if found, nullptr otherwise
+     */
+    static const DhcpOption* find_option(const std::vector<DhcpOption>& options, DhcpOptionCode code);
 
 private:
     /**
@@ -139,14 +147,6 @@ private:
      * @return New offset
      */
     static size_t generate_option(const DhcpOption& option, uint8_t* data, size_t offset);
-    
-    /**
-     * @brief Find DHCP option in options list
-     * @param options Options list
-     * @param code Option code to find
-     * @return Pointer to option if found, nullptr otherwise
-     */
-    static const DhcpOption* find_option(const std::vector<DhcpOption>& options, DhcpOptionCode code);
     
     /**
      * @brief Extract MAC address from DHCP header

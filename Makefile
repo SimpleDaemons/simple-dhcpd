@@ -14,7 +14,7 @@
 
 # Variables
 PROJECT_NAME = simple-dhcpd
-VERSION = 0.3.0
+VERSION = 0.1.0
 BUILD_DIR = build
 DIST_DIR = dist
 PACKAGE_DIR = packaging
@@ -170,9 +170,11 @@ package: build
 ifeq ($(PLATFORM),macos)
 	@echo "Building macOS packages..."
 	@mkdir -p $(DIST_DIR)
-	cd $(BUILD_DIR) && ../scripts/build-dmg.sh
-	cd $(BUILD_DIR) && ../scripts/build-pkg.sh
-	@echo "macOS packages created: Enhanced DMG and PKG"
+	cd $(BUILD_DIR) && cpack -G DragNDrop
+	cd $(BUILD_DIR) && cpack -G productbuild
+	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.dmg $(DIST_DIR)/ 2>/dev/null || true
+	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.pkg $(DIST_DIR)/ 2>/dev/null || true
+	@echo "macOS packages created: DMG and PKG"
 else ifeq ($(PLATFORM),linux)
 	@echo "Building Linux packages..."
 	@mkdir -p $(DIST_DIR)

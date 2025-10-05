@@ -295,9 +295,19 @@ void DhcpServer::handle_release(const DhcpMessage& message, const std::string& c
 
 void DhcpServer::handle_decline(const DhcpMessage& message, const std::string& client_address, uint16_t client_port) {
     try {
-        // Mark IP as declined (simplified)
+        // Mark IP as declined
         LOG_INFO("Client declined IP " + ip_to_string(message.client_ip) + 
                  " for " + mac_to_string(message.client_mac));
+        
+        // Find the lease and mark it as declined
+        auto existing_lease = lease_manager_->get_lease_by_mac(message.client_mac);
+        if (existing_lease && existing_lease->ip_address == message.client_ip) {
+            // Release the declined lease
+            lease_manager_->release_lease(message.client_mac, message.client_ip);
+            
+            // TODO: Add IP to declined list to prevent reallocation for a period
+            // This would require extending the lease manager with declined IP tracking
+        }
         
     } catch (const std::exception& e) {
         LOG_ERROR("Error handling DHCP Decline: " + std::string(e.what()));
@@ -309,8 +319,47 @@ void DhcpServer::handle_inform(const DhcpMessage& message, const std::string& cl
         // Handle inform request (client already has IP)
         LOG_INFO("Received DHCP Inform from " + mac_to_string(message.client_mac));
         
-        // Send ACK with configuration information
-        // This would be implemented based on specific requirements
+        // Find appropriate subnet
+        std::string subnet_name = find_subnet_for_client(message);
+        const auto& config = config_manager_->get_config();
+        const DhcpSubnet* subnet = nullptr;
+        
+        for (const auto& s : config.subnets) {
+            if (s.name == subnet_name) {
+                subnet = &s;
+                break;
+            }
+        }
+        
+        if (!subnet) {
+            LOG_WARN("No subnet found for DHCP Inform from " + mac_to_string(message.client_mac));
+            return;
+        }
+        
+        // Build ACK message with configuration information
+        DhcpMessageBuilder builder;
+        builder.set_message_type(DhcpMessageType::ACK)
+               .set_transaction_id(message.header.xid)
+               .set_client_mac(message.client_mac)
+               .set_your_ip(message.client_ip)
+               .set_server_ip(string_to_ip("192.168.1.1")) // Simplified
+               .add_option(DhcpOptionCode::DHCP_MESSAGE_TYPE, 
+                          std::vector<uint8_t>{message_type_to_option_value(DhcpMessageType::ACK)})
+               .add_option_ip(DhcpOptionCode::SERVER_IDENTIFIER, 
+                          string_to_ip("192.168.1.1")); // Simplified
+        
+        // Add subnet options
+        auto options = build_subnet_options(*subnet);
+        for (const auto& option : options) {
+            builder.add_option(option);
+        }
+        
+        DhcpMessage ack = builder.build();
+        
+        // Send ACK
+        socket_manager_->send_dhcp_message(ack, client_address, client_port);
+        
+        LOG_INFO("Sent DHCP ACK to " + mac_to_string(message.client_mac) + " for Inform");
         
     } catch (const std::exception& e) {
         LOG_ERROR("Error handling DHCP Inform: " + std::string(e.what()));
@@ -445,12 +494,30 @@ void DhcpServer::send_nak(const DhcpMessage& message, const std::string& client_
 }
 
 std::string DhcpServer::find_subnet_for_client(const DhcpMessage& message) {
-    // Simplified subnet selection - use first subnet
     const auto& config = config_manager_->get_config();
     if (config.subnets.empty()) {
         throw DhcpServerException("No subnets configured");
     }
     
+    // If client has an IP, try to find matching subnet
+    if (message.client_ip != 0) {
+        for (const auto& subnet : config.subnets) {
+            if (is_ip_in_subnet(message.client_ip, subnet)) {
+                return subnet.name;
+            }
+        }
+    }
+    
+    // If client has relay IP, try to find matching subnet
+    if (message.relay_ip != 0) {
+        for (const auto& subnet : config.subnets) {
+            if (is_ip_in_subnet(message.relay_ip, subnet)) {
+                return subnet.name;
+            }
+        }
+    }
+    
+    // Default to first subnet
     return config.subnets[0].name;
 }
 
@@ -502,6 +569,11 @@ void DhcpServer::log_dhcp_message(const DhcpMessage& message, const std::string&
 void DhcpServer::update_statistics(DhcpMessageType message_type) {
     // Update statistics (simplified)
     // This would be implemented based on specific requirements
+}
+
+bool DhcpServer::is_ip_in_subnet(IpAddress ip, const DhcpSubnet& subnet) {
+    // Check if IP is within the subnet range
+    return ntohl(ip) >= ntohl(subnet.range_start) && ntohl(ip) <= ntohl(subnet.range_end);
 }
 
 } // namespace simple_dhcpd

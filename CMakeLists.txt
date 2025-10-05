@@ -3,10 +3,7 @@
 # Copyright 2024 SimpleDaemons
 
 cmake_minimum_required(VERSION 3.16)
-project(simple-dhcpd VERSION 0.3.0 LANGUAGES CXX)
-
-# Set project description
-set(PROJECT_DESCRIPTION "A lightweight and secure DHCP server daemon")
+project(simple-dhcpd VERSION 0.1.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -48,14 +45,30 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.c")
 file(GLOB_RECURSE HEADERS "include/*.hpp" "include/*.h")
 
+# Create library (excluding main.cpp)
+set(LIB_SOURCES
+    src/advanced_lease_manager.cpp
+    src/config.cpp
+    src/dhcp_options_manager.cpp
+    src/dhcp_parser.cpp
+    src/dhcp_security_manager.cpp
+    src/dhcp_server.cpp
+    src/lease_manager.cpp
+    src/logger.cpp
+    src/udp_socket.cpp
+)
+add_library(${PROJECT_NAME}_lib ${LIB_SOURCES} ${HEADERS})
+
 # Create executable
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME} src/main.cpp)
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} Threads::Threads)
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib Threads::Threads)
+target_link_libraries(${PROJECT_NAME}_lib Threads::Threads)
 
 if(ENABLE_SSL)
     target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
+    target_link_libraries(${PROJECT_NAME}_lib OpenSSL::SSL OpenSSL::Crypto)
 endif()
 
 if(ENABLE_JSON)
@@ -64,15 +77,21 @@ if(ENABLE_JSON)
         find_library(JSONCPP_STATIC_LIB jsoncpp PATHS /opt/local/lib /usr/local/lib /usr/lib)
         if(JSONCPP_STATIC_LIB)
             target_link_libraries(${PROJECT_NAME} ${JSONCPP_STATIC_LIB})
+            target_link_libraries(${PROJECT_NAME}_lib ${JSONCPP_STATIC_LIB})
         else()
             target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES})
+            target_link_libraries(${PROJECT_NAME}_lib ${JSONCPP_LIBRARIES})
         endif()
     else()
         target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES})
+        target_link_libraries(${PROJECT_NAME}_lib ${JSONCPP_LIBRARIES})
     endif()
     target_include_directories(${PROJECT_NAME} PRIVATE ${JSONCPP_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME}_lib PRIVATE ${JSONCPP_INCLUDE_DIRS})
     target_compile_options(${PROJECT_NAME} PRIVATE ${JSONCPP_CFLAGS_OTHER})
+    target_compile_options(${PROJECT_NAME}_lib PRIVATE ${JSONCPP_CFLAGS_OTHER})
     target_link_directories(${PROJECT_NAME} PRIVATE ${JSONCPP_LIBRARY_DIRS})
+    target_link_directories(${PROJECT_NAME}_lib PRIVATE ${JSONCPP_LIBRARY_DIRS})
 endif()
 
 # Compiler-specific options
@@ -125,23 +144,30 @@ install(DIRECTORY config/
 
 # Install service files
 if(UNIX AND NOT APPLE)
-    install(FILES deployment/systemd/simple-dhcpd.service
+    install(FILES deployment/systemd/${PROJECT_NAME}.service
         DESTINATION lib/systemd/system
     )
 elseif(APPLE)
-    install(FILES deployment/launchd/com.simple-dhcpd.simple-dhcpd.plist
-        DESTINATION Library/LaunchDaemons
+    install(FILES deployment/launchd/com.${PROJECT_NAME}.${PROJECT_NAME}.plist
+        DESTINATION /Library/LaunchDaemons
     )
 endif()
 
 # Tests
-if(ENABLE_TESTS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+if(ENABLE_TESTS)
     enable_testing()
-    add_subdirectory(tests)
+    # Only add tests subdirectory if it exists and has CMakeLists.txt
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+        add_subdirectory(tests)
+    else()
+        message(STATUS "Tests directory found but no CMakeLists.txt - skipping tests")
+    endif()
 endif()
 
 # Package generation
 if(ENABLE_PACKAGING)
+    include(CPack)
+    
     # Package information
     set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
     set(CPACK_PACKAGE_VENDOR "SimpleDaemons")
@@ -150,13 +176,9 @@ if(ENABLE_PACKAGING)
     set(CPACK_PACKAGE_CONTACT "info@simpledaemons.com")
     set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/simpledaemons/${PROJECT_NAME}")
     
-    # Package files - disabled for now due to PKG generator issues
-    # if(APPLE)
-    #     # Only set resource files for macOS PKG
-    #     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-    #     set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-    #     set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/WELCOME.txt")
-    # endif()
+    # Package files
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
     
     # Platform-specific package settings
     if(WIN32)
@@ -179,15 +201,15 @@ if(ENABLE_PACKAGING)
         # macOS DMG and PKG packages
         set(CPACK_GENERATOR "DragNDrop;productbuild")
         
-        # Create a single PKG installer instead of component package
-        set(CPACK_PRODUCTBUILD_PACKAGE_NAME "${PROJECT_NAME}")
-        set(CPACK_PRODUCTBUILD_IDENTIFIER "com.simpledaemons.${PROJECT_NAME}")
-        set(CPACK_PRODUCTBUILD_DISTRIBUTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/deployment/distribution.xml")
-        
         # DMG settings
         set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}")
         set(CPACK_DMG_FORMAT "UDBZ")
+        set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/assets/dmg_background.png")
+        set(CPACK_DMG_DS_STORE "${CMAKE_CURRENT_SOURCE_DIR}/assets/DS_Store")
         
+        # PKG settings
+        set(CPACK_PRODUCTBUILD_IDENTIFIER "com.simpledaemons.${PROJECT_NAME}")
+        set(CPACK_PRODUCTBUILD_PACKAGE_NAME "${PROJECT_NAME}")
         
     else()
         # Linux DEB and RPM packages
@@ -283,6 +305,7 @@ if(ENABLE_PACKAGING)
         "*.lib"
     )
     
+    # Include CPack configuration
     include(CPack)
 endif()
 

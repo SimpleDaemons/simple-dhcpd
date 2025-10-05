@@ -212,6 +212,14 @@ private:
      * @param message_type Message type
      */
     void update_statistics(DhcpMessageType message_type);
+    
+    /**
+     * @brief Check if IP is in subnet range
+     * @param ip IP address to check
+     * @param subnet Subnet configuration
+     * @return true if IP is in subnet range
+     */
+    bool is_ip_in_subnet(IpAddress ip, const DhcpSubnet& subnet);
 };
 
 } // namespace simple_dhcpd

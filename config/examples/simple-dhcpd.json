@@ -1,0 +1,163 @@
+{
+  "server": {
+    "listen_addresses": [
+      "0.0.0.0:67",
+      "::67"
+    ],
+    "config_file": "/etc/simple-dhcpd/simple-dhcpd.json",
+    "lease_file": "/var/lib/simple-dhcpd/dhcpd.leases",
+    "log_file": "/var/log/simple-dhcpd/simple-dhcpd.log",
+    "enable_logging": true,
+    "enable_security": true,
+    "max_leases": 10000
+  },
+  "global_options": [
+    {
+      "code": 6,
+      "name": "DNS_SERVERS",
+      "data": "8.8.8.8,8.8.4.4,1.1.1.1"
+    },
+    {
+      "code": 15,
+      "name": "DOMAIN_NAME",
+      "data": "example.com"
+    },
+    {
+      "code": 3,
+      "name": "ROUTER",
+      "data": "192.168.1.1"
+    }
+  ],
+  "subnets": [
+    {
+      "name": "main-lan",
+      "network": "192.168.1.0",
+      "prefix_length": 24,
+      "range_start": "192.168.1.100",
+      "range_end": "192.168.1.200",
+      "gateway": "192.168.1.1",
+      "dns_servers": [
+        "192.168.1.1",
+        "8.8.8.8",
+        "8.8.4.4"
+      ],
+      "domain_name": "home.local",
+      "lease_time": 86400,
+      "max_lease_time": 172800,
+      "options": [
+        {
+          "code": 6,
+          "name": "DNS_SERVERS",
+          "data": "192.168.1.1,8.8.8.8"
+        },
+        {
+          "code": 15,
+          "name": "DOMAIN_NAME",
+          "data": "home.local"
+        },
+        {
+          "code": 3,
+          "name": "ROUTER",
+          "data": "192.168.1.1"
+        },
+        {
+          "code": 28,
+          "name": "BROADCAST_ADDRESS",
+          "data": "192.168.1.255"
+        }
+      ],
+      "reservations": [
+        {
+          "mac_address": "00:11:22:33:44:55",
+          "ip_address": "192.168.1.10",
+          "hostname": "server-01",
+          "is_static": true
+        },
+        {
+          "mac_address": "00:11:22:33:44:56",
+          "ip_address": "192.168.1.11",
+          "hostname": "printer-01",
+          "is_static": true
+        }
+      ],
+      "exclusions": [
+        {
+          "start": "192.168.1.1",
+          "end": "192.168.1.10"
+        },
+        {
+          "start": "192.168.1.250",
+          "end": "192.168.1.255"
+        }
+      ]
+    },
+    {
+      "name": "guest-wifi",
+      "network": "192.168.100.0",
+      "prefix_length": 24,
+      "range_start": "192.168.100.10",
+      "range_end": "192.168.100.100",
+      "gateway": "192.168.100.1",
+      "dns_servers": [
+        "192.168.100.1",
+        "8.8.8.8"
+      ],
+      "domain_name": "guest.local",
+      "lease_time": 3600,
+      "max_lease_time": 7200,
+      "options": [
+        {
+          "code": 6,
+          "name": "DNS_SERVERS",
+          "data": "192.168.100.1,8.8.8.8"
+        },
+        {
+          "code": 15,
+          "name": "DOMAIN_NAME",
+          "data": "guest.local"
+        },
+        {
+          "code": 3,
+          "name": "ROUTER",
+          "data": "192.168.100.1"
+        }
+      ],
+      "reservations": [],
+      "exclusions": [
+        {
+          "start": "192.168.100.1",
+          "end": "192.168.100.9"
+        }
+      ]
+    }
+  ],
+  "security": {
+    "dhcp_snooping": true,
+    "mac_filtering": true,
+    "rate_limiting": {
+      "enabled": true,
+      "max_requests_per_minute": 60,
+      "max_requests_per_hour": 1000
+    },
+    "allowed_mac_addresses": [
+      "00:11:22:33:44:55",
+      "00:11:22:33:44:56"
+    ],
+    "blocked_mac_addresses": [
+      "ff:ff:ff:ff:ff:ff"
+    ]
+  },
+  "logging": {
+    "level": "INFO",
+    "file_rotation": {
+      "enabled": true,
+      "max_size_mb": 100,
+      "max_files": 5
+    },
+    "console_output": true,
+    "syslog": {
+      "enabled": true,
+      "facility": "daemon"
+    }
+  }
+}
