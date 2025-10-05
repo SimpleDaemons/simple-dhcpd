@@ -85,6 +85,11 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
     
     // Check if interface is trusted
     if (is_interface_trusted(source_interface)) {
+        // Monitoring hook: record allowed message on trusted interface
+        report_security_event(SecurityEvent(SecurityEventType::SUSPICIOUS_ACTIVITY, ThreatLevel::LOW,
+                                            "DHCP message allowed from trusted interface",
+                                            mac_to_string(message.client_mac),
+                                            ip_to_string(message.client_ip), source_interface));
         return true;
     }
     
@@ -93,15 +98,30 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
     for (const auto& binding : snooping_bindings_) {
         if (binding.mac_address == mac_to_string(message.client_mac) && 
             binding.ip_address == message.client_ip) {
-            return true;
+            // Ensure binding's learned interface matches the source interface
+            if (binding.interface == source_interface) {
+                return true;
+            }
+            report_security_event(SecurityEvent(SecurityEventType::SUSPICIOUS_ACTIVITY, ThreatLevel::MEDIUM,
+                                                "Snooping binding interface mismatch",
+                                                mac_to_string(message.client_mac),
+                                                ip_to_string(message.client_ip), source_interface));
+            return false;
         }
     }
     
-    // Report unauthorized DHCP server
-    SecurityEvent event(SecurityEventType::UNAUTHORIZED_DHCP_SERVER, ThreatLevel::HIGH,
-                       "Unauthorized DHCP message from " + source_interface,
-                       mac_to_string(message.client_mac), ip_to_string(message.client_ip), source_interface);
-    report_security_event(event);
+    // Classify event based on message type
+    if (message.message_type == DhcpMessageType::OFFER || message.message_type == DhcpMessageType::ACK) {
+        report_security_event(SecurityEvent(SecurityEventType::UNAUTHORIZED_DHCP_SERVER, ThreatLevel::HIGH,
+                                            "Unauthorized DHCP server activity detected",
+                                            mac_to_string(message.client_mac),
+                                            ip_to_string(message.client_ip), source_interface));
+    } else {
+        report_security_event(SecurityEvent(SecurityEventType::SUSPICIOUS_ACTIVITY, ThreatLevel::MEDIUM,
+                                            "DHCP message failed snooping validation",
+                                            mac_to_string(message.client_mac),
+                                            ip_to_string(message.client_ip), source_interface));
+    }
     
     return false;
 }
@@ -786,35 +806,44 @@ void DhcpSecurityManager::update_security_stats(const std::string& stat_name) {
 }
 
 bool DhcpSecurityManager::mac_matches_rule(const std::string& mac_address, const MacFilterRule& rule) {
-    if (rule.mac_address == "*" || rule.mac_address == mac_address) {
+    // Normalize: lowercase and remove separators
+    auto normalize = [](std::string s) {
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        s.erase(std::remove(s.begin(), s.end(), ':'), s.end());
+        s.erase(std::remove(s.begin(), s.end(), '-'), s.end());
+        return s;
+    };
+    const std::string target = normalize(mac_address);
+    std::string pattern = normalize(rule.mac_address);
+
+    if (pattern == "*" || pattern == target) {
         return true;
     }
-    
-    // Support wildcard patterns like "aa:bb:*" or "aa:*:*"
-    std::string pattern = rule.mac_address;
-    std::string target = mac_address;
-    
-    // Convert to lowercase for case-insensitive comparison
-    std::transform(pattern.begin(), pattern.end(), pattern.begin(), ::tolower);
-    std::transform(target.begin(), target.end(), target.begin(), ::tolower);
-    
-    // Simple wildcard matching
-    size_t pos = 0;
-    while (pos < pattern.length() && pos < target.length()) {
-        if (pattern[pos] == '*') {
-            return true; // Wildcard matches anything
-        }
-        if (pattern[pos] != target[pos]) {
-            return false;
-        }
-        pos++;
+
+    // Wildcard to regex: '*' -> ".*", '?' -> '.'
+    std::string regex_str;
+    regex_str.reserve(pattern.size() * 2);
+    regex_str.push_back('^');
+    for (char c : pattern) {
+        if (c == '*') { regex_str += ".*"; }
+        else if (c == '?') { regex_str += '.'; }
+        else if (std::isalnum(static_cast<unsigned char>(c))) { regex_str.push_back(c); }
+        else { regex_str.push_back('\\'); regex_str.push_back(c); }
     }
-    
-    return pattern.length() == target.length();
+    regex_str.push_back('$');
+    try {
+        std::regex re(regex_str);
+        return std::regex_match(target, re);
+    } catch (...) {
+        return false;
+    }
 }
 
 bool DhcpSecurityManager::ip_matches_rule(const IpAddress& ip_address, const IpFilterRule& rule) {
-    // For now, exact match only (could be extended to support CIDR ranges)
+    // Apply mask if provided, else exact match
+    if (rule.ip_mask != 0) {
+        return (ip_address & rule.ip_mask) == (rule.ip_address & rule.ip_mask);
+    }
     return rule.ip_address == ip_address;
 }
 
