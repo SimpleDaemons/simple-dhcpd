@@ -4,7 +4,7 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 [![Build Status](https://travis-ci.org/simpledaemons/simple-dhcpd.svg?branch=main)](https://travis-ci.org/simpledaemons/simple-dhcpd)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.2.0--beta-blue.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
 
 ## Overview
 
@@ -19,9 +19,9 @@ Simple DHCP Daemon is a modern, enterprise-grade DHCP server that provides:
 - **DHCP Options**: Comprehensive options system with validation and inheritance
 - **Production Ready**: Enterprise features with monitoring, logging, and compliance support
 
-## 🚀 Version 0.2.0-beta - Core Protocol Complete
+## 🚀 Version 0.3.0 - Advanced Features Complete
 
-**Current Status**: Phase 1 & 2 Complete, Phase 3 In Progress
+**Current Status**: Phase 1–3 Complete
 
 ### What's Currently Implemented:
 - ✅ **Complete Daemon Framework**: Signal handling, configuration management, logging
