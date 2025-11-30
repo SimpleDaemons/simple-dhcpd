@@ -589,7 +589,7 @@ This document tracks technical debt, known issues, code quality improvements, an
 - [PROJECT_STATUS.md](PROJECT_STATUS.md) - Overall project status
 - [FEATURE_AUDIT.md](FEATURE_AUDIT.md) - Feature implementation status
 - [PROGRESS_REPORT.md](PROGRESS_REPORT.md) - Progress tracking
-- [ROADMAP.md](ROADMAP.md) - Future roadmap
+- [ROADMAP.md](../ROADMAP.md) - Future roadmap
 
 ---
 
