@@ -10,9 +10,9 @@
 #include <cassert>
 #include <vector>
 #include <cstring>
-#include "dhcp_parser.hpp"
-#include "dhcp_types.hpp"
-#include "dhcp_utils.hpp"
+#include "simple-dhcpd/core/parser.hpp"
+#include "simple-dhcpd/core/types.hpp"
+#include "simple-dhcpd/utils/utils.hpp"
 
 using namespace simple_dhcpd;
 

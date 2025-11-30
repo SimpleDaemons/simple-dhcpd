@@ -54,45 +54,102 @@ RM = /opt/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/blb/Workspace/SimpleDaemons/simple-dhcpd
+CMAKE_SOURCE_DIR = /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build
+CMAKE_BINARY_DIR = /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/simple-dhcpd_lib.dir/all
 all: CMakeFiles/simple-dhcpd.dir/all
+all: tests/all
 .PHONY : all
 
 # The main recursive "codegen" target.
+codegen: CMakeFiles/simple-dhcpd_lib.dir/codegen
 codegen: CMakeFiles/simple-dhcpd.dir/codegen
+codegen: tests/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
-preinstall:
+preinstall: tests/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/simple-dhcpd_lib.dir/clean
 clean: CMakeFiles/simple-dhcpd.dir/clean
+clean: tests/clean
 .PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory tests
+
+# Recursive "all" directory target.
+tests/all: tests/CMakeFiles/simple_dhcpd_tests.dir/all
+.PHONY : tests/all
+
+# Recursive "codegen" directory target.
+tests/codegen: tests/CMakeFiles/simple_dhcpd_tests.dir/codegen
+.PHONY : tests/codegen
+
+# Recursive "preinstall" directory target.
+tests/preinstall:
+.PHONY : tests/preinstall
+
+# Recursive "clean" directory target.
+tests/clean: tests/CMakeFiles/simple_dhcpd_tests.dir/clean
+.PHONY : tests/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/simple-dhcpd_lib.dir
+
+# All Build rule for target.
+CMakeFiles/simple-dhcpd_lib.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11,12 "Built target simple-dhcpd_lib"
+.PHONY : CMakeFiles/simple-dhcpd_lib.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/simple-dhcpd_lib.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 10
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/simple-dhcpd_lib.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 0
+.PHONY : CMakeFiles/simple-dhcpd_lib.dir/rule
+
+# Convenience name for target.
+simple-dhcpd_lib: CMakeFiles/simple-dhcpd_lib.dir/rule
+.PHONY : simple-dhcpd_lib
+
+# codegen rule for target.
+CMakeFiles/simple-dhcpd_lib.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11,12 "Finished codegen for target simple-dhcpd_lib"
+.PHONY : CMakeFiles/simple-dhcpd_lib.dir/codegen
+
+# clean rule for target.
+CMakeFiles/simple-dhcpd_lib.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/clean
+.PHONY : CMakeFiles/simple-dhcpd_lib.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/simple-dhcpd.dir
 
 # All Build rule for target.
-CMakeFiles/simple-dhcpd.dir/all:
+CMakeFiles/simple-dhcpd.dir/all: CMakeFiles/simple-dhcpd_lib.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target simple-dhcpd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=1,2 "Built target simple-dhcpd"
 .PHONY : CMakeFiles/simple-dhcpd.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/simple-dhcpd.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles 11
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/simple-dhcpd.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 0
 .PHONY : CMakeFiles/simple-dhcpd.dir/rule
 
 # Convenience name for target.
@@ -102,13 +159,45 @@ simple-dhcpd: CMakeFiles/simple-dhcpd.dir/rule
 # codegen rule for target.
 CMakeFiles/simple-dhcpd.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Finished codegen for target simple-dhcpd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=1,2 "Finished codegen for target simple-dhcpd"
 .PHONY : CMakeFiles/simple-dhcpd.dir/codegen
 
 # clean rule for target.
 CMakeFiles/simple-dhcpd.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/clean
 .PHONY : CMakeFiles/simple-dhcpd.dir/clean
+
+#=============================================================================
+# Target rules for target tests/CMakeFiles/simple_dhcpd_tests.dir
+
+# All Build rule for target.
+tests/CMakeFiles/simple_dhcpd_tests.dir/all: CMakeFiles/simple-dhcpd_lib.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/simple_dhcpd_tests.dir/build.make tests/CMakeFiles/simple_dhcpd_tests.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/simple_dhcpd_tests.dir/build.make tests/CMakeFiles/simple_dhcpd_tests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=13,14,15 "Built target simple_dhcpd_tests"
+.PHONY : tests/CMakeFiles/simple_dhcpd_tests.dir/all
+
+# Build rule for subdir invocation for target.
+tests/CMakeFiles/simple_dhcpd_tests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 13
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/simple_dhcpd_tests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 0
+.PHONY : tests/CMakeFiles/simple_dhcpd_tests.dir/rule
+
+# Convenience name for target.
+simple_dhcpd_tests: tests/CMakeFiles/simple_dhcpd_tests.dir/rule
+.PHONY : simple_dhcpd_tests
+
+# codegen rule for target.
+tests/CMakeFiles/simple_dhcpd_tests.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/simple_dhcpd_tests.dir/build.make tests/CMakeFiles/simple_dhcpd_tests.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=13,14,15 "Finished codegen for target simple_dhcpd_tests"
+.PHONY : tests/CMakeFiles/simple_dhcpd_tests.dir/codegen
+
+# clean rule for target.
+tests/CMakeFiles/simple_dhcpd_tests.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/simple_dhcpd_tests.dir/build.make tests/CMakeFiles/simple_dhcpd_tests.dir/clean
+.PHONY : tests/CMakeFiles/simple_dhcpd_tests.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

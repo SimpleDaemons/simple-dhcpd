@@ -9,11 +9,11 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <cstring>
-#include "dhcp_parser.hpp"
-#include "dhcp_types.hpp"
-#include "dhcp_utils.hpp"
-#include "lease_manager.hpp"
-#include "config.hpp"
+#include "simple-dhcpd/core/parser.hpp"
+#include "simple-dhcpd/core/types.hpp"
+#include "simple-dhcpd/utils/utils.hpp"
+#include "simple-dhcpd/lease/manager.hpp"
+#include "simple-dhcpd/config/manager.hpp"
 
 using namespace simple_dhcpd;
 

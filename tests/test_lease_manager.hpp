@@ -9,7 +9,7 @@
 #ifndef SIMPLE_DHCPD_TEST_LEASE_MANAGER_HPP
 #define SIMPLE_DHCPD_TEST_LEASE_MANAGER_HPP
 
-#include "dhcp_types.hpp"
+#include "simple-dhcpd/core/types.hpp"
 
 class LeaseManagerTest {
 public:

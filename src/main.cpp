@@ -6,9 +6,9 @@
  * @license Apache-2.0
  */
 
-#include "dhcp_server.hpp"
-#include "logger.hpp"
-#include "config.hpp"
+#include "simple-dhcpd/core/server.hpp"
+#include "simple-dhcpd/utils/logger.hpp"
+#include "simple-dhcpd/config/manager.hpp"
 #include <iostream>
 #include <csignal>
 #include <cstring>

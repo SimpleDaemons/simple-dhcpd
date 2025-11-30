@@ -8,7 +8,7 @@
 #include <string>
 #include <chrono>
 #include <future>
-#include "dhcp_security_manager.hpp"
+#include "simple-dhcpd/security/manager.hpp"
 
 using namespace simple_dhcpd;
 

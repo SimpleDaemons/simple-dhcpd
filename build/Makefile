@@ -57,10 +57,10 @@ RM = /opt/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/blb/Workspace/SimpleDaemons/simple-dhcpd
+CMAKE_SOURCE_DIR = /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build
+CMAKE_BINARY_DIR = /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -78,12 +78,22 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool for source..."
-	/opt/local/bin/cpack --config ./CPackSourceConfig.cmake /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CPackSourceConfig.cmake
+	/opt/local/bin/cpack --config ./CPackSourceConfig.cmake /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
 package_source/fast: package_source
 .PHONY : package_source/fast
+
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/opt/local/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -152,9 +162,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -182,6 +192,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named simple-dhcpd_lib
+
+# Build rule for target.
+simple-dhcpd_lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simple-dhcpd_lib
+.PHONY : simple-dhcpd_lib
+
+# fast build rule for target.
+simple-dhcpd_lib/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/build
+.PHONY : simple-dhcpd_lib/fast
+
+#=============================================================================
 # Target rules for targets named simple-dhcpd
 
 # Build rule for target.
@@ -194,12 +217,25 @@ simple-dhcpd/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/build
 .PHONY : simple-dhcpd/fast
 
+#=============================================================================
+# Target rules for targets named simple_dhcpd_tests
+
+# Build rule for target.
+simple_dhcpd_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simple_dhcpd_tests
+.PHONY : simple_dhcpd_tests
+
+# fast build rule for target.
+simple_dhcpd_tests/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/simple_dhcpd_tests.dir/build.make tests/CMakeFiles/simple_dhcpd_tests.dir/build
+.PHONY : simple_dhcpd_tests/fast
+
 src/advanced_lease_manager.o: src/advanced_lease_manager.cpp.o
 .PHONY : src/advanced_lease_manager.o
 
 # target to build an object file
 src/advanced_lease_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/advanced_lease_manager.cpp.o
 .PHONY : src/advanced_lease_manager.cpp.o
 
 src/advanced_lease_manager.i: src/advanced_lease_manager.cpp.i
@@ -207,7 +243,7 @@ src/advanced_lease_manager.i: src/advanced_lease_manager.cpp.i
 
 # target to preprocess a source file
 src/advanced_lease_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/advanced_lease_manager.cpp.i
 .PHONY : src/advanced_lease_manager.cpp.i
 
 src/advanced_lease_manager.s: src/advanced_lease_manager.cpp.s
@@ -215,7 +251,7 @@ src/advanced_lease_manager.s: src/advanced_lease_manager.cpp.s
 
 # target to generate assembly for a file
 src/advanced_lease_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/advanced_lease_manager.cpp.s
 .PHONY : src/advanced_lease_manager.cpp.s
 
 src/config.o: src/config.cpp.o
@@ -223,7 +259,7 @@ src/config.o: src/config.cpp.o
 
 # target to build an object file
 src/config.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/config.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/config.cpp.o
 .PHONY : src/config.cpp.o
 
 src/config.i: src/config.cpp.i
@@ -231,7 +267,7 @@ src/config.i: src/config.cpp.i
 
 # target to preprocess a source file
 src/config.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/config.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/config.cpp.i
 .PHONY : src/config.cpp.i
 
 src/config.s: src/config.cpp.s
@@ -239,7 +275,7 @@ src/config.s: src/config.cpp.s
 
 # target to generate assembly for a file
 src/config.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/config.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/config.cpp.s
 .PHONY : src/config.cpp.s
 
 src/dhcp_options_manager.o: src/dhcp_options_manager.cpp.o
@@ -247,7 +283,7 @@ src/dhcp_options_manager.o: src/dhcp_options_manager.cpp.o
 
 # target to build an object file
 src/dhcp_options_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_options_manager.cpp.o
 .PHONY : src/dhcp_options_manager.cpp.o
 
 src/dhcp_options_manager.i: src/dhcp_options_manager.cpp.i
@@ -255,7 +291,7 @@ src/dhcp_options_manager.i: src/dhcp_options_manager.cpp.i
 
 # target to preprocess a source file
 src/dhcp_options_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_options_manager.cpp.i
 .PHONY : src/dhcp_options_manager.cpp.i
 
 src/dhcp_options_manager.s: src/dhcp_options_manager.cpp.s
@@ -263,7 +299,7 @@ src/dhcp_options_manager.s: src/dhcp_options_manager.cpp.s
 
 # target to generate assembly for a file
 src/dhcp_options_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_options_manager.cpp.s
 .PHONY : src/dhcp_options_manager.cpp.s
 
 src/dhcp_parser.o: src/dhcp_parser.cpp.o
@@ -271,7 +307,7 @@ src/dhcp_parser.o: src/dhcp_parser.cpp.o
 
 # target to build an object file
 src/dhcp_parser.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_parser.cpp.o
 .PHONY : src/dhcp_parser.cpp.o
 
 src/dhcp_parser.i: src/dhcp_parser.cpp.i
@@ -279,7 +315,7 @@ src/dhcp_parser.i: src/dhcp_parser.cpp.i
 
 # target to preprocess a source file
 src/dhcp_parser.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_parser.cpp.i
 .PHONY : src/dhcp_parser.cpp.i
 
 src/dhcp_parser.s: src/dhcp_parser.cpp.s
@@ -287,7 +323,7 @@ src/dhcp_parser.s: src/dhcp_parser.cpp.s
 
 # target to generate assembly for a file
 src/dhcp_parser.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_parser.cpp.s
 .PHONY : src/dhcp_parser.cpp.s
 
 src/dhcp_security_manager.o: src/dhcp_security_manager.cpp.o
@@ -295,7 +331,7 @@ src/dhcp_security_manager.o: src/dhcp_security_manager.cpp.o
 
 # target to build an object file
 src/dhcp_security_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_security_manager.cpp.o
 .PHONY : src/dhcp_security_manager.cpp.o
 
 src/dhcp_security_manager.i: src/dhcp_security_manager.cpp.i
@@ -303,7 +339,7 @@ src/dhcp_security_manager.i: src/dhcp_security_manager.cpp.i
 
 # target to preprocess a source file
 src/dhcp_security_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_security_manager.cpp.i
 .PHONY : src/dhcp_security_manager.cpp.i
 
 src/dhcp_security_manager.s: src/dhcp_security_manager.cpp.s
@@ -311,7 +347,7 @@ src/dhcp_security_manager.s: src/dhcp_security_manager.cpp.s
 
 # target to generate assembly for a file
 src/dhcp_security_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_security_manager.cpp.s
 .PHONY : src/dhcp_security_manager.cpp.s
 
 src/dhcp_server.o: src/dhcp_server.cpp.o
@@ -319,7 +355,7 @@ src/dhcp_server.o: src/dhcp_server.cpp.o
 
 # target to build an object file
 src/dhcp_server.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_server.cpp.o
 .PHONY : src/dhcp_server.cpp.o
 
 src/dhcp_server.i: src/dhcp_server.cpp.i
@@ -327,7 +363,7 @@ src/dhcp_server.i: src/dhcp_server.cpp.i
 
 # target to preprocess a source file
 src/dhcp_server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_server.cpp.i
 .PHONY : src/dhcp_server.cpp.i
 
 src/dhcp_server.s: src/dhcp_server.cpp.s
@@ -335,7 +371,7 @@ src/dhcp_server.s: src/dhcp_server.cpp.s
 
 # target to generate assembly for a file
 src/dhcp_server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/dhcp_server.cpp.s
 .PHONY : src/dhcp_server.cpp.s
 
 src/lease_manager.o: src/lease_manager.cpp.o
@@ -343,7 +379,7 @@ src/lease_manager.o: src/lease_manager.cpp.o
 
 # target to build an object file
 src/lease_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/lease_manager.cpp.o
 .PHONY : src/lease_manager.cpp.o
 
 src/lease_manager.i: src/lease_manager.cpp.i
@@ -351,7 +387,7 @@ src/lease_manager.i: src/lease_manager.cpp.i
 
 # target to preprocess a source file
 src/lease_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/lease_manager.cpp.i
 .PHONY : src/lease_manager.cpp.i
 
 src/lease_manager.s: src/lease_manager.cpp.s
@@ -359,7 +395,7 @@ src/lease_manager.s: src/lease_manager.cpp.s
 
 # target to generate assembly for a file
 src/lease_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/lease_manager.cpp.s
 .PHONY : src/lease_manager.cpp.s
 
 src/logger.o: src/logger.cpp.o
@@ -367,7 +403,7 @@ src/logger.o: src/logger.cpp.o
 
 # target to build an object file
 src/logger.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/logger.cpp.o
 .PHONY : src/logger.cpp.o
 
 src/logger.i: src/logger.cpp.i
@@ -375,7 +411,7 @@ src/logger.i: src/logger.cpp.i
 
 # target to preprocess a source file
 src/logger.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/logger.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/logger.cpp.i
 .PHONY : src/logger.cpp.i
 
 src/logger.s: src/logger.cpp.s
@@ -383,7 +419,7 @@ src/logger.s: src/logger.cpp.s
 
 # target to generate assembly for a file
 src/logger.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/logger.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/logger.cpp.s
 .PHONY : src/logger.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -415,7 +451,7 @@ src/udp_socket.o: src/udp_socket.cpp.o
 
 # target to build an object file
 src/udp_socket.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/udp_socket.cpp.o
 .PHONY : src/udp_socket.cpp.o
 
 src/udp_socket.i: src/udp_socket.cpp.i
@@ -423,7 +459,7 @@ src/udp_socket.i: src/udp_socket.cpp.i
 
 # target to preprocess a source file
 src/udp_socket.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/udp_socket.cpp.i
 .PHONY : src/udp_socket.cpp.i
 
 src/udp_socket.s: src/udp_socket.cpp.s
@@ -431,7 +467,7 @@ src/udp_socket.s: src/udp_socket.cpp.s
 
 # target to generate assembly for a file
 src/udp_socket.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd.dir/build.make CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple-dhcpd_lib.dir/build.make CMakeFiles/simple-dhcpd_lib.dir/src/udp_socket.cpp.s
 .PHONY : src/udp_socket.cpp.s
 
 # Help Target
@@ -448,7 +484,10 @@ help:
 	@echo "... package"
 	@echo "... package_source"
 	@echo "... rebuild_cache"
+	@echo "... test"
 	@echo "... simple-dhcpd"
+	@echo "... simple-dhcpd_lib"
+	@echo "... simple_dhcpd_tests"
 	@echo "... src/advanced_lease_manager.o"
 	@echo "... src/advanced_lease_manager.i"
 	@echo "... src/advanced_lease_manager.s"

@@ -9,9 +9,9 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
-#include "lease_manager.hpp"
-#include "dhcp_types.hpp"
-#include "dhcp_utils.hpp"
+#include "simple-dhcpd/lease/manager.hpp"
+#include "simple-dhcpd/core/types.hpp"
+#include "simple-dhcpd/utils/utils.hpp"
 
 using namespace simple_dhcpd;
 

@@ -53,10 +53,10 @@ RM = /opt/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/blb/Workspace/SimpleDaemons/simple-dhcpd
+CMAKE_SOURCE_DIR = /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build
+CMAKE_BINARY_DIR = /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/simple-dhcpd.dir/depend.make
@@ -72,178 +72,34 @@ include CMakeFiles/simple-dhcpd.dir/flags.make
 CMakeFiles/simple-dhcpd.dir/codegen:
 .PHONY : CMakeFiles/simple-dhcpd.dir/codegen
 
-CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/advanced_lease_manager.cpp
-CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/advanced_lease_manager.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/advanced_lease_manager.cpp > CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/advanced_lease_manager.cpp -o CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/config.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/config.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/config.cpp
-CMakeFiles/simple-dhcpd.dir/src/config.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/config.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/config.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/config.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/config.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/config.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/config.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/config.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/config.cpp > CMakeFiles/simple-dhcpd.dir/src/config.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/config.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/config.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/config.cpp -o CMakeFiles/simple-dhcpd.dir/src/config.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_options_manager.cpp
-CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_options_manager.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_options_manager.cpp > CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_options_manager.cpp -o CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_parser.cpp
-CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_parser.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_parser.cpp > CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_parser.cpp -o CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_security_manager.cpp
-CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_security_manager.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_security_manager.cpp > CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_security_manager.cpp -o CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_server.cpp
-CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_server.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_server.cpp > CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/dhcp_server.cpp -o CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/lease_manager.cpp
-CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/lease_manager.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/lease_manager.cpp > CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/lease_manager.cpp -o CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/logger.cpp
-CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/logger.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/logger.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/logger.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/logger.cpp > CMakeFiles/simple-dhcpd.dir/src/logger.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/logger.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/logger.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/logger.cpp -o CMakeFiles/simple-dhcpd.dir/src/logger.cpp.s
-
 CMakeFiles/simple-dhcpd.dir/src/main.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/main.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/main.cpp
+CMakeFiles/simple-dhcpd.dir/src/main.cpp.o: /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/src/main.cpp
 CMakeFiles/simple-dhcpd.dir/src/main.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/main.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/main.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/main.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/main.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/main.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/main.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/main.cpp.o -c /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/src/main.cpp
 
 CMakeFiles/simple-dhcpd.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/main.cpp > CMakeFiles/simple-dhcpd.dir/src/main.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/src/main.cpp > CMakeFiles/simple-dhcpd.dir/src/main.cpp.i
 
 CMakeFiles/simple-dhcpd.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/main.cpp -o CMakeFiles/simple-dhcpd.dir/src/main.cpp.s
-
-CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o: CMakeFiles/simple-dhcpd.dir/flags.make
-CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/udp_socket.cpp
-CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o: CMakeFiles/simple-dhcpd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o -MF CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o.d -o CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o -c /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/udp_socket.cpp
-
-CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/udp_socket.cpp > CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.i
-
-CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/src/udp_socket.cpp -o CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/src/main.cpp -o CMakeFiles/simple-dhcpd.dir/src/main.cpp.s
 
 # Object files for target simple-dhcpd
 simple__dhcpd_OBJECTS = \
-"CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/config.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/main.cpp.o" \
-"CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o"
+"CMakeFiles/simple-dhcpd.dir/src/main.cpp.o"
 
 # External object files for target simple-dhcpd
 simple__dhcpd_EXTERNAL_OBJECTS =
 
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/advanced_lease_manager.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/config.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/dhcp_options_manager.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/dhcp_parser.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/dhcp_security_manager.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/dhcp_server.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/lease_manager.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/logger.cpp.o
 simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/main.cpp.o
-simple-dhcpd: CMakeFiles/simple-dhcpd.dir/src/udp_socket.cpp.o
 simple-dhcpd: CMakeFiles/simple-dhcpd.dir/build.make
+simple-dhcpd: libsimple-dhcpd_lib.a
 simple-dhcpd: /opt/local/libexec/openssl3/lib/libssl.dylib
 simple-dhcpd: /opt/local/libexec/openssl3/lib/libcrypto.dylib
-simple-dhcpd: /opt/local/lib/libjsoncpp.dylib
 simple-dhcpd: CMakeFiles/simple-dhcpd.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable simple-dhcpd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable simple-dhcpd"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/simple-dhcpd.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -255,6 +111,6 @@ CMakeFiles/simple-dhcpd.dir/clean:
 .PHONY : CMakeFiles/simple-dhcpd.dir/clean
 
 CMakeFiles/simple-dhcpd.dir/depend:
-	cd /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/blb/Workspace/SimpleDaemons/simple-dhcpd /Users/blb/Workspace/SimpleDaemons/simple-dhcpd /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build /Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/CMakeFiles/simple-dhcpd.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/CMakeFiles/simple-dhcpd.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/simple-dhcpd.dir/depend
 

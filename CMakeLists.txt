@@ -47,15 +47,15 @@ file(GLOB_RECURSE HEADERS "include/*.hpp" "include/*.h")
 
 # Create library (excluding main.cpp)
 set(LIB_SOURCES
-    src/advanced_lease_manager.cpp
-    src/config.cpp
-    src/dhcp_options_manager.cpp
-    src/dhcp_parser.cpp
-    src/dhcp_security_manager.cpp
-    src/dhcp_server.cpp
-    src/lease_manager.cpp
-    src/logger.cpp
-    src/udp_socket.cpp
+    src/simple-dhcpd/lease/advanced_manager.cpp
+    src/simple-dhcpd/config/manager.cpp
+    src/simple-dhcpd/options/manager.cpp
+    src/simple-dhcpd/core/parser.cpp
+    src/simple-dhcpd/security/manager.cpp
+    src/simple-dhcpd/core/server.cpp
+    src/simple-dhcpd/lease/manager.cpp
+    src/simple-dhcpd/utils/logger.cpp
+    src/simple-dhcpd/network/udp_socket.cpp
 )
 add_library(${PROJECT_NAME}_lib ${LIB_SOURCES} ${HEADERS})
 

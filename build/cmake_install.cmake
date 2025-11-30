@@ -1,4 +1,4 @@
-# Install script for directory: /Users/blb/Workspace/SimpleDaemons/simple-dhcpd
+# Install script for directory: /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Release")
+    set(CMAKE_INSTALL_CONFIG_NAME "")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -38,7 +38,7 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/simple-dhcpd")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/simple-dhcpd")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/simple-dhcpd" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/simple-dhcpd")
     execute_process(COMMAND /usr/bin/install_name_tool
@@ -51,21 +51,34 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/include/" FILES_MATCHING REGEX "/[^/]*\\.h$" REGEX "/[^/]*\\.hpp$")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/" FILES_MATCHING REGEX "/[^/]*\\.h$" REGEX "/[^/]*\\.hpp$")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/simple-dhcpd" TYPE DIRECTORY FILES "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/config/" FILES_MATCHING REGEX "/[^/]*\\.conf$" REGEX "/[^/]*\\.example$")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/simple-dhcpd" TYPE DIRECTORY FILES "/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/config/" FILES_MATCHING REGEX "/[^/]*\\.conf$" REGEX "/[^/]*\\.example$")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/Library/LaunchDaemons" TYPE FILE FILES "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/deployment/launchd/com.simple-dhcpd.simple-dhcpd.plist")
+  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+   "/Library/LaunchDaemons/com.simple-dhcpd.simple-dhcpd.plist")
+  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  file(INSTALL DESTINATION "/Library/LaunchDaemons" TYPE FILE FILES "/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/deployment/launchd/com.simple-dhcpd.simple-dhcpd.plist")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/tests/cmake_install.cmake")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/install_local_manifest.txt"
+  file(WRITE "/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -81,6 +94,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/blb/Workspace/SimpleDaemons/simple-dhcpd/build/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
