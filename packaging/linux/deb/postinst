@@ -1,0 +1,53 @@
+#!/bin/bash
+# Post-installation script for simple-dhcpd
+# Requires license acceptance
+
+set -e
+
+PROJECT_NAME="simple-dhcpd"
+CONFIG_DIR="/etc/$simple-dhcpd"
+LOG_DIR="/var/log/$simple-dhcpd"
+SERVICE_USER="dhcpddev"
+
+# Display license and require acceptance
+if [ "$1" = "configure" ]; then
+    echo "=========================================="
+    echo "simple-dhcpd License Agreement"
+    echo "=========================================="
+    echo ""
+    cat /usr/share/doc/$simple-dhcpd/copyright 2>/dev/null || \
+        cat /usr/share/$simple-dhcpd/LICENSE.txt 2>/dev/null || \
+        echo "Please review the license at: https://github.com/simpledaemons/$simple-dhcpd/blob/main/LICENSE"
+    echo ""
+    echo "By continuing, you agree to the terms of the license."
+    echo ""
+    read -p "Do you accept the license? [y/N]: " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "License not accepted. Installation cancelled."
+        exit 1
+    fi
+    
+    # Create service user
+    if ! id "$SERVICE_USER" &>/dev/null; then
+        useradd -r -s /usr/sbin/nologin -d /var/lib/$simple-dhcpd -c "$simple-dhcpd service user" "$SERVICE_USER"
+    fi
+    
+    # Create directories
+    mkdir -p "$CONFIG_DIR"
+    mkdir -p "$LOG_DIR"
+    mkdir -p "/var/lib/$simple-dhcpd"
+    
+    # Set permissions
+    chown -R "$SERVICE_USER:$SERVICE_USER" "$CONFIG_DIR"
+    chown -R "$SERVICE_USER:$SERVICE_USER" "$LOG_DIR"
+    chown -R "$SERVICE_USER:$SERVICE_USER" "/var/lib/$simple-dhcpd"
+    
+    # Enable and start service
+    systemctl daemon-reload
+    systemctl enable "$simple-dhcpd" 2>/dev/null || true
+    systemctl start "$simple-dhcpd" 2>/dev/null || true
+fi
+
+exit 0
+

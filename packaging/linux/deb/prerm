@@ -1,0 +1,15 @@
+#!/bin/bash
+# Pre-removal script for simple-dhcpd
+
+set -e
+
+PROJECT_NAME="simple-dhcpd"
+
+if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
+    # Stop service before removal
+    systemctl stop "$simple-dhcpd" 2>/dev/null || true
+    systemctl disable "$simple-dhcpd" 2>/dev/null || true
+fi
+
+exit 0
+
