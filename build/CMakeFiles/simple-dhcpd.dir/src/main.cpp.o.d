@@ -1,7 +1,7 @@
 CMakeFiles/simple-dhcpd.dir/src/main.cpp.o: \
   /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/src/main.cpp \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/dhcp_server.hpp \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/dhcp_types.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/core/server.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/core/types.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__config_site \
@@ -369,17 +369,17 @@ CMakeFiles/simple-dhcpd.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/array \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/config.hpp \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/udp_socket.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/config/manager.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/network/udp_socket.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/thread \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__mutex_base \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/system_error \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__errc \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/cerrno \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/mutex \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/dhcp_parser.hpp \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/lease_manager.hpp \
-  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/logger.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/core/parser.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/lease/manager.hpp \
+  /Users/blb/Workspace/SimpleDaemons/projects/simple-dhcpd/include/simple-dhcpd/utils/logger.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/fstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__locale \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/locale.h \
