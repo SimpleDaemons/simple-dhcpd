@@ -13,9 +13,9 @@ graph TB
 
     subgraph "DHCP Server"
         Server[simple-dhcpd<br/>Main Process]
-        Config[/etc/simple-dhcpd/<br/>Configuration Files]
-        Logs[/var/log/simple-dhcpd/<br/>Log Files]
-        LeaseDB[/var/lib/simple-dhcpd/<br/>Lease Database]
+        Config[Configuration Files<br/>/etc/simple-dhcpd/]
+        Logs[Log Files<br/>/var/log/simple-dhcpd/]
+        LeaseDB[Lease Database<br/>/var/lib/simple-dhcpd/]
     end
 
     subgraph "System Services"
@@ -108,9 +108,9 @@ graph TB
 
     subgraph "External"
         Clients[DHCP Clients]
-        ConfigMount[/host/config<br/>Configuration]
-        DataMount[/host/data<br/>Lease Database]
-        LogMount[/host/logs<br/>Log Files]
+        ConfigMount[Configuration<br/>/host/config]
+        DataMount[Lease Database<br/>/host/data]
+        LogMount[Log Files<br/>/host/logs]
     end
 
     Clients --> HostNetwork
