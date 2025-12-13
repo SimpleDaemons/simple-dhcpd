@@ -105,22 +105,22 @@ graph TB
         Volumes[Volumes<br/>Config/Data/Logs]
         HostNetwork[Host Network<br/>Port 67]
     end
-    
+
     subgraph "External"
         Clients[DHCP Clients]
         ConfigMount[/host/config<br/>Configuration]
         DataMount[/host/data<br/>Lease Database]
         LogMount[/host/logs<br/>Log Files]
     end
-    
+
     Clients --> HostNetwork
     HostNetwork --> Container
     Container --> Volumes
-    
+
     ConfigMount --> Volumes
     DataMount --> Volumes
     LogMount --> Volumes
-    
+
     Docker --> Container
 ```
 
@@ -135,39 +135,39 @@ graph TB
         Secret[Secret<br/>TLS Certificates]
         PVC[PersistentVolumeClaim<br/>Lease Database]
     end
-    
+
     subgraph "Kubernetes Nodes"
         Pod1[Pod 1<br/>simple-dhcpd]
         Pod2[Pod 2<br/>simple-dhcpd]
         PodN[Pod N<br/>simple-dhcpd]
     end
-    
+
     subgraph "External"
         Clients[DHCP Clients]
         Ingress[Ingress<br/>Optional HTTP API]
     end
-    
+
     Clients --> Service
     Service --> Pod1
     Service --> Pod2
     Service --> PodN
-    
+
     Deployment --> Pod1
     Deployment --> Pod2
     Deployment --> PodN
-    
+
     Pod1 --> ConfigMap
     Pod1 --> Secret
     Pod1 --> PVC
-    
+
     Pod2 --> ConfigMap
     Pod2 --> Secret
     Pod2 --> PVC
-    
+
     PodN --> ConfigMap
     PodN --> Secret
     PodN --> PVC
-    
+
     Ingress --> Service
 ```
 
