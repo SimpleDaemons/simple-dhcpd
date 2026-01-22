@@ -65,6 +65,13 @@ Common documentation applicable to all versions:
 - **[Troubleshooting](shared/troubleshooting/)** - Common issues and debugging
 - **[Support](shared/support/)** - FAQ and support resources
 
+### 👨‍💻 Developer Documentation
+Documentation for developers and contributors:
+
+- **[Developer Guide](development/README.md)** - Complete developer documentation
+- **[Build Guide](development/BUILD_GUIDE.md)** - Build commands and reference
+- **[Setup Guide](development/SETUP.md)** - Development environment setup
+
 ### 🏭 Production Version Documentation
 - **[Production Guide](production/README.md)** - Complete Production Version documentation
 - **[Installation](production/installation.md)** - Production installation guide
