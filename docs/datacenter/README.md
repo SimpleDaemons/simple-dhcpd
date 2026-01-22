@@ -1,7 +1,7 @@
 # Datacenter Version Documentation
 
-**Version:** Planned  
-**License:** BSL 1.1 (Business Source License 1.1)  
+**Version:** Planned
+**License:** BSL 1.1 (Business Source License 1.1)
 **Status:** 📋 Planned - Design Phase
 
 ---
@@ -244,6 +244,6 @@ If you're currently using the Enterprise Version and need Datacenter features:
 
 ---
 
-**Last Updated:** December 2024  
-**Version:** Planned  
+**Last Updated:** December 2024
+**Version:** Planned
 **Status:** Design Phase
