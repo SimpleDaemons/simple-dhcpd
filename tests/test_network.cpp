@@ -10,8 +10,8 @@
 #include <thread>
 #include <chrono>
 #include <vector>
-#include "simple-dhcpd/network/udp_socket.hpp"
-#include "simple-dhcpd/utils/utils.hpp"
+#include "simple-dhcpd/core/network/udp_socket.hpp"
+#include "simple-dhcpd/core/utils/utils.hpp"
 
 using namespace simple_dhcpd;
 

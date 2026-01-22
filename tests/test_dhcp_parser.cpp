@@ -12,7 +12,7 @@
 #include <cstring>
 #include "simple-dhcpd/core/parser.hpp"
 #include "simple-dhcpd/core/types.hpp"
-#include "simple-dhcpd/utils/utils.hpp"
+#include "simple-dhcpd/core/utils/utils.hpp"
 
 using namespace simple_dhcpd;
 

@@ -66,14 +66,14 @@ if(BUILD_VERSION STREQUAL "production")
         src/production/security/manager.cpp
         src/production/features/advanced_manager.cpp
     )
-    file(GLOB_RECURSE VERSION_HEADERS 
+    file(GLOB_RECURSE VERSION_HEADERS
         "include/simple-dhcpd/core/*.hpp"
         "include/simple-dhcpd/production/*.hpp"
     )
     set(VERSION_MAIN main/production.cpp)
     set(PACKAGE_SUFFIX "production")
     set(PROJECT_DESCRIPTION "Simple DHCP Daemon - Production Version")
-    
+
 elseif(BUILD_VERSION STREQUAL "enterprise")
     set(VERSION_SOURCES
         ${CORE_SOURCES}
@@ -84,7 +84,7 @@ elseif(BUILD_VERSION STREQUAL "enterprise")
         # src/enterprise/management/web_ui.cpp
         # src/enterprise/integrations/dns.cpp
     )
-    file(GLOB_RECURSE VERSION_HEADERS 
+    file(GLOB_RECURSE VERSION_HEADERS
         "include/simple-dhcpd/core/*.hpp"
         "include/simple-dhcpd/production/*.hpp"
         "include/simple-dhcpd/enterprise/*.hpp"
@@ -92,7 +92,7 @@ elseif(BUILD_VERSION STREQUAL "enterprise")
     set(VERSION_MAIN main/enterprise.cpp)
     set(PACKAGE_SUFFIX "enterprise")
     set(PROJECT_DESCRIPTION "Simple DHCP Daemon - Enterprise Version")
-    
+
 elseif(BUILD_VERSION STREQUAL "datacenter")
     set(VERSION_SOURCES
         ${CORE_SOURCES}
@@ -103,7 +103,7 @@ elseif(BUILD_VERSION STREQUAL "datacenter")
         # src/datacenter/cluster/cluster_manager.cpp
         # src/datacenter/multi-site/sync.cpp
     )
-    file(GLOB_RECURSE VERSION_HEADERS 
+    file(GLOB_RECURSE VERSION_HEADERS
         "include/simple-dhcpd/core/*.hpp"
         "include/simple-dhcpd/production/*.hpp"
         "include/simple-dhcpd/enterprise/*.hpp"
@@ -112,7 +112,7 @@ elseif(BUILD_VERSION STREQUAL "datacenter")
     set(VERSION_MAIN main/datacenter.cpp)
     set(PACKAGE_SUFFIX "datacenter")
     set(PROJECT_DESCRIPTION "Simple DHCP Daemon - Datacenter Version")
-    
+
 else()
     message(FATAL_ERROR "Unknown BUILD_VERSION: ${BUILD_VERSION}. Must be: production, enterprise, or datacenter")
 endif()
@@ -211,7 +211,7 @@ endif()
 # Package generation
 if(ENABLE_PACKAGING)
     include(CPack)
-    
+
     # Package information
     set(CPACK_PACKAGE_NAME "${PROJECT_NAME}-${PACKAGE_SUFFIX}")
     set(CPACK_PACKAGE_VENDOR "SimpleDaemons")
@@ -220,7 +220,7 @@ if(ENABLE_PACKAGING)
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
     set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
     set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-    
+
     # Package file names
     if(APPLE)
         set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PACKAGE_SUFFIX}-${PROJECT_VERSION}-${PLATFORM_ID}")
@@ -235,7 +235,7 @@ if(ENABLE_PACKAGING)
         else()
             set(PLATFORM_ID "linux")
         endif()
-        
+
         set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PACKAGE_SUFFIX}-${PROJECT_VERSION}-${PLATFORM_ID}-${PACKAGE_ARCH}")
         # We want: {name}-{version}-{platform}-{arch}.deb (architecture already in CPACK_PACKAGE_FILE_NAME)
         set(CPACK_DEBIAN_FILE_NAME "${PROJECT_NAME}-${PACKAGE_SUFFIX}-${PROJECT_VERSION}-${PLATFORM_ID}-${PACKAGE_ARCH}")
@@ -243,9 +243,9 @@ if(ENABLE_PACKAGING)
     else()
         set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PACKAGE_SUFFIX}-${PROJECT_VERSION}-${PLATFORM_NAME}-${PACKAGE_ARCH}")
     endif()
-    
+
     set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PACKAGE_SUFFIX}-${PROJECT_VERSION}-src")
-    
+
     # Include packaging configuration
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CMakeLists.cpack")
         include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/CMakeLists.cpack")

@@ -9,7 +9,7 @@
 #ifndef SIMPLE_DHCPD_ADVANCED_LEASE_MANAGER_HPP
 #define SIMPLE_DHCPD_ADVANCED_LEASE_MANAGER_HPP
 
-#include "simple-dhcpd/lease/manager.hpp"
+#include "simple-dhcpd/core/lease/manager.hpp"
 #include "simple-dhcpd/core/types.hpp"
 #include <string>
 #include <map>

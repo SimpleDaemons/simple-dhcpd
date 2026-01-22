@@ -7,7 +7,7 @@
  */
 
 #include "simple-dhcpd/production/security/manager.hpp"
-#include "simple-dhcpd/utils/utils.hpp"
+#include "simple-dhcpd/core/utils/utils.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>

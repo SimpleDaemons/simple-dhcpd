@@ -10,7 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-#include "simple-dhcpd/config/manager.hpp"
+#include "simple-dhcpd/core/config/manager.hpp"
 #include "simple-dhcpd/core/types.hpp"
 
 using namespace simple_dhcpd;

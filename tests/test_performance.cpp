@@ -14,9 +14,9 @@
 #include <cmath>
 #include "simple-dhcpd/core/parser.hpp"
 #include "simple-dhcpd/core/types.hpp"
-#include "simple-dhcpd/lease/manager.hpp"
-#include "simple-dhcpd/config/manager.hpp"
-#include "simple-dhcpd/utils/utils.hpp"
+#include "simple-dhcpd/core/lease/manager.hpp"
+#include "simple-dhcpd/core/config/manager.hpp"
+#include "simple-dhcpd/core/utils/utils.hpp"
 
 using namespace simple_dhcpd;
 using namespace std::chrono;

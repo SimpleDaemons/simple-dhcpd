@@ -6,8 +6,8 @@
  * @license Apache-2.0
  */
 
-#include "simple-dhcpd/lease/advanced_manager.hpp"
-#include "simple-dhcpd/utils/utils.hpp"
+#include "simple-dhcpd/production/features/advanced_manager.hpp"
+#include "simple-dhcpd/core/utils/utils.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>

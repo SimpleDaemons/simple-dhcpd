@@ -535,5 +535,5 @@ sudo lsof -i :67
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** 1.0.0

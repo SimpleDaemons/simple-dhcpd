@@ -267,7 +267,7 @@ find src include -name "*.cpp" -o -name "*.hpp" | xargs clang-format -i
    # Build
    cd build
    make -j$(nproc)
-   
+
    # Test
    make test
    ```

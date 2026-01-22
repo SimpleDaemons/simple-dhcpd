@@ -10,11 +10,11 @@
 #define SIMPLE_DHCPD_CORE_SERVER_HPP
 
 #include "simple-dhcpd/core/types.hpp"
-#include "simple-dhcpd/config/manager.hpp"
-#include "simple-dhcpd/network/udp_socket.hpp"
+#include "simple-dhcpd/core/config/manager.hpp"
+#include "simple-dhcpd/core/network/udp_socket.hpp"
 #include "simple-dhcpd/core/parser.hpp"
-#include "simple-dhcpd/lease/manager.hpp"
-#include "simple-dhcpd/utils/logger.hpp"
+#include "simple-dhcpd/core/lease/manager.hpp"
+#include "simple-dhcpd/core/utils/logger.hpp"
 #include <memory>
 #include <atomic>
 #include <thread>
