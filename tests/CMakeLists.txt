@@ -7,21 +7,23 @@ find_package(GTest QUIET)
 if(GTest_FOUND)
     # Include Google Test
     include(GoogleTest)
-    
+
     # Create test executable using Google Test
-    add_executable(simple_dhcpd_tests 
+    add_executable(simple_dhcpd_tests
         test_simple_dhcpd.cpp
         test_security.cpp
+        test_network.cpp
+        test_config.cpp
     )
-    
+
     # Link libraries
-    target_link_libraries(simple_dhcpd_tests 
-        GTest::GTest 
+    target_link_libraries(simple_dhcpd_tests
+        GTest::GTest
         GTest::Main
         Threads::Threads
         simple-dhcpd_lib
     )
-    
+
     # Add JSON linking if enabled
     if(ENABLE_JSON)
         if(ENABLE_STATIC_LINKING)
@@ -38,33 +40,35 @@ if(GTest_FOUND)
         target_compile_options(simple_dhcpd_tests PRIVATE ${JSONCPP_CFLAGS_OTHER})
         target_link_directories(simple_dhcpd_tests PRIVATE ${JSONCPP_LIBRARY_DIRS})
     endif()
-    
+
     # Include directories
-    target_include_directories(simple_dhcpd_tests PRIVATE 
+    target_include_directories(simple_dhcpd_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src
     )
-    
+
     # Discover tests
     gtest_discover_tests(simple_dhcpd_tests)
-    
+
     message(STATUS "Google Test found - tests enabled")
-    
+
 else()
     # Fallback to basic test framework
     message(STATUS "Google Test not found - using basic test framework")
-    
+
     # Create basic test executable
     add_executable(simple_dhcpd_tests
         test_simple_dhcpd.cpp
+        test_network.cpp
+        test_config.cpp
     )
-    
+
     # Link with required libraries
-    target_link_libraries(simple_dhcpd_tests 
+    target_link_libraries(simple_dhcpd_tests
         Threads::Threads
         simple-dhcpd_lib
     )
-    
+
     # Add JSON linking if enabled
     if(ENABLE_JSON)
         if(ENABLE_STATIC_LINKING)
@@ -81,13 +85,13 @@ else()
         target_compile_options(simple_dhcpd_tests PRIVATE ${JSONCPP_CFLAGS_OTHER})
         target_link_directories(simple_dhcpd_tests PRIVATE ${JSONCPP_LIBRARY_DIRS})
     endif()
-    
+
     # Include directories
-    target_include_directories(simple_dhcpd_tests PRIVATE 
+    target_include_directories(simple_dhcpd_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src
     )
-    
+
     # Add basic test
     add_test(NAME basic_tests COMMAND simple_dhcpd_tests)
 endif()
