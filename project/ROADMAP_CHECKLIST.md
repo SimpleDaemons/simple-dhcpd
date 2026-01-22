@@ -3,8 +3,33 @@
 ## Project Status: 🚀 Beta Development
 **Last Updated**: December 2024
 **Current Version**: 0.2.0-beta
-**Next Milestone**: Complete Phase 3 Advanced Features
-**Current Phase**: Phase 3 (50% Complete)
+**Next Milestone**: Complete Production Version 1.0
+
+---
+
+## Product Lines Overview
+
+This project maintains two distinct product lines:
+
+1. **Production Version** - Core DHCP server for production environments
+   - Focus: Stability, reliability, essential features
+   - Target: Small to medium deployments, single-server installations
+   - License: Apache 2.0
+   - Status: ~85% Complete
+
+2. **Enterprise Version** - Advanced DHCP server with enterprise features
+   - Focus: High availability, scalability, advanced management
+   - Target: Large deployments, multi-server environments, enterprise integrations
+   - License: BSL 1.1 (Business Source License 1.1)
+   - Status: ~15% Complete (shares Production foundation)
+
+---
+
+# Production Version Roadmap
+
+## Status: 🚀 90% Complete
+**Target Release**: Q1 2025
+**Current Phase**: Finalizing Production Features
 
 ---
 
@@ -144,7 +169,7 @@
 
 ---
 
-## Phase 3: Advanced DHCP Features ✅ COMPLETED
+## Phase 3: Production DHCP Features ✅ COMPLETED
 **Timeline**: 6-8 weeks
 **Status**: 100% Complete
 **Target**: Q2 2025
@@ -214,37 +239,12 @@
   - [x] Option templates management
   - [x] Option templates monitoring
 
-### Security Features
-- [⚠️] DHCP snooping
-  - [x] Basic DHCP snooping implementation
-  - [x] Trusted interface management
-  - [x] Advanced snooping validation
-  - [x] Snooping monitoring
-- [⚠️] MAC address filtering
-  - [x] Basic MAC filtering implementation
-  - [x] MAC filtering configuration
-  - [x] Advanced pattern matching (wildcards/regex)
-  - [x] Filtering management and event reporting
-- [⚠️] IP address filtering
-  - [x] Basic IP filtering implementation
-  - [x] IP filtering configuration
-  - [x] Advanced IP filtering (CIDR/mask matching)
-  - [x] Filtering management and event reporting
+### Basic Security Features
 - [x] Option 82 support
   - [x] Option 82 implementation
   - [x] Option 82 configuration
   - [x] Option 82 management
   - [x] Option 82 monitoring
-- [⚠️] Authentication support
-  - [x] Basic authentication framework
-  - [x] Authentication configuration
-  - [x] HMAC-SHA256 implementation
-  - [x] Authentication management and validation window
-- [⚠️] Rate limiting
-  - [x] Basic rate limiting implementation
-  - [x] Rate limiting configuration
-  - [x] Advanced rate limiting (block windows)
-  - [x] Rate limiting management and event reporting
 - [x] Security event logging
   - [x] Security event logging implementation
   - [x] Security event logging configuration
@@ -282,10 +282,216 @@
 
 ---
 
-## Phase 4: Enterprise Features 📋 PLANNED
+## Phase 4: Production Testing & Quality Assurance 📋 IN PROGRESS
+**Timeline**: 4-6 weeks
+**Status**: 60% Complete
+
+### Unit Testing
+- [x] DHCP protocol implementation testing
+  - [x] Google Test framework setup
+  - [x] DHCP message tests (passing)
+  - [x] DHCP option tests (passing)
+  - [x] DHCP lease tests (passing)
+- [x] Network layer testing
+  - [x] Google Test framework setup
+  - [x] UDP socket tests
+  - [x] Network interface tests
+  - [x] IP address validation tests
+- [x] Configuration parsing testing
+  - [x] Google Test framework setup
+  - [x] Configuration parsing tests
+  - [x] Configuration validation tests
+  - [x] Configuration error tests
+
+### Integration Testing
+- [ ] Cross-platform compatibility testing
+  - [ ] Linux testing
+  - [ ] macOS testing
+  - [ ] Windows testing
+- [ ] Protocol compatibility testing
+  - [ ] DHCP version tests
+  - [ ] Client compatibility tests
+  - [ ] Interoperability tests
+- [ ] Performance benchmarking
+  - [ ] Throughput tests
+  - [ ] Latency tests
+  - [ ] Resource usage tests
+- [ ] Security testing
+  - [ ] Basic security validation
+  - [ ] Vulnerability testing
+  - [ ] Security validation
+
+### Load Testing
+- [ ] High request rate testing
+  - [ ] RPS limit tests
+  - [ ] RPS stability tests
+  - [ ] RPS performance tests
+- [ ] Concurrent lease testing
+  - [ ] Lease limit tests
+  - [ ] Lease stability tests
+  - [ ] Lease performance tests
+- [ ] Memory usage testing
+  - [ ] Memory usage tests
+  - [ ] Memory leak detection
+  - [ ] Memory optimization tests
+- [ ] Stress testing
+  - [ ] High load tests
+  - [ ] Failure recovery tests
+  - [ ] Stability tests
+
+---
+
+## Phase 5: Production Documentation ✅ COMPLETED
+**Timeline**: 2-3 weeks
+**Status**: 100% Complete
+
+### User Documentation
+- [x] Installation guide
+  - [x] System requirements
+  - [x] Installation steps
+  - [x] Configuration setup
+- [x] Configuration reference
+  - [x] Configuration options
+  - [x] Configuration examples
+  - [x] Configuration validation
+- [x] Troubleshooting guide
+  - [x] Common issues
+  - [x] Debug procedures
+  - [x] Support information
+- [x] Performance tuning guide
+  - [x] Performance optimization
+  - [x] Tuning parameters
+  - [x] Best practices
+- [x] Security best practices
+  - [x] Security configuration
+  - [x] Security hardening
+  - [x] Security monitoring
+
+### Operations Documentation
+- [x] Deployment guide
+  - [x] Deployment procedures
+  - [x] Environment setup
+  - [x] Deployment validation
+- [x] Monitoring setup
+  - [x] Monitoring configuration
+  - [x] Basic alerting setup
+  - [x] Dashboard configuration
+- [x] Backup procedures
+  - [x] Backup strategies
+  - [x] Backup procedures
+  - [x] Restore procedures
+- [x] Maintenance procedures
+  - [x] Maintenance tasks
+  - [x] Maintenance schedules
+  - [x] Maintenance procedures
+
+---
+
+## Production Version Release Milestones
+
+### Version 0.1.0 (Alpha) - Q2 2024 ✅ COMPLETED
+**Target Features**:
+- Basic DHCP protocol support
+- Dynamic lease allocation
+- Basic configuration
+- Core daemon functionality
+
+**Acceptance Criteria**:
+- [x] Basic DHCP protocol implementation
+- [x] Dynamic lease allocation
+- [x] Basic configuration
+- [x] Basic security features
+- [x] Unit test coverage >80%
+- [x] Documentation complete
+
+### Version 0.2.0 (Beta) - Q3 2024 ✅ COMPLETED
+**Target Features**:
+- Static lease allocation
+- Advanced DHCP options
+- Security features
+- Performance optimizations
+
+**Acceptance Criteria**:
+- [x] Static lease allocation
+- [x] Advanced DHCP options
+- [x] Security features
+- [x] Performance improvements
+- [x] Integration test coverage >70%
+- [x] Beta testing complete
+
+### Version 1.0.0 (Production Stable) - Q1 2025 📋 TARGET
+**Target Features**:
+- Complete production feature set
+- Production ready
+- Comprehensive testing
+- Complete documentation
+
+**Acceptance Criteria**:
+- [ ] All production features implemented
+- [ ] Production readiness validation
+- [ ] Complete documentation
+- [ ] Long-term stability testing
+- [ ] Load test validation
+- [ ] Security audit complete
+
+---
+
+# Enterprise Version Roadmap
+
+## Status: 🚀 15% Complete (Foundation Complete)
+**Target Release**: Q2-Q3 2025
+**Current Phase**: Planning Enterprise Features
+**License**: BSL 1.1 (Business Source License 1.1)
+
+**Note**: Enterprise Version builds upon Production Version foundation. All Production features are included. Enterprise Version is licensed under BSL 1.1, which provides source code access with usage restrictions that convert to Apache 2.0 after a specified period.
+
+---
+
+## Enterprise Phase 1: Advanced Security Features 📋 PLANNED
+**Timeline**: 4-6 weeks
+**Status**: 0% Complete
+**Target**: Q2 2025
+
+### Advanced Security
+- [⚠️] DHCP snooping
+  - [x] Basic DHCP snooping implementation (from Production)
+  - [x] Trusted interface management (from Production)
+  - [ ] Advanced snooping validation
+  - [ ] Snooping monitoring
+- [⚠️] MAC address filtering
+  - [x] Basic MAC filtering implementation (from Production)
+  - [x] MAC filtering configuration (from Production)
+  - [ ] Advanced pattern matching (wildcards/regex)
+  - [ ] Filtering management and event reporting
+- [⚠️] IP address filtering
+  - [x] Basic IP filtering implementation (from Production)
+  - [x] IP filtering configuration (from Production)
+  - [ ] Advanced IP filtering (CIDR/mask matching)
+  - [ ] Filtering management and event reporting
+- [⚠️] Authentication support
+  - [x] Basic authentication framework (from Production)
+  - [x] Authentication configuration (from Production)
+  - [x] HMAC-SHA256 implementation (from Production)
+  - [ ] Authentication management and validation window
+- [⚠️] Rate limiting
+  - [x] Basic rate limiting implementation (from Production)
+  - [x] Rate limiting configuration (from Production)
+  - [ ] Advanced rate limiting (block windows)
+  - [ ] Rate limiting management and event reporting
+
+### Security Testing
+- [⚠️] Security feature testing
+  - [x] Security feature tests (initial)
+  - [ ] Authentication tests
+  - [ ] Access control tests
+  - [ ] Advanced security validation
+
+---
+
+## Enterprise Phase 2: High Availability 📋 PLANNED
 **Timeline**: 8-10 weeks
 **Status**: 0% Complete
-**Target**: Q4 2024
+**Target**: Q2-Q3 2025
 
 ### High Availability
 - [ ] DHCP failover protocol
@@ -319,6 +525,13 @@
   - [ ] Recovery documentation
   - [ ] Recovery monitoring
 
+---
+
+## Enterprise Phase 3: Advanced Management 📋 PLANNED
+**Timeline**: 6-8 weeks
+**Status**: 0% Complete
+**Target**: Q3 2025
+
 ### Advanced Management
 - [ ] Web-based management interface
   - [ ] Web interface implementation
@@ -350,6 +563,13 @@
   - [ ] Alerting implementation
   - [ ] Monitoring configuration
   - [ ] Alerting configuration
+
+---
+
+## Enterprise Phase 4: Integration & APIs 📋 PLANNED
+**Timeline**: 6-8 weeks
+**Status**: 0% Complete
+**Target**: Q3-Q4 2025
 
 ### Integration & APIs
 - [ ] DNS integration
@@ -385,10 +605,10 @@
 
 ---
 
-## Phase 5: Scalability & Optimization 📋 PLANNED
+## Enterprise Phase 5: Scalability & Optimization 📋 PLANNED
 **Timeline**: 10-12 weeks
 **Status**: 0% Complete
-**Target**: Q1 2025
+**Target**: Q4 2025 - Q1 2026
 
 ### Performance Optimization
 - [ ] Connection pooling
@@ -456,7 +676,69 @@
 
 ---
 
-## Testing & Quality Assurance
+## Enterprise Version Release Milestones
+
+### Version 1.0.0 (Enterprise Alpha) - Q2 2025 📋 TARGET
+**Target Features**:
+- Advanced security features
+- Basic high availability
+- Web management interface
+- REST API
+
+**Acceptance Criteria**:
+- [ ] Advanced security features complete
+- [ ] Basic failover protocol
+- [ ] Web interface functional
+- [ ] REST API functional
+- [ ] Enterprise test coverage >70%
+
+### Version 2.0.0 (Enterprise Beta) - Q3 2025 📋 TARGET
+**Target Features**:
+- Complete high availability
+- Full management suite
+- Integration APIs
+- Performance optimizations
+
+**Acceptance Criteria**:
+- [ ] High availability complete
+- [ ] Management suite complete
+- [ ] Integration APIs functional
+- [ ] Performance optimizations complete
+- [ ] Enterprise test coverage >80%
+
+### Version 2.5.0 (Enterprise RC) - Q4 2025 📋 TARGET
+**Target Features**:
+- Scalability features
+- Cloud deployment
+- Complete documentation
+- Enterprise readiness
+
+**Acceptance Criteria**:
+- [ ] Scalability features complete
+- [ ] Cloud deployment ready
+- [ ] Complete enterprise documentation
+- [ ] Enterprise readiness validation
+- [ ] Load test validation
+- [ ] Security audit complete
+
+### Version 3.0.0 (Enterprise Stable) - Q1 2026 📋 TARGET
+**Target Features**:
+- Full enterprise feature set
+- Production ready
+- Enterprise features
+- Complete documentation
+
+**Acceptance Criteria**:
+- [ ] All enterprise features implemented
+- [ ] Production readiness validation
+- [ ] Enterprise features complete
+- [ ] Complete documentation
+- [ ] Long-term stability testing
+- [ ] Release candidate validation
+
+---
+
+## Shared Testing & Quality Assurance
 
 ### Unit Testing
 - [⚠️] DHCP protocol implementation testing
@@ -517,29 +799,7 @@
 
 ---
 
-## Documentation
-
-### User Documentation
-- [ ] Installation guide
-  - [ ] System requirements
-  - [ ] Installation steps
-  - [ ] Configuration setup
-- [ ] Configuration reference
-  - [ ] Configuration options
-  - [ ] Configuration examples
-  - [ ] Configuration validation
-- [ ] Troubleshooting guide
-  - [ ] Common issues
-  - [ ] Debug procedures
-  - [ ] Support information
-- [ ] Performance tuning guide
-  - [ ] Performance optimization
-  - [ ] Tuning parameters
-  - [ ] Best practices
-- [ ] Security best practices
-  - [ ] Security configuration
-  - [ ] Security hardening
-  - [ ] Security monitoring
+## Shared Documentation
 
 ### Developer Documentation
 - [ ] API documentation
@@ -563,119 +823,27 @@
   - [ ] Test writing
   - [ ] Test execution
 
-### Operations Documentation
-- [ ] Deployment guide
-  - [ ] Deployment procedures
+### Enterprise Operations Documentation
+- [ ] Enterprise deployment guide
+  - [ ] Enterprise deployment procedures
   - [ ] Environment setup
   - [ ] Deployment validation
-- [ ] Monitoring setup
-  - [ ] Monitoring configuration
-  - [ ] Alerting setup
-  - [ ] Dashboard configuration
-- [ ] Backup procedures
-  - [ ] Backup strategies
-  - [ ] Backup procedures
-  - [ ] Restore procedures
-- [ ] Disaster recovery
-  - [ ] Recovery procedures
-  - [ ] Recovery testing
-  - [ ] Recovery documentation
-- [ ] Maintenance procedures
-  - [ ] Maintenance tasks
-  - [ ] Maintenance schedules
-  - [ ] Maintenance procedures
-
----
-
-## Release Milestones
-
-### Version 0.1.0 (Alpha) - Q2 2024
-**Target Features**:
-- Basic DHCP protocol support
-- Dynamic lease allocation
-- Basic configuration
-- Core daemon functionality
-
-**Acceptance Criteria**:
-- [ ] Basic DHCP protocol implementation
-- [ ] Dynamic lease allocation
-- [ ] Basic configuration
-- [ ] Basic security features
-- [ ] Unit test coverage >80%
-- [ ] Documentation complete
-
-### Version 0.2.0 (Beta) - Q3 2024
-**Target Features**:
-- Static lease allocation
-- Advanced DHCP options
-- Security features
-- Performance optimizations
-
-**Acceptance Criteria**:
-- [ ] Static lease allocation
-- [ ] Advanced DHCP options
-- [ ] Security features
-- [ ] Performance improvements
-- [ ] Integration test coverage >70%
-- [ ] Beta testing complete
-
-### Version 0.3.0 (RC) - Q4 2024
-**Target Features**:
-- DHCP failover
-- High availability features
-- Complete documentation
-- Production readiness
-
-**Acceptance Criteria**:
-- [ ] DHCP failover
-- [ ] High availability features
-- [ ] Complete documentation
-- [ ] Production readiness
-- [ ] Load test validation
-- [ ] Security audit complete
-
-### Version 1.0.0 (Stable) - Q1 2025
-**Target Features**:
-- Full feature set
-- Production ready
-- Enterprise features
-- Complete documentation
-
-**Acceptance Criteria**:
-- [ ] All planned features implemented
-- [ ] Production readiness validation
-- [ ] Enterprise features complete
-- [ ] Complete documentation
-- [ ] Long-term stability testing
-- [ ] Release candidate validation
-
----
-
-## Current Sprint Goals
-
-### Sprint 1 (Current)
-**Duration**: 2 weeks
-**Goals**:
-- [ ] DHCP protocol framework
-- [ ] Basic DHCP message handling
-- [ ] UDP socket implementation
-- [ ] Basic lease management
-
-### Sprint 2
-**Duration**: 2 weeks
-**Goals**:
-- [ ] DHCP Discover/Offer/Request/ACK
-- [ ] Basic configuration system
-- [ ] Error handling
-- [ ] Logging
-
-### Sprint 3
-**Duration**: 2 weeks
-**Goals**:
-- [ ] DHCP options support
-- [ ] Static lease allocation
-- [ ] Security features
-- [ ] Performance optimization
+- [ ] Enterprise monitoring setup
+  - [ ] Enterprise monitoring configuration
+  - [ ] Enterprise alerting setup
+  - [ ] Enterprise dashboard configuration
+- [ ] Enterprise backup procedures
+  - [ ] Enterprise backup strategies
+  - [ ] Enterprise backup procedures
+  - [ ] Enterprise restore procedures
+- [ ] Enterprise disaster recovery
+  - [ ] Enterprise recovery procedures
+  - [ ] Enterprise recovery testing
+  - [ ] Enterprise recovery documentation
+- [ ] Enterprise maintenance procedures
+  - [ ] Enterprise maintenance tasks
+  - [ ] Enterprise maintenance schedules
+  - [ ] Enterprise maintenance procedures
 
 ---
 
@@ -684,12 +852,14 @@
 ### High Risk
 - **DHCP Protocol Complexity**: DHCP protocol is complex with many edge cases
 - **Lease Management**: Lease management is critical and complex
+- **High Availability**: Enterprise HA features are complex and require careful design
 - **Performance Requirements**: High performance requirements may be challenging
 
 ### Medium Risk
 - **Cross-platform Compatibility**: Ensuring compatibility across platforms
 - **Integration Testing**: Complex integration testing requirements
 - **Documentation**: Comprehensive documentation requirements
+- **Enterprise Integrations**: Third-party integrations may have compatibility issues
 
 ### Low Risk
 - **Build System**: Standardized build system is already in place
@@ -700,12 +870,20 @@
 
 ## Success Metrics
 
-### Technical Metrics
+### Production Version Metrics
 - **Test Coverage**: >90% unit test coverage
+- **Performance**: >10,000 RPS per server
+- **Concurrency**: >10,000 concurrent leases
+- **Latency**: <5ms for DHCP operations
+- **Memory Usage**: <50MB base + 1KB per lease
+
+### Enterprise Version Metrics
+- **Test Coverage**: >95% unit test coverage
 - **Performance**: >50,000 RPS per server
 - **Concurrency**: >100,000 concurrent leases
 - **Latency**: <1ms for DHCP operations
-- **Memory Usage**: <50MB base + 1KB per lease
+- **Memory Usage**: <100MB base + 0.5KB per lease
+- **Availability**: 99.9% uptime SLA
 
 ### Quality Metrics
 - **Bug Density**: <1 critical bug per 1000 lines of code
@@ -714,7 +892,7 @@
 - **Security**: Zero critical security vulnerabilities
 
 ### Business Metrics
-- **User Adoption**: Target 1000+ active users
+- **User Adoption**: Target 1000+ active users (Production), 100+ enterprise customers
 - **Community Engagement**: Active contributor community
 - **Enterprise Adoption**: Enterprise feature adoption
 - **Support Quality**: <24 hour response time
@@ -737,20 +915,22 @@
 - **2024-12-XX**: Implemented multi-format configuration support (JSON, YAML, INI)
 - **2024-12-XX**: Created organized examples by use case (simple, advanced, production, security)
 - **2024-12-XX**: Added configuration validation and conversion tools
+- **2024-12-XX**: Reorganized roadmap into Production and Enterprise product lines
 
 ### Next Steps
-1. Complete Phase 3 Advanced DHCP Features
-2. Implement comprehensive security features
-3. Add advanced lease management capabilities
-4. Develop comprehensive unit tests
-5. Begin integration testing framework
+1. Complete Production Version testing and documentation
+2. Finalize Production Version 1.0 release
+3. Begin Enterprise Version advanced security features
+4. Plan Enterprise Version high availability architecture
+5. Develop Enterprise Version management interfaces
 6. Performance optimization and testing
 
 ### Dependencies
 - **OpenSSL**: For security features
 - **JSONCPP**: For configuration management
 - **CMake**: For build system
-- **Testing Framework**: TBD (Google Test, Catch2, etc.)
+- **Testing Framework**: Google Test
+- **Enterprise**: Additional dependencies TBD (SNMP libraries, web frameworks, etc.)
 
 ### Resources
 - **Development Team**: 2-3 developers
