@@ -9,11 +9,14 @@ if(GTest_FOUND)
     include(GoogleTest)
 
     # Create test executable using Google Test
-    add_executable(simple_dhcpd_tests
+    add_executable(simple_dhcpd_tests 
         test_simple_dhcpd.cpp
         test_security.cpp
         test_network.cpp
         test_config.cpp
+        test_integration.cpp
+        test_performance.cpp
+        test_load.cpp
     )
 
     # Link libraries
@@ -61,6 +64,9 @@ else()
         test_simple_dhcpd.cpp
         test_network.cpp
         test_config.cpp
+        test_integration.cpp
+        test_performance.cpp
+        test_load.cpp
     )
 
     # Link with required libraries
