@@ -1,6 +1,6 @@
 # Enterprise Version Integrations Guide
 
-**Version:** Foundation Complete (v1.0.0 Alpha in development)  
+**Version:** Foundation Complete (v1.0.0 Alpha in development)
 **License:** BSL 1.1
 
 ---
@@ -384,5 +384,5 @@ snmpget -v2c -c public localhost 1.3.6.1.2.1.1.1.0
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** Foundation Complete

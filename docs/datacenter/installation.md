@@ -1,6 +1,6 @@
 # Datacenter Version Installation Guide
 
-**Version:** Planned  
+**Version:** Planned
 **License:** BSL 1.1
 
 ---
@@ -250,5 +250,5 @@ The Datacenter Version requires license activation for production use. See [Lice
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** Planned

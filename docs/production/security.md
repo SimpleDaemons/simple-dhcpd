@@ -1,6 +1,6 @@
 # Production Version Security Guide
 
-**Version:** 1.0.0  
+**Version:** 1.0.0
 **License:** Apache 2.0
 
 ---
@@ -72,5 +72,5 @@ See [Security Best Practices](../shared/user-guide/security-best-practices.md) f
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** 1.0.0

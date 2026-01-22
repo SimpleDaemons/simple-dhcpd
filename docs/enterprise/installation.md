@@ -1,6 +1,6 @@
 # Enterprise Version Installation Guide
 
-**Version:** Foundation Complete (v1.0.0 Alpha in development)  
+**Version:** Foundation Complete (v1.0.0 Alpha in development)
 **License:** BSL 1.1
 
 ---
@@ -263,5 +263,5 @@ The Enterprise Version requires license activation for production use. See [Lice
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** Foundation Complete

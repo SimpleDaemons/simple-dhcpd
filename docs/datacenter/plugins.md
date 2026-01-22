@@ -1,6 +1,6 @@
 # Datacenter Version Plugin Architecture
 
-**Version:** Planned  
+**Version:** Planned
 **License:** BSL 1.1
 
 ---
@@ -150,5 +150,5 @@ curl -X POST -k https://your-cluster:8081/api/v1/plugins/my-plugin/disable
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** Planned

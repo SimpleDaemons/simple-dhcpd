@@ -7,8 +7,8 @@ Welcome to the Simple DHCP Daemon documentation. This guide will help you unders
 Simple DHCP Daemon is available in three versions, each designed for different deployment scenarios:
 
 ### 🏭 Production Version
-**License:** Apache 2.0  
-**Status:** ✅ 100% Complete - Ready for v1.0.0 Release  
+**License:** Apache 2.0
+**Status:** ✅ 100% Complete - Ready for v1.0.0 Release
 **Target:** Small to medium deployments, single-server installations
 
 - Complete DHCP protocol implementation (DORA process)
@@ -21,8 +21,8 @@ Simple DHCP Daemon is available in three versions, each designed for different d
 **Documentation:** [Production Version Documentation](production/README.md)
 
 ### 🏢 Enterprise Version
-**License:** BSL 1.1 (Business Source License 1.1)  
-**Status:** 🚧 ~15% Complete (Foundation Ready)  
+**License:** BSL 1.1 (Business Source License 1.1)
+**Status:** 🚧 ~15% Complete (Foundation Ready)
 **Target:** Large deployments, multi-server environments, enterprise integrations
 
 - All Production Version features included
@@ -37,8 +37,8 @@ Simple DHCP Daemon is available in three versions, each designed for different d
 **Documentation:** [Enterprise Version Documentation](enterprise/README.md)
 
 ### 🏛️ Datacenter Version
-**License:** BSL 1.1 (Business Source License 1.1)  
-**Status:** 📋 Planned  
+**License:** BSL 1.1 (Business Source License 1.1)
+**Status:** 📋 Planned
 **Target:** Large-scale datacenter deployments, cloud environments, multi-site operations
 
 - All Enterprise Version features included
@@ -196,7 +196,7 @@ If you find any issues with the documentation or have suggestions for improvemen
 
 ---
 
-**Last Updated**: December 2024  
-**Production Version**: 1.0.0 (Ready for Release)  
-**Enterprise Version**: Foundation Complete  
+**Last Updated**: December 2024
+**Production Version**: 1.0.0 (Ready for Release)
+**Enterprise Version**: Foundation Complete
 **Datacenter Version**: Planned

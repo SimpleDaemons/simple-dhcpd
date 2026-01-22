@@ -3,6 +3,9 @@
 		{
 			"name": "simple-dhcpd",
 			"path": "."
+		},
+		{
+			"path": "../simple-tftpd"
 		}
 	],
 	"settings": {
@@ -92,4 +95,3 @@
 		}
 	}
 }
-

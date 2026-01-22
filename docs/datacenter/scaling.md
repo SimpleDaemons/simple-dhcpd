@@ -1,6 +1,6 @@
 # Datacenter Version Scaling Guide
 
-**Version:** Planned  
+**Version:** Planned
 **License:** BSL 1.1
 
 ---
@@ -209,5 +209,5 @@ curl -k https://your-cluster:8081/api/v1/scaling/metrics
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** Planned

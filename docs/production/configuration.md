@@ -1,6 +1,6 @@
 # Production Version Configuration Guide
 
-**Version:** 1.0.0  
+**Version:** 1.0.0
 **License:** Apache 2.0
 
 ---
@@ -267,5 +267,5 @@ See [Configuration Examples](../shared/configuration/examples.md) for more examp
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2024
 **Version:** 1.0.0
