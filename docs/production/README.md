@@ -1,6 +1,6 @@
 # Production Version Documentation
 
-**CMake package version:** 0.3.0  
+**CMake package version:** 0.6.0  
 **License:** Apache 2.0  
 **Status:** **Pre–1.0** — see **[project/PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)** for build, **`ctest`**, and server wiring. These guides describe the **intended** production line; some sections remain **aspirational**.
 
@@ -233,5 +233,5 @@ The Production Version provides a solid foundation. If you need:
 ---
 
 **Last updated:** April 2026  
-**Version label:** 0.3.0 (pre–1.0)  
+**Version label:** 0.6.0 (pre–1.0)  
 **Status:** See [PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)

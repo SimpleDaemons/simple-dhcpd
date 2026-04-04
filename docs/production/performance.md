@@ -1,6 +1,6 @@
 # Production Version Performance Tuning
 
-**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
+**Version:** 0.6.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
 **License:** Apache 2.0
 
 ---
@@ -53,4 +53,4 @@ See [Performance Tuning Guide](../shared/user-guide/performance-tuning.md) for d
 ---
 
 **Last Updated:** December 2024
-**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
+**Version:** 0.6.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)

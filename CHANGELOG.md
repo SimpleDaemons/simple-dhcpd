@@ -7,21 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- **Documentation (April 2026):** Reconciled root `README.md`, `project/*.md`, `docs/README.md`, `docs/production/README.md`, and related guides with **current build/test reality**: `simple_dhcpd_tests` **passes** (`ctest`, 60 tests); `DhcpServer` **wires** optional security and advanced lease backend; status remains **pre–1.0** until field/CI/packaging bars in `project/PRODUCTION_READINESS.md` are met. Canonical narrative: **`project/PROGRESS_REPORT.md`**.
+### Planned
+- Field validation, CI matrix expansion, coverage reports, packaging smoke tests.
+
+## [0.6.0] - 2026-04-04
+
+### Summary
+Pre–1.0 release line aligned with **integration + green default test suite** and **honest documentation**. Tags **v0.4.0** (production code), **v0.5.0** (tests), **v0.6.0** (this release + version bump).
 
 ### Added
-- Transparent configuration loading for JSON, YAML, and INI
-- YAML/INI coverage for server, subnets, global options, security, logging
-- Advanced snooping validation and monitoring hooks
-- MAC filtering wildcard/regex matching
-- IP filtering with CIDR/mask support
-- Rate limiting block windows and event reporting
+- Sample multi-format configs under `config/examples/` (ini, conf, json, yml).
 
-### Planned
-- Phase 4: Enterprise Features
-- Phase 5: Performance Optimization
-- Phase 6: Production Readiness
+### Changed
+- **Documentation:** Reconciled `README.md`, `project/*.md`, `docs/**`, deployment and example READMEs with build/test reality (`ctest` 60/60). Canonical status: `project/PROGRESS_REPORT.md`.
+- **CMake:** `PROJECT_VERSION` set to **0.6.0**.
+
+### Notes
+- **v0.4.0** tag: advanced lease load + security manager fixes (commits up to `feat(production): ...`).
+- **v0.5.0** tag: test suite alignment (`test: align integration...`).
+- Intermediate tags use historical commits; CMake version caught up at **v0.6.0**.
 
 ## [0.3.0] - 2024-12-29
 
@@ -174,10 +178,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **v0.1.0**: Foundation - Complete build system, deployment configs, and infrastructure
 - **v0.2.0**: Core DHCP Protocol - Full DHCP server implementation with all essential features
 - **v0.2.1**: Enhanced Packaging - Professional installers and improved user experience
+- **v0.3.0**: Phase 3 advanced DHCP / security / options (2024-12-29)
+- **v0.4.0** (tag): Advanced lease load + security manager hardening (April 2026)
+- **v0.5.0** (tag): Default test target aligned with APIs (April 2026)
+- **v0.6.0**: Docs reconciliation + CMake 0.6.0 + sample configs (April 2026)
 
 ## Next Releases
 
-- **v0.3.0**: Advanced DHCP Features - Lease management, DHCP options, security features
-- **v0.4.0**: Enterprise Features - High availability, monitoring, management interface
-- **v0.5.0**: Performance Optimization - High-performance optimizations and scalability
-- **v1.0.0** (future): **Not released** — requires checklist in `project/PRODUCTION_READINESS.md` (CI, field validation, coverage/packaging as claimed)
+- **v0.3.0**: Shipped 2024-12-29 (Phase 3 feature drop).
+- **v0.4.0** / **v0.5.0** / **v0.6.0**: April 2026 tags — production integration, test suite, then docs + CMake **0.6.0** (see git tags).
+- **v1.0.0** (future): **Not released** — requires checklist in `project/PRODUCTION_READINESS.md` (CI, field validation, coverage/packaging as claimed).

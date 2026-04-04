@@ -538,4 +538,4 @@ sudo lsof -i :67
 ---
 
 **Last updated:** April 2026  
-**CMake / product label:** 0.3.0 (pre–1.0)
+**CMake / product label:** 0.6.0 (pre–1.0)

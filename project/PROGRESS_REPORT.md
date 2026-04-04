@@ -1,7 +1,7 @@
 # Simple DHCP Daemon — Honest Progress Report
 
 **Last verified:** April 2026 (`cmake --build` + `ctest`, 60/60)  
-**Product version (CMake):** 0.3.0 (`production` build target)  
+**Product version (CMake):** 0.6.0 (`production` build target)  
 **This file:** Canonical “what is actually true” status for the Production line. Use it when other docs disagree.
 
 ---

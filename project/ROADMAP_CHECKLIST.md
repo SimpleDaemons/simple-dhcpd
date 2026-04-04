@@ -2,7 +2,7 @@
 
 ## Project status
 **Last updated:** April 2026  
-**CMake package version:** 0.3.0  
+**CMake package version:** 0.6.0  
 **Honest status:** [PROGRESS_REPORT.md](PROGRESS_REPORT.md)
 
 **Production:** Pre–1.0 — **`ctest`: 60/60 passing** (Apr 2026); `DhcpServer` wires optional **security** and **advanced lease DB** from config; remaining gaps are field hardening, coverage metrics, and multi-platform validation (see [PROGRESS_REPORT.md](PROGRESS_REPORT.md)).  

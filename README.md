@@ -4,7 +4,7 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 [![Build Status](https://travis-ci.org/simpledaemons/simple-dhcpd.svg?branch=main)](https://travis-ci.org/simpledaemons/simple-dhcpd)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/SimpleDaemons/simple-dhcpd/releases)
 
 ## Overview
 
@@ -23,7 +23,7 @@ Simple DHCP Daemon is a C++17 DHCP server **under active development**. It targe
 - High-scale RPS figures and “50k RPS”-style claims — **not CI-benchmarked** here
 - Windows and every packaged artifact on every distro
 
-## Version 0.3.0 (CMake)
+## Version 0.6.0 (CMake)
 
 **Label only** — **pre–1.0**; progress and gaps are summarized in **`project/PROGRESS_REPORT.md`**.
 
@@ -498,7 +498,7 @@ sudo make install
 
 ### Development Status
 
-**Current Version**: 0.3.0 (Phase 3 Complete)
+**Current Version**: 0.6.0 (pre–1.0; Phase 3+ integration and docs reconciliation)
 
 #### Completed Phases:
 - ✅ **Phase 1**: Core DHCP Protocol (v0.1.0)

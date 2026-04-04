@@ -1,7 +1,7 @@
 # Simple DHCP Daemon - Technical Debt
 
 **Date:** April 2026 (major correction)
-**Current Version:** CMake `0.3.0`, production target
+**Current Version:** CMake `0.6.0`, production target
 **Purpose:** Track technical debt, known issues, and areas requiring improvement
 
 ---
