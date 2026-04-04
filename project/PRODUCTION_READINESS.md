@@ -1,230 +1,56 @@
-# Production Version 1.0.0 - Readiness Checklist
+# Production readiness (honest checklist)
 
-**Date:** December 2024
-**Version:** Production 1.0.0 Release Candidate
-**Status:** ✅ **READY FOR RELEASE**
-
----
-
-## ✅ Feature Completeness
-
-### Core Features
-- [x] Complete DHCP protocol implementation (DORA process)
-- [x] All DHCP message types (Discover, Offer, Request, ACK, Release, Decline, Inform)
-- [x] DHCP options system (standard, vendor-specific, custom)
-- [x] Dynamic and static lease allocation
-- [x] Lease renewal and expiration handling
-- [x] Lease conflict resolution
-- [x] Multi-format configuration (JSON, YAML, INI)
-- [x] Basic security features (Option 82, security logging, trusted relay agents)
-
-### Infrastructure
-- [x] Cross-platform support (Linux, macOS, Windows)
-- [x] Build system (CMake, Makefile)
-- [x] Package generation (DEB, RPM, DMG, MSI)
-- [x] Service integration (systemd, launchd, Windows)
-- [x] Docker containerization
+**Last updated:** April 2026  
+**Authoritative narrative:** [PROGRESS_REPORT.md](PROGRESS_REPORT.md)
 
 ---
 
-## ✅ Testing Completeness
+## Verdict
 
-### Unit Testing (100%)
-- [x] DHCP protocol tests
-- [x] Network layer tests
-- [x] Configuration parsing tests
-- [x] Test coverage: ~70%
-
-### Integration Testing (100%)
-- [x] Full DORA process integration tests
-- [x] Cross-platform compatibility tests
-- [x] Protocol compatibility tests
-- [x] Configuration and lease management integration
-- [x] Security integration tests
-
-### Performance Testing (100%)
-- [x] Throughput benchmarks (>10,000 RPS)
-- [x] Latency measurements (<5ms average)
-- [x] Resource usage validation
-- [x] Concurrent operation testing
-
-### Load Testing (100%)
-- [x] High request rate testing (RPS limit, stability, performance)
-- [x] Concurrent lease testing (limit, stability, performance)
-- [x] Memory usage and leak detection
-- [x] Stress testing (high load, failure recovery, stability)
+**Not ready for a v1.0.0 production release** until the items below are closed. The **main `simple-dhcpd` binary builds** (macOS verified); the **default Google Test binary does not compile** due to API drift between tests and core types.
 
 ---
 
-## ✅ Documentation Completeness
+## Checklist (current truth)
 
-### User Documentation (100%)
-- [x] Installation guide
-- [x] Configuration reference
-- [x] Troubleshooting guide
-- [x] Performance tuning guide
-- [x] Security best practices
+### Build & core runtime
+- [x] Production CMake target compiles (core + production sources).
+- [ ] **All automated tests compile and pass** (`simple_dhcpd_tests`).
+- [ ] Windows / Linux CI parity verified on real runners (not assumed).
 
-### Operations Documentation (100%)
-- [x] Deployment guide
-- [x] Monitoring setup
-- [x] Backup procedures
-- [x] Maintenance procedures
+### Integration vs documentation
+- [x] `DhcpServer` uses **`LeaseManager`** for the live datapath.
+- [ ] **`DhcpSecurityManager`** invoked from `DhcpServer` when security is enabled — **not done** (manager exists; server does not call it).
+- [ ] **`AdvancedLeaseManager`** selectable from server / same process — **not done**; `load_database()` does not restore dynamic `LEASE:` rows into active state (incomplete).
+- [ ] Replace **hardcoded** `192.168.1.1` and fixed options in `build_subnet_options()` / Inform path with **config-driven** values.
+- [ ] **`update_statistics()`** — implement or remove claims about metrics.
+- [ ] **DHCP Decline** — declined-IP quarantine or documented RFC gap (`src/core/dhcp/server.cpp`).
 
-### Developer Documentation
-- [x] API documentation (header files)
-- [x] Architecture overview
-- [x] Code structure documentation
+### Testing
+- [ ] Fix: static `DhcpParser::parse_message` vs tests expecting instance + output parameter.
+- [ ] Fix: `allocate_lease(mac, requested_ip, subnet)` vs tests passing two arguments.
+- [ ] Fix: `DhcpMessage` fields (`header.xid`, etc.) vs tests using `xid` / `yiaddr` at top level.
+- [ ] Add or wire **`test_dhcp_parser.cpp`**, **`test_lease_manager.cpp`** into `tests/CMakeLists.txt` if they should ship.
+- [ ] Remove or replace **placeholder** assertions in `test_basic.cpp`.
+- [ ] Publish a **real coverage number** (tool-generated), not a hand-waved percentage.
 
----
+### Security (claims vs datapath)
+- [ ] Security **enforced on received packets** in `handle_dhcp_message` path, or docs must say “library only.”
+- [ ] Review **`get_security_events()`** filtering logic if productized.
 
-## ✅ Quality Assurance
-
-### Code Quality
-- [x] No critical linter errors
-- [x] Code compiles on all target platforms
-- [x] All tests passing
-- [x] Proper error handling
-- [x] Memory management reviewed
-
-### Security
-- [x] Basic security features implemented
-- [x] Security event logging
-- [x] Option 82 support
-- [x] Trusted relay agent management
-- [x] Security validation tests
-
-### Performance
-- [x] Meets performance targets (>10,000 RPS)
-- [x] Latency within acceptable range (<5ms)
-- [x] Memory usage optimized
-- [x] Concurrent operation validated
-
-### Stability
-- [x] Long-running stability tests passed
-- [x] Failure recovery validated
-- [x] Stress testing completed
-- [x] No memory leaks detected
+### Packaging & ops
+- [ ] Confirm CPack/Docker/systemd paths on target distros (not marked done from docs alone).
 
 ---
 
-## ✅ Release Readiness
+## When to call it 1.0
 
-### Build & Packaging
-- [x] All packages build successfully
-- [x] Installation procedures validated
-- [x] Service files tested
-- [x] Docker images build correctly
+Minimum bar:
 
-### Deployment
-- [x] Deployment procedures documented
-- [x] Configuration examples provided
-- [x] Migration guides available
-- [x] Rollback procedures documented
-
-### Support
-- [x] Documentation complete
-- [x] Troubleshooting guide available
-- [x] Common issues documented
-- [x] Support channels identified
+1. Green `ctest` (or equivalent) on at least one Linux and macOS CI job.  
+2. Security/advanced lease either **integrated** or **explicitly out of scope** for 1.0 in user-facing docs.  
+3. No known **stub** in the hot path (statistics, decline policy, or documented exceptions).
 
 ---
 
-## 📊 Production Readiness Metrics
-
-### Test Coverage
-- **Unit Tests:** 70% coverage
-- **Integration Tests:** Complete
-- **Performance Tests:** Complete
-- **Load Tests:** Complete
-
-### Performance Metrics
-- **Throughput:** >10,000 RPS ✅
-- **Latency:** <5ms average ✅
-- **Concurrent Leases:** >10,000 supported ✅
-- **Memory Usage:** <50MB base + 1KB per lease ✅
-
-### Quality Metrics
-- **Build Success Rate:** 100% ✅
-- **Test Pass Rate:** 100% ✅
-- **Documentation Coverage:** 100% ✅
-- **Security Validation:** Complete ✅
-
----
-
-## 🎯 Release Decision
-
-### Go/No-Go Criteria
-
-**✅ GO FOR RELEASE**
-
-All acceptance criteria met:
-- ✅ All production features implemented
-- ✅ Comprehensive testing complete
-- ✅ Complete documentation
-- ✅ Performance targets met
-- ✅ Security validation complete
-- ✅ Stability validated
-- ✅ Build and packaging verified
-
-### Known Limitations
-
-1. **Enterprise Features:** Advanced security, high availability, and management interfaces are planned for Enterprise Version
-2. **Platform Testing:** Windows support needs additional real-world testing
-3. **Long-term Stability:** Additional long-term stability testing recommended for production deployments
-
-### Recommendations
-
-1. **Initial Deployment:** Start with small deployments and monitor
-2. **Gradual Rollout:** Expand deployment gradually
-3. **Monitoring:** Set up comprehensive monitoring from day one
-4. **Backup Strategy:** Implement backup procedures before production use
-5. **Documentation Review:** Review documentation with actual deployment scenarios
-
----
-
-## 📝 Release Notes Summary
-
-### What's New in v1.0.0
-
-- Complete DHCP protocol implementation
-- Advanced lease management with conflict resolution
-- Comprehensive DHCP options support
-- Multi-format configuration (JSON, YAML, INI)
-- Basic security features
-- Complete documentation
-- Comprehensive test suite
-- Cross-platform support
-
-### Breaking Changes
-
-None - This is the first stable release.
-
-### Deprecations
-
-None - First stable release.
-
-### Upgrade Notes
-
-N/A - First stable release.
-
----
-
-## ✅ Final Sign-Off
-
-**Production Version 1.0.0 is READY FOR RELEASE**
-
-- [x] Features: Complete
-- [x] Testing: Complete
-- [x] Documentation: Complete
-- [x] Quality: Validated
-- [x] Performance: Validated
-- [x] Security: Validated
-- [x] Stability: Validated
-
-**Recommendation:** **APPROVE FOR RELEASE**
-
----
-
-*Last Updated: December 2024*
-*Status: Production Ready - Release Candidate*
+*Previous “100% ready / GO FOR RELEASE” content was inaccurate relative to the repository state; retained only in git history.*
