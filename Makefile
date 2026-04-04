@@ -499,7 +499,9 @@ else ifeq ($(PLATFORM),freebsd)
 			fi; \
 		done; \
 	fi
-	python3 -m pip install --user bandit semgrep
+	python3 -m pip install --user bandit
+	@python3 -m pip install --user semgrep || \
+		echo "Note: semgrep was not installed via pip (FreeBSD: maturin/Rust wheels often fail). 'make security-scan' still runs bandit; for semgrep use a release binary or Docker — see https://semgrep.dev/docs/install"
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing development tools on Windows..."
 	@echo "Please run: scripts\\build-windows.bat --dev-deps"
