@@ -253,6 +253,8 @@ make package
 
 ### Package Types
 
+Names below use **`1.0.0` as an example**; the repository’s **CMake package version** is **0.3.0** until release tagging — verify filenames under `build/` after `cpack` or `make package`.
+
 #### Linux
 - **DEB:** `simple-dhcpd-production-1.0.0-linux-amd64.deb`
 - **RPM:** `simple-dhcpd-production-1.0.0-linux-amd64.rpm`

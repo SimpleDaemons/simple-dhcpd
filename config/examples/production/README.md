@@ -1,6 +1,6 @@
 # Production Configurations
 
-This directory contains enterprise-grade production configurations designed for mission-critical environments with high availability, security, and performance requirements.
+This directory contains **example** configurations for large or mission-critical **designs**. The **simple-dhcpd** binary is **pre–1.0** (see **`../../project/PROGRESS_REPORT.md`**); validate behavior and scale in your environment — examples may describe features still **roadmap-only** or partially implemented.
 
 ## Files
 

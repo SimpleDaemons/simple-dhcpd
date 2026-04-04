@@ -1,8 +1,10 @@
 # Enterprise Version Documentation
 
-**Version:** Foundation Complete (v1.0.0 Alpha in development)
-**License:** BSL 1.1 (Business Source License 1.1)
-**Status:** 🚧 ~15% Complete - Foundation Ready
+**Version:** Foundation Complete (v1.0.0 Alpha in development)  
+**License:** BSL 1.1 (Business Source License 1.1)  
+**Status:** 🚧 ~15% Complete - Foundation Ready  
+
+**Apache 2.0 production line:** See **[../../project/PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)** — **pre–1.0**, with **`ctest`** green on the default test target. This Enterprise guide is **roadmap** for a future product line.
 
 ---
 

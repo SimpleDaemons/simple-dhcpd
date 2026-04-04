@@ -1,23 +1,23 @@
-# Minimal Simple DHCP Daemon Configuration
-# This is the simplest possible configuration
-
-server:
-  listen_addresses:
-    - "0.0.0.0:67"
-  enable_logging: true
-  enable_security: false
-  max_leases: 1000
-
-subnets:
-  - name: "default"
-    network: "192.168.1.0"
-    prefix_length: 24
-    range_start: "192.168.1.100"
-    range_end: "192.168.1.200"
-    gateway: "192.168.1.1"
-    dns_servers:
-      - "192.168.1.1"
-      - "8.8.8.8"
-    domain_name: "local"
-    lease_time: 86400
-    max_lease_time: 172800
+dhcp:
+  listen:
+  - 0.0.0.0:67
+  maxLeases: 1000
+  enableLogging: true
+  enableSecurity: false
+  subnets:
+  - name: default
+    network: 192.168.1.0
+    prefixLength: 24
+    rangeStart: 192.168.1.100
+    rangeEnd: 192.168.1.200
+    gateway: 192.168.1.1
+    dnsServers:
+    - 192.168.1.1
+    - 8.8.8.8
+    domainName: local
+    leaseTime: 86400
+    maxLeaseTime: 172800
+  security: {}
+  performance: {}
+  logging: {}
+  monitoring: {}

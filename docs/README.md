@@ -7,16 +7,17 @@ Welcome to the Simple DHCP Daemon documentation. This guide will help you unders
 Simple DHCP Daemon is available in three versions, each designed for different deployment scenarios:
 
 ### 🏭 Production Version
-**License:** Apache 2.0
-**Status:** ✅ 100% Complete - Ready for v1.0.0 Release
+**License:** Apache 2.0  
+**Status:** **Pre–1.0** (CMake **0.3.0**) — core daemon + **default `ctest` suite passing** (60 tests). See **[project/PROGRESS_REPORT.md](../project/PROGRESS_REPORT.md)** before treating docs as “shipped 1.0.”
+
 **Target:** Small to medium deployments, single-server installations
 
-- Complete DHCP protocol implementation (DORA process)
-- Advanced lease management with conflict resolution
-- Basic security features (Option 82, security logging, trusted relay agents)
-- Multi-format configuration (JSON, YAML, INI)
-- Comprehensive documentation
-- Full test coverage (unit, integration, performance, load)
+- DHCP protocol handling in the **production binary** (DORA-style path)
+- **LeaseManager** or **AdvancedLeaseManager** (text `LEASE:`/`STATIC:` file), config-selected
+- **Security** optional on the packet path when enabled (`DhcpSecurityManager`)
+- Multi-format configuration (**JSON** validated; YAML/INI partial)
+- Documentation **aligned toward honest status** (April 2026); deep pages may still over-claim
+- Automated tests: **unit, integration-style, performance, load** (in-process; not full black-box UDP:67)
 
 **Documentation:** [Production Version Documentation](production/README.md)
 
@@ -203,7 +204,6 @@ If you find any issues with the documentation or have suggestions for improvemen
 
 ---
 
-**Last Updated**: December 2024
-**Production Version**: 1.0.0 (Ready for Release)
-**Enterprise Version**: Foundation Complete
-**Datacenter Version**: Planned
+**Last updated:** April 2026  
+**Production version (CMake):** 0.3.0 — **pre–1.0** ([PROGRESS_REPORT.md](../project/PROGRESS_REPORT.md))  
+**Enterprise / Datacenter:** Roadmap / planned (see product-specific READMEs)

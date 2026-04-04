@@ -1,5 +1,7 @@
 # Simple DHCP Daemon - Development Roadmap
 
+**April 2026:** For **verified** build, test, and wiring status, see **[project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md)**. This roadmap is **planning**; phase checkmarks are not a substitute for CI and field validation.
+
 ## Overview
 The Simple DHCP Daemon (simple-dhcpd) is a lightweight, high-performance DHCP server implementation designed for modern networking environments. This roadmap outlines the development phases and milestones for creating a production-ready DHCP daemon.
 

@@ -1,6 +1,6 @@
 # Production Version Deployment Guide
 
-**Version:** 1.0.0
+**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
 **License:** Apache 2.0
 
 ---
@@ -148,4 +148,4 @@ See [Troubleshooting Guide](../shared/troubleshooting/README.md) for common issu
 ---
 
 **Last Updated:** December 2024
-**Version:** 1.0.0
+**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)

@@ -1,14 +1,14 @@
 # Production Version Documentation
 
-**Version:** 1.0.0
-**License:** Apache 2.0
-**Status:** ✅ 100% Complete - Ready for Release
+**CMake package version:** 0.3.0  
+**License:** Apache 2.0  
+**Status:** **Pre–1.0** — see **[project/PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)** for build, **`ctest`**, and server wiring. These guides describe the **intended** production line; some sections remain **aspirational**.
 
 ---
 
 ## Overview
 
-The Production Version of Simple DHCP Daemon is a complete, production-ready DHCP server designed for small to medium deployments. It provides all essential DHCP functionality with advanced lease management, basic security features, and comprehensive documentation.
+The Production line is a **C++17 DHCP server** for small to medium deployments. The **daemon builds**, optional **security** and **advanced lease file** backends are **wired into `DhcpServer`** from configuration, and the **default test binary passes** locally — **v1.0.0** still requires your own **field and CI** validation.
 
 ## What's Included
 
@@ -22,8 +22,8 @@ The Production Version of Simple DHCP Daemon is a complete, production-ready DHC
 - ✅ Multi-format configuration (JSON, YAML, INI)
 - ✅ Basic security features (Option 82, security logging, trusted relay agents)
 - ✅ Cross-platform support (Linux, macOS, Windows)
-- ✅ Comprehensive testing (unit, integration, performance, load)
-- ✅ Complete documentation
+- ✅ Automated testing (unit, integration-style, performance, load) in default `simple_dhcpd_tests` target  
+- ⚠️ **Not** a substitute for black-box DHCP testing on real networks
 
 ### Performance
 - **Throughput:** >10,000 requests per second
@@ -96,7 +96,7 @@ The Production Version of Simple DHCP Daemon is a complete, production-ready DHC
 - Lease renewal with grace periods
 - Automatic lease expiration and cleanup
 - Conflict detection and resolution
-- Lease database persistence
+- Lease persistence (**text file** for advanced backend; not SQLite)
 
 ### Security
 - Option 82 (Relay Agent Information) support
@@ -232,6 +232,6 @@ The Production Version provides a solid foundation. If you need:
 
 ---
 
-**Last Updated:** December 2024
-**Version:** 1.0.0
-**Status:** Production Ready
+**Last updated:** April 2026  
+**Version label:** 0.3.0 (pre–1.0)  
+**Status:** See [PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)

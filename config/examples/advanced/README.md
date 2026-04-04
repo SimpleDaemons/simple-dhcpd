@@ -20,7 +20,7 @@ High-availability setup with multiple DHCP servers:
 - **Failover Support**: Backup servers for critical services
 - **High Capacity**: 10,000+ leases supported
 - **Advanced Monitoring**: Comprehensive logging and rotation
-- **Production Ready**: Enterprise-grade configuration
+- **Enterprise-style example** (daemon remains **pre–1.0** — see `project/PROGRESS_REPORT.md`)
 
 **Use case**: Large enterprises, mission-critical applications, high-availability environments
 
