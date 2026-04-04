@@ -5,8 +5,8 @@
 **CMake package version:** 0.3.0  
 **Honest status:** [PROGRESS_REPORT.md](PROGRESS_REPORT.md)
 
-**Production:** Pre–1.0 — **tests do not compile**; security/advanced lease **not wired** into `DhcpServer`.  
-**Next milestone:** Repair test suite + integrate or document scope for security/advanced lease.
+**Production:** Pre–1.0 — **`ctest`: 60/60 passing** (Apr 2026); `DhcpServer` wires optional **security** and **advanced lease DB** from config; remaining gaps are field hardening, coverage metrics, and multi-platform validation (see [PROGRESS_REPORT.md](PROGRESS_REPORT.md)).  
+**Next milestone:** Operational burn-in, real relay/multi-subnet testing, and release packaging checks.
 
 ---
 
@@ -19,10 +19,10 @@
 
 # Production Version Roadmap
 
-> **April 2026:** Checkboxes below are **mostly historical**. They do **not** reflect a passing test suite today (`simple_dhcpd_tests` fails to compile). Use [PROGRESS_REPORT.md](PROGRESS_REPORT.md) before trusting “complete” markers.
+> **April 2026:** The **default Google Test binary builds and passes** (`simple_dhcpd_tests`, 60 tests). Phase checklists below remain **historical planning**; treat [PROGRESS_REPORT.md](PROGRESS_REPORT.md) as the honest integration and quality bar.
 
-## Status (legacy heading — not verified)
-**Prior claim:** 100% complete / release candidate — **retracted** until tests pass and integration matches scope.
+## Status (verified April 2026)
+**Tests:** `ctest` 60/60 green after API alignment, config/JSON fixes, UDP receive shutdown behavior, and load-test pool sizing. **Release:** still pre–1.0 until operational validation and packaging are exercised on target platforms.
 
 ---
 

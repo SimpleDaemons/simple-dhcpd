@@ -5,21 +5,21 @@
 
 ## 🎯 Overview
 
-This document summarized intended Phase 3 / production-completion work. **It overstated shipping status.** As of April 2026:
+This document summarized intended Phase 3 / production-completion work. **It historically overstated shipping status.** As of **April 2026 (reconciled)**:
 
-- The **production binary builds**, but the **Google Test target does not compile** (API mismatch).
-- **`DhcpSecurityManager`** and **`AdvancedLeaseManager`** are **not integrated** into `DhcpServer`.
+- The **production binary builds**; **`simple_dhcpd_tests` builds and passes** (`ctest`, 60 tests).
+- **`DhcpSecurityManager`** and **`AdvancedLeaseManager`** are **integrated into `DhcpServer`** behind configuration.
 
-See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture. The sections below describe **what was built in the tree**, not what is verified or wired into the default daemon.
+See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the **pre–1.0** honest bar. The sections below mix **historical phase labels** with **code that exists**; they are **not** a promise of v1.0.0 readiness.
 
 ---
 
 ## ✅ Completed Features (historical labels)
 
-**April 2026:** “100% complete” below means **substantial code exists**, not *integrated into `DhcpServer`*, *covered by passing tests*, or *shippable 1.0*. Prefer [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
+**April 2026:** “100% complete” labels below mean **substantial subsystem code exists**, not necessarily *full RFC surface* or *shippable 1.0*. Security/advanced lease are **wired into `DhcpServer`** when enabled in config. Prefer [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
 
 ### 1. Advanced Lease Management
-**Status:** Code present — **not default server backend**; DB load path incomplete for dynamic leases
+**Status:** **Optional `DhcpServer` backend** when `advanced_lease_database` is set; text **`LEASE:`/`STATIC:`** persistence; **`load_database()`** loads dynamic leases into the active set
 
 **Implementation:**
 - `AdvancedLeaseManager` - Advanced lease management with conflict resolution
@@ -35,7 +35,7 @@ See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture.
 - `include/simple-dhcpd/production/features/advanced_manager.hpp`
 - `src/production/features/advanced_manager.cpp`
 
-**Impact:** DHCP server now has production-ready lease management with conflict resolution and persistence.
+**Impact:** Optional server backend with text-file persistence and conflict helpers — see **`PROGRESS_REPORT.md`** for scope.
 
 ---
 
@@ -265,31 +265,27 @@ See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture.
 - **DHCP Options:** 70% (basic support)
 - **Security:** 60% (basic features)
 
-### After Phase 3 + Recent Work
-- **Production Version:** **100% complete** ⬆️ +50% (FULLY COMPLETE)
-- **Lease Management:** 100% ✅
-- **DHCP Options:** 100% ✅
-- **Security (Production):** 100% ✅
-- **Testing:** 100% ✅ ⬆️ +60% (unit, integration, performance, load)
-- **Documentation:** 100% ✅
-- **Production Readiness:** 100% ✅
+### After Phase 3 + April 2026 reconciliation
+- **Production Version:** **Pre–1.0** — core + **green default test suite**; field and CI bars remain ([PRODUCTION_READINESS.md](PRODUCTION_READINESS.md)).
+- **Lease Management:** Strong in-tree; two backends (basic / advanced text file).
+- **DHCP Options:** Substantial; server builds many options inline — verify per deployment.
+- **Security (Production):** **On datapath** when enabled in config.
+- **Testing:** **60/60** default `ctest` — not full black-box DHCP.
+- **Documentation:** Reconciled toward honest status; deep pages may still drift.
+- **Production Readiness:** **Not** claiming v1.0.0 until ops checklist closes.
 
 ---
 
 ## 🔧 Technical Improvements
 
-### Code Quality
-- All code compiles without errors
-- All tests pass
-- No linter errors
-- Proper error handling added
-- Platform-specific code properly guarded
+### Code quality (April 2026)
+- Production + default tests **compile**; **`ctest`** **60/60** on verified setup.
+- Security, advanced lease, statistics, decline hold **config-gated** in `DhcpServer`.
+- Platform-specific code remains a **validation** topic (especially Windows).
 
 ### Integration
-- All features properly integrated into main flow
-- Configuration-driven feature enabling
-- Proper fallback mechanisms
-- Comprehensive logging
+- Lease backend and security **selected via `DhcpConfig`**
+- JSON config **validated** on load (`dhcp.listen` + `dhcp.subnets` required)
 
 ---
 
@@ -311,28 +307,11 @@ See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture.
 
 ## 🚀 What's Next
 
-### Immediate (Production Version 1.0.0) ✅ COMPLETE
-1. ✅ **Integration Testing** - COMPLETE
-   - ✅ Cross-platform compatibility testing
-   - ✅ Protocol compatibility testing
-   - ✅ Performance benchmarking
-   - ✅ Security testing
-
-2. ✅ **Load Testing** - COMPLETE
-   - ✅ High request rate testing
-   - ✅ Concurrent lease testing
-   - ✅ Memory usage testing
-   - ✅ Stress testing
-
-3. ✅ **Final Polish** - COMPLETE
-   - ✅ Production readiness validation
-   - ✅ All acceptance criteria met
-   - ✅ Release candidate ready
-
-4. **Release v1.0.0**
-   - Tag release
-   - Publish release notes
-   - Announce availability
+### Immediate (pre–1.0)
+1. **CI** — Reproducible **`ctest`** on Linux + macOS runners.
+2. **Field / lab DHCP** — Real clients; relay scenarios as needed.
+3. **Coverage** — Tool-generated report or explicit disclaimer.
+4. **Release v1.0.0** — Only after [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) minimum bar.
 
 ### Short Term (Enterprise Version 1.0.0)
 1. **Advanced Security Features**
@@ -361,18 +340,16 @@ See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture.
 
 ## 🎉 Achievements
 
-### Major Milestones
-- ✅ All Phase 3 advanced features integrated
-- ✅ Complete DHCP options system
-- ✅ Comprehensive security framework
-- ✅ Advanced lease management
-- ✅ Multi-format configuration support
+### Major milestones (accurate)
+- ✅ Phase 3 feature code in tree; **server wiring** for security/advanced/decline/stats (April 2026)
+- ✅ Default **automated test suite passing**
+- ⚠️ **v1.0.0** — still gated on ops/field validation
 
 ### Code Statistics
 - **Files Modified:** 10+
 - **Lines Added:** ~2,000+
 - **Features Completed:** 5 major feature sets
-- **Tests Passing:** All core tests
+- **Tests passing:** 60/60 default `ctest` (see `PROGRESS_REPORT.md`)
 
 ---
 
@@ -388,8 +365,8 @@ See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture.
 - [x] Integration Testing (DORA, cross-platform, protocol, security)
 - [x] Performance Testing (throughput, latency, resources)
 - [x] Load Testing (RPS, concurrent leases, memory, stress)
-- [x] Production Documentation (100%)
-- [x] Production Readiness Validation
+- [x] Project documentation reconciled (pre–1.0 honest status)
+- [ ] Production readiness **checklist** — open items in `PRODUCTION_READINESS.md`
 - [x] Product Line Reorganization
 - [x] Documentation Updates
 - [x] Build System Updates
@@ -402,14 +379,13 @@ See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture.
 ```text
 ✅ CMake configuration: SUCCESS
 ✅ simple-dhcpd (production): compiles
-❌ simple_dhcpd_tests: FAILS TO COMPILE (parser/lease/message API drift)
+✅ simple_dhcpd_tests: compiles; ctest 60/60 (developer verification)
 ```
 
-### Feature Verification
-- ✅ Lease management verified (code logic confirmed)
-- ✅ Options system verified (implementation confirmed)
-- ✅ Security features verified (integration confirmed)
-- ✅ Configuration support verified (parsing confirmed)
+### Feature verification
+- ✅ Lease paths exercised by tests + server build
+- ✅ Security modules exercised by `test_security.cpp` + server wiring
+- ✅ JSON configuration validation and subnet parsing covered by config tests
 
 ---
 
