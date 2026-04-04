@@ -1,6 +1,6 @@
 # Simple DHCP Daemon - Project Status
 
-**Reality check (April 2026):** For accurate, evidence-based status (build, tests, stubs, unwired code), see **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)**. The sections below mix **implemented behavior** with **aspirational or historical** claims; they are being phased to match the codebase.
+**Reality check (April 2026):** For accurate, evidence-based status (build, **`ctest`**, server wiring), see **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)**. The sections below still mix **implemented behavior** with **aspirational** examples; prefer **`PROGRESS_REPORT.md`** when they conflict.
 
 ## 🎯 Project Overview
 
@@ -50,7 +50,7 @@ Simple DHCP Daemon is a DHCP server in C++17 aiming for:
 - ✅ **Lease Renewal**: Automatic renewal handling with grace periods
 - ✅ **Lease Expiration**: Cleanup and reclamation of expired leases
 - ✅ **Conflict Resolution**: Multiple strategies for lease conflicts
-- ✅ **Database Persistence**: SQLite-based lease storage (structure ready)
+- ⚠️ **Lease persistence**: Advanced backend uses **text** `LEASE:`/`STATIC:` files (not SQLite)
 - ✅ **Lease Analytics**: Utilization monitoring and historical tracking
 
 ### 4. DHCP Options System
@@ -109,13 +109,12 @@ Simple DHCP Daemon is a DHCP server in C++17 aiming for:
 The project maintains two distinct product lines:
 
 ### Production Version
-**Status:** **Pre–1.0 / alpha** — core daemon builds; **Google Test target does not compile** (API drift); `DhcpSecurityManager` and `AdvancedLeaseManager` are **not wired into `DhcpServer`**.
+**Status:** **Pre–1.0 / late alpha → approaching beta** — core daemon builds; **`simple_dhcpd_tests` passes** (`ctest`, 60 tests); **`DhcpServer`** uses **`LeaseManager`** or **`AdvancedLeaseManager`** (config); optional **`DhcpSecurityManager`** on the packet path when enabled; **statistics**, **config-driven options**, **declined-IP hold**.
 
-- ✅ Core DHCP handling and `LeaseManager` in the live server path
-- ✅ Multi-format configuration (JSON primary; YAML/INI per implementation)
-- ⚠️ “Advanced” lease/security: code present in library, **not used** by default server
-- ❌ Test suite: **broken at compile time** (see `PROGRESS_REPORT.md`)
-- ⚠️ Several **hardcoded** DHCP options / server ID and **stub** statistics in server
+- ✅ Core DHCP handling and lease backends on the live server path
+- ✅ Multi-format configuration (JSON primary + validation; YAML/INI per implementation)
+- ✅ Automated test suite (default binary) green — see `PROGRESS_REPORT.md`
+- ⚠️ Relay / multi-subnet selection and some docs still **lag** real-world edge cases
 - **License:** Apache 2.0
 
 ### Enterprise Version
@@ -136,17 +135,17 @@ The project maintains two distinct product lines:
 
 ## 🎉 Recent achievements (accurate)
 
-1. **Core server + build**: Production CMake target produces a working binary on macOS (developer machine).
-2. **Structured codebase**: Clear split of core DHCP, lease, parser, network, config; optional production feature sources compiled into the library.
-3. **Security and advanced lease modules**: Large implementations exist for future integration or side use.
-4. **Honest documentation pass**: `PROGRESS_REPORT.md` reflects build/test and integration reality (April 2026).
+1. **Core server + build**: Production CMake target produces a working binary; **`ctest`** green on developer verification (April 2026).
+2. **Structured codebase**: Clear split of core DHCP, lease, parser, network, config; production feature sources in the same library.
+3. **Security and advanced lease**: **Wired into `DhcpServer`** behind configuration (see `PROGRESS_REPORT.md`).
+4. **Honest documentation**: `PROGRESS_REPORT.md`, this file, and user-facing docs updated to **pre–1.0** accurate language.
 
 ## 🔄 Next steps (Production)
 
-1. **Repair tests** — Fix compile errors vs `DhcpParser`, `DhcpMessage`, `LeaseManager::allocate_lease`.
-2. **Integrate or scope** — Wire `DhcpSecurityManager` / `AdvancedLeaseManager` into `DhcpServer`, or document them as experimental libraries only.
-3. **Remove hardcoded DHCP options** where config should drive behavior; implement decline / declined-IP policy.
-4. **Re-measure** performance and coverage with passing tests; then consider **v1.0.0** tag.
+1. **Field validation** — Real clients, relays, and multi-subnet layouts; tighten subnet selection where needed.
+2. **CI breadth** — Linux + macOS (and Windows if claimed) runners; reproducible `ctest`.
+3. **Coverage** — Publish tool-generated coverage; remove hand-waved percentages.
+4. **Packaging** — Verify CPack/Docker/systemd artifacts on target distros; then consider **v1.0.0** tag.
 
 ### Enterprise Version 1.0.0 (Q2 2025)
 1. **Advanced Security Features**: Complete advanced security implementation
@@ -168,13 +167,13 @@ The project maintains two distinct product lines:
 
 ## 📈 Project health
 
-**Production:** 🟡 **In progress** — core promising; **tests broken**; advanced modules **unintegrated**.
+**Production:** 🟢 **Core + tests healthy** — default suite passes; **pre–1.0** until ops/field validation.
 
 **Enterprise:** 🟡 **Roadmap** — not separately shippable.
 
-**Strengths:** Clear architecture, working main binary build, substantial optional modules for future integration.
+**Strengths:** Clear architecture, working binary, security/advanced paths available from config, honest status docs.
 
-**Risks:** Documentation historically overstated readiness; security not enforced on live path; no green automated test run until suite is fixed.
+**Risks:** Marketing README bullets can still oversell; YAML depth; black-box DHCP testing still thin.
 
 ## 🎯 Success Criteria
 
@@ -189,7 +188,7 @@ The project has successfully achieved its primary goals for v0.3.0:
 
 ## Release stance
 
-**Production v1.0.0:** **Not recommended** until tests compile and pass and integration claims match the server path. See `PROGRESS_REPORT.md`.
+**Production v1.0.0:** **Not recommended** until field/CI/packaging bars in `PRODUCTION_READINESS.md` are satisfied. **`ctest` is green** — see `PROGRESS_REPORT.md`.
 
 **Enterprise:** No release; planning only.
 

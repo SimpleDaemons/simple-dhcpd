@@ -8,72 +8,41 @@
 
 ## 🎯 Overview
 
-This document tracks technical debt. **Earlier revisions incorrectly marked the test program as complete.** See [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
+This document tracks technical debt. **Earlier revisions overstated shipping readiness** (e.g. tests “complete” while broken). The **default test binary now passes** — see [PROGRESS_REPORT.md](PROGRESS_REPORT.md) for the current bar.
 
-**Priority theme:** Fix test compilation, integrate or scope unwired modules, remove hardcoded DHCP fields.
+**Priority theme:** CI parity, coverage metrics, relay/subnet edge cases, YAML depth, dead test files.
+
+---
+
+## 🟢 Recently closed (April 2026)
+
+### Default Google Test binary (`simple_dhcpd_tests`)
+**Status:** ✅ **Resolved** — target **builds**; **`ctest`** reports **60/60** passing (parser, lease, config, security, network, integration-style, performance, load).
+
+**Follow-ups (lower urgency):**
+- [ ] Add or remove **`test_dhcp_parser.cpp`** / **`test_lease_manager.cpp`** if they should be part of the default binary.
+- [ ] Add **black-box** UDP:67 DHCP tests (optional; current suite is mostly in-process).
 
 ---
 
 ## 🔴 High Priority (Critical)
 
-### 1. Test suite does not compile
-**Status:** ❌ **OPEN**
-**Priority:** 🔴 **CRITICAL**
+### 1. Declined IP Address Tracking
+**Status:** ✅ **Implemented** (verify behavior under load)
 
-**Current state (April 2026):**
-- `simple_dhcpd_tests` **fails to build**: `DhcpParser::parse_message` is **static** (return value), tests use instance + out-parameter; `allocate_lease` requires **three** arguments; `DhcpMessage` uses **`header.xid`** etc., not top-level `xid`/`yiaddr`.
-- `test_dhcp_parser.cpp` / `test_lease_manager.cpp` exist but are **not** in `tests/CMakeLists.txt`.
+**Location:** `LeaseManager::add_declined_ip`, `DhcpServer::handle_decline`, config **`decline_hold_seconds`**.
 
-**Action items:**
-- [ ] Update integration, performance, and load tests to match current APIs.
-- [ ] Optionally add compatibility wrappers in code (less ideal than fixing tests).
-- [ ] Add missing test sources to CMake or delete dead tests.
+**Remaining:**
+- [ ] Dedicated unit/integration tests that assert a declined IP is not re-offered inside the hold window.
 
 ---
 
-### 2. Declined IP Address Tracking
-**Status:** ❌ **Not Implemented**
-**Priority:** 🔴 **HIGH**
-**Estimated Effort:** 8-12 hours
-
-**Location:** `src/core/dhcp/server.cpp` (Decline handler)
-
-**Current State:**
-```cpp
-// TODO: Add IP to declined list to prevent reallocation for a period
-// This would require extending the lease manager with declined IP tracking
-```
-
-**Issue:**
-- When a client sends DHCP Decline, the IP is released but can be immediately reallocated
-- This can cause repeated conflicts if the IP is actually in use
-
-**Impact:**
-- Potential IP address conflicts
-- Poor user experience with repeated failures
-- RFC compliance concern
-
-**Solution:**
-- Extend `LeaseManager` with declined IP tracking
-- Implement time-based blacklist (e.g., 1 hour)
-- Add configuration for blacklist duration
-
-**Action Items:**
-- [ ] Add declined IP tracking to `LeaseManager`
-- [ ] Implement time-based blacklist
-- [ ] Add configuration option for blacklist duration
-- [ ] Add tests for declined IP handling
-
-**Target:** v0.3.0 release
-
----
-
-### 3. YAML Configuration Parser
+### 2. YAML Configuration Parser
 **Status:** ⚠️ **Partial Implementation**
 **Priority:** 🔴 **HIGH**
 **Estimated Effort:** 12-16 hours
 
-**Location:** `src/config.cpp:281-284`
+**Location:** `src/core/config/manager.cpp` (`parse_yaml_config`)
 
 **Current State:**
 ```cpp
@@ -106,41 +75,22 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 4. Database Persistence Testing
-**Status:** ⚠️ **Structure Ready, Needs Testing**
+### 3. Lease persistence (advanced backend)
+**Status:** ⚠️ **Text `LEASE:`/`STATIC:` file — needs hardening**
 **Priority:** 🔴 **HIGH**
-**Estimated Effort:** 16-20 hours
 
-**Current State:**
-- SQLite database structure implemented
-- Persistence logic exists but not fully tested
-- Backup/restore functionality needs verification
+**Current state:** `AdvancedLeaseManager` persists to a **line-oriented file**, not SQLite. **`load_database()`** loads dynamic `LEASE:` rows into the active set (April 2026).
 
-**Issues:**
-- No production testing of database operations
-- Backup/restore not verified
-- No migration strategy for schema changes
-- No performance testing with large datasets
-
-**Impact:**
-- Risk of data loss
-- Unknown performance characteristics
-- Difficult to recover from failures
-
-**Action Items:**
-- [ ] Add comprehensive database tests
-- [ ] Test backup/restore procedures
-- [ ] Implement schema migration system
-- [ ] Performance test with 100K+ leases
-- [ ] Add database integrity checks
-
-**Target:** v0.3.0 release
+**Action items:**
+- [ ] Fuzz / corruption tests for lease files
+- [ ] Backup/restore and crash-recovery procedures documented and tested
+- [ ] Performance with very large files
 
 ---
 
 ## 🟡 Medium Priority (Important)
 
-### 5. DHCP Options Configuration Persistence
+### 4. DHCP Options Configuration Persistence
 **Status:** ❌ **Not Implemented**
 **Priority:** 🟡 **MEDIUM**
 **Estimated Effort:** 10-14 hours
@@ -179,7 +129,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 6. Memory Management Review
+### 5. Memory Management Review
 **Status:** ⚠️ **Needs Review**
 **Priority:** 🟡 **MEDIUM**
 **Estimated Effort:** 8-12 hours
@@ -211,7 +161,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 7. Error Handling Improvements
+### 6. Error Handling Improvements
 **Status:** ⚠️ **Partial**
 **Priority:** 🟡 **MEDIUM**
 **Estimated Effort:** 12-16 hours
@@ -244,7 +194,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 8. Performance Optimization
+### 7. Performance Optimization
 **Status:** ⚠️ **Basic Optimization Only**
 **Priority:** 🟡 **MEDIUM**
 **Estimated Effort:** 20-30 hours
@@ -277,7 +227,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 9. Logging Improvements
+### 8. Logging Improvements
 **Status:** ⚠️ **Functional but Could Be Better**
 **Priority:** 🟡 **MEDIUM**
 **Estimated Effort:** 8-12 hours
@@ -310,7 +260,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 10. Configuration Validation Enhancement
+### 9. Configuration Validation Enhancement
 **Status:** ⚠️ **Basic Validation Only**
 **Priority:** 🟡 **MEDIUM**
 **Estimated Effort:** 10-14 hours
@@ -345,7 +295,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ## 🟢 Low Priority (Nice to Have)
 
-### 11. Code Documentation
+### 10. Code Documentation
 **Status:** ⚠️ **Partial**
 **Priority:** 🟢 **LOW**
 **Estimated Effort:** 16-20 hours
@@ -373,7 +323,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 12. Refactoring Opportunities
+### 11. Refactoring Opportunities
 **Status:** ⚠️ **Code Works but Could Be Better**
 **Priority:** 🟢 **LOW**
 **Estimated Effort:** 20-30 hours
@@ -406,7 +356,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 13. Platform-Specific Code
+### 12. Platform-Specific Code
 **Status:** ⚠️ **Basic Support**
 **Priority:** 🟢 **LOW**
 **Estimated Effort:** 12-16 hours
@@ -431,7 +381,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 14. Dependency Management
+### 13. Dependency Management
 **Status:** ⚠️ **Basic**
 **Priority:** 🟢 **LOW**
 **Estimated Effort:** 8-12 hours
@@ -456,7 +406,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ---
 
-### 15. Build System Improvements
+### 14. Build System Improvements
 **Status:** ⚠️ **Functional**
 **Priority:** 🟢 **LOW**
 **Estimated Effort:** 8-12 hours
@@ -491,7 +441,7 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 - **Low Priority:** 5 items (~64-90 hours)
 
 ### By Category
-- **Testing:** 1 item (High)
+- **Testing:** follow-ups (black-box DHCP, optional extra sources) — default suite **green**
 - **Code Quality:** 6 items (Mixed)
 - **Features:** 3 items (Mixed)
 - **Infrastructure:** 5 items (Low-Medium)
@@ -505,15 +455,14 @@ This document tracks technical debt. **Earlier revisions incorrectly marked the 
 
 ## 🎯 Debt Reduction Strategy
 
-### Phase 1: Critical Issues (Production Version 1.0.0) ✅ COMPLETE
-**Timeline:** 1-2 months
-**Status:** ✅ COMPLETE
+### Phase 1: Critical path (pre–1.0)
+**Status:** **In progress** — default **`ctest` green**; declined-IP hold **implemented**; YAML still minimal; lease-file persistence needs hardening.
 
-1. ✅ Integration testing (COMPLETE)
-2. ✅ Performance/load testing (COMPLETE)
-3. ⚠️ Declined IP tracking (deferred - not blocking release)
-4. ⚠️ YAML parser replacement (deferred - works for Production use)
-5. ⚠️ Database persistence testing (deferred - structure ready)
+1. ✅ Default automated tests build and pass (`simple_dhcpd_tests`)
+2. ✅ In-process integration / performance / load tests in CI locally
+3. ✅ Declined IP hold (`decline_hold_seconds` + `add_declined_ip`)
+4. ⚠️ YAML: replace or deepen (`yaml-cpp` / stricter schema)
+5. ⚠️ Advanced lease file: corruption, backup, scale testing
 
 ### Phase 2: Important Improvements (Enterprise Version 1.0.0)
 **Timeline:** 3-4 months
