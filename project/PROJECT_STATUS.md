@@ -1,8 +1,10 @@
 # Simple DHCP Daemon - Project Status
 
+**Reality check (April 2026):** For accurate, evidence-based status (build, tests, stubs, unwired code), see **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)**. The sections below mix **implemented behavior** with **aspirational or historical** claims; they are being phased to match the codebase.
+
 ## 🎯 Project Overview
 
-Simple DHCP Daemon is a high-performance, feature-rich DHCP server written in C++ with support for:
+Simple DHCP Daemon is a DHCP server in C++17 aiming for:
 - Multi-platform deployment (Linux, macOS, Windows)
 - Complete DHCP protocol implementation (DORA process)
 - Advanced lease management with conflict resolution
@@ -107,28 +109,20 @@ Simple DHCP Daemon is a high-performance, feature-rich DHCP server written in C+
 The project maintains two distinct product lines:
 
 ### Production Version
-**Status:** 🚀 **100% Complete** - Ready for v1.0.0 Release
+**Status:** **Pre–1.0 / alpha** — core daemon builds; **Google Test target does not compile** (API drift); `DhcpSecurityManager` and `AdvancedLeaseManager` are **not wired into `DhcpServer`**.
 
-- ✅ Working DHCP server with full protocol support
-- ✅ Advanced lease management with conflict resolution
-- ✅ Basic security features (Option 82, security logging, trusted relay agents)
-- ✅ Multi-format configuration support (JSON, YAML, INI)
-- ✅ Complete documentation (100% - installation, configuration, troubleshooting, performance tuning, security, deployment, monitoring, backup, maintenance)
-- ✅ Comprehensive testing (unit, integration, performance, load tests - 100% complete)
-- ✅ Build and packaging system
-- ✅ Cross-platform support
-- ✅ Production readiness validated
+- ✅ Core DHCP handling and `LeaseManager` in the live server path
+- ✅ Multi-format configuration (JSON primary; YAML/INI per implementation)
+- ⚠️ “Advanced” lease/security: code present in library, **not used** by default server
+- ❌ Test suite: **broken at compile time** (see `PROGRESS_REPORT.md`)
+- ⚠️ Several **hardcoded** DHCP options / server ID and **stub** statistics in server
 - **License:** Apache 2.0
 
 ### Enterprise Version
-**Status:** 🚀 **15% Complete** (Foundation Complete)
+**Status:** **Roadmap / foundation only** (same core as production; enterprise features largely unimplemented)
 
-- ✅ All Production Version features included
-- ⚠️ Advanced security features (in progress)
-- 📋 High availability features (planned)
-- 📋 Advanced management interfaces (planned)
-- 📋 Integration APIs (planned)
-- **License:** BSL 1.1 (Business Source License 1.1)
+- Shares production core; **no separate production-grade enterprise datapath** yet
+- **License:** BSL 1.1 (Business Source License 1.1) — when shipped
 
 ## 📊 Project Metrics
 
@@ -140,28 +134,19 @@ The project maintains two distinct product lines:
 - **Package Formats**: 6 (DMG, PKG, DEB, RPM, TGZ, NSIS)
 - **Configuration Formats**: 3 (JSON, YAML, INI)
 
-## 🎉 Recent Achievements
+## 🎉 Recent achievements (accurate)
 
-1. ✅ **Production Version 100% Complete**: All features, testing, and documentation complete - READY FOR RELEASE
-2. ✅ **Comprehensive Testing Complete**: Integration, performance, and load tests implemented
-3. ✅ **Product Line Reorganization**: Separated Production and Enterprise versions
-4. ✅ **Testing Expansion**: Network layer, configuration parsing, integration, performance, and load tests
-5. ✅ **Documentation Complete**: All Production Version documentation finalized (100%)
-6. ✅ **Production Readiness**: All acceptance criteria met, validated and ready for v1.0.0
-7. ✅ **Phase 3 Complete**: Advanced DHCP features fully implemented
-8. ✅ **Security Framework**: Complete security feature set
-9. ✅ **Lease Management**: Advanced lease management with conflict resolution
-10. ✅ **Options System**: Comprehensive DHCP options support
-11. ✅ **Multi-Format Config**: JSON, YAML, and INI support
+1. **Core server + build**: Production CMake target produces a working binary on macOS (developer machine).
+2. **Structured codebase**: Clear split of core DHCP, lease, parser, network, config; optional production feature sources compiled into the library.
+3. **Security and advanced lease modules**: Large implementations exist for future integration or side use.
+4. **Honest documentation pass**: `PROGRESS_REPORT.md` reflects build/test and integration reality (April 2026).
 
-## 🔄 Next Steps
+## 🔄 Next steps (Production)
 
-### Production Version 1.0.0 (Q1 2025) ✅ READY
-1. ✅ **Integration Testing**: Complete - Cross-platform and protocol compatibility tested
-2. ✅ **Performance Testing**: Complete - Load and stress testing done
-3. ✅ **Final Polish**: Complete - All validation done
-4. ✅ **Release Preparation**: Complete - Release candidate ready
-5. **Release**: Tag v1.0.0 and publish release notes
+1. **Repair tests** — Fix compile errors vs `DhcpParser`, `DhcpMessage`, `LeaseManager::allocate_lease`.
+2. **Integrate or scope** — Wire `DhcpSecurityManager` / `AdvancedLeaseManager` into `DhcpServer`, or document them as experimental libraries only.
+3. **Remove hardcoded DHCP options** where config should drive behavior; implement decline / declined-IP policy.
+4. **Re-measure** performance and coverage with passing tests; then consider **v1.0.0** tag.
 
 ### Enterprise Version 1.0.0 (Q2 2025)
 1. **Advanced Security Features**: Complete advanced security implementation
@@ -181,35 +166,15 @@ The project maintains two distinct product lines:
 3. **Advanced Monitoring**: Enhanced metrics and alerting
 4. **Production Ready**: Full enterprise feature set
 
-## 📈 Project Health
+## 📈 Project health
 
-**Production Version Status**: 🟢 **EXCELLENT** - 100% complete, PRODUCTION READY
+**Production:** 🟡 **In progress** — core promising; **tests broken**; advanced modules **unintegrated**.
 
-**Strengths**:
-- ✅ Working DHCP server with full protocol support
-- ✅ Comprehensive security features (basic production set)
-- ✅ Advanced lease management with conflict resolution
-- ✅ Professional documentation (100% complete)
-- ✅ Modern development practices
-- ✅ Comprehensive testing (unit, integration, performance, load - 100% complete)
-- ✅ Multi-format configuration support
-- ✅ Production readiness validated
-- ✅ All acceptance criteria met
+**Enterprise:** 🟡 **Roadmap** — not separately shippable.
 
-**Status**: ✅ **READY FOR v1.0.0 RELEASE**
+**Strengths:** Clear architecture, working main binary build, substantial optional modules for future integration.
 
-**Enterprise Version Status**: 🟡 **Foundation Complete** - 15% complete, building on Production Version
-
-**Strengths**:
-- ✅ Solid foundation (all Production features)
-- ✅ Clear roadmap for enterprise features
-- ✅ BSL 1.1 licensing model
-
-**Areas for Development**:
-- ⚠️ Advanced security features (in progress)
-- ⚠️ High availability features (planned)
-- ⚠️ Management interfaces (planned)
-- ⚠️ Integration APIs (planned)
+**Risks:** Documentation historically overstated readiness; security not enforced on live path; no green automated test run until suite is fixed.
 
 ## 🎯 Success Criteria
 
@@ -222,32 +187,12 @@ The project has successfully achieved its primary goals for v0.3.0:
 6. ✅ **Documentation**: Complete guides
 7. ✅ **Cross-Platform**: Multi-platform support
 
-## 🚀 Ready for Release
+## Release stance
 
-### Production Version 1.0.0
-The Production Version is now **100% complete** and **READY FOR RELEASE** with:
-- ✅ A working DHCP server with full protocol support
-- ✅ Advanced lease management with conflict resolution
-- ✅ Basic security features for production use
-- ✅ Multi-format configuration support (JSON, YAML, INI)
-- ✅ Complete documentation (100% - all guides and references)
-- ✅ Comprehensive testing (unit, integration, performance, load - 100% complete)
-- ✅ Deployment automation and packaging
-- ✅ Production readiness validated
-- ✅ All acceptance criteria met
+**Production v1.0.0:** **Not recommended** until tests compile and pass and integration claims match the server path. See `PROGRESS_REPORT.md`.
 
-**Status: ✅ APPROVED FOR v1.0.0 RELEASE**
-
-### Enterprise Version
-The Enterprise Version is **15% complete** (foundation ready) with:
-- All Production Version features as foundation
-- Clear roadmap for enterprise features
-- BSL 1.1 licensing model
-
-**Next steps: Implement advanced security features, high availability, and management interfaces.**
+**Enterprise:** No release; planning only.
 
 ---
 
-*Last Updated: December 2024*
-*Production Version Status: 100% Complete - READY FOR v1.0.0 RELEASE*
-*Enterprise Version Status: 15% Complete - Foundation Ready*
+*Last updated: April 2026 (aligned with `PROGRESS_REPORT.md`)*

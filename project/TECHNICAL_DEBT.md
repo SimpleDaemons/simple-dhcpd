@@ -1,56 +1,33 @@
 # Simple DHCP Daemon - Technical Debt
 
-**Date:** December 2024
-**Current Version:** Production 0.2.0-beta, Enterprise (Foundation)
+**Date:** April 2026 (major correction)
+**Current Version:** CMake `0.3.0`, production target
 **Purpose:** Track technical debt, known issues, and areas requiring improvement
 
 ---
 
 ## 🎯 Overview
 
-This document tracks technical debt, known issues, code quality improvements, and areas that need refactoring or enhancement in the simple-dhcpd project. Items are prioritized by impact and urgency.
+This document tracks technical debt. **Earlier revisions incorrectly marked the test program as complete.** See [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
 
-**Total Debt Items:** 24+ (1 resolved)
-**Estimated Effort:** ~150-250 hours (reduced due to completed testing work)
+**Priority theme:** Fix test compilation, integrate or scope unwired modules, remove hardcoded DHCP fields.
 
 ---
 
 ## 🔴 High Priority (Critical)
 
-### 1. Test Coverage Expansion
-**Status:** ✅ **COMPLETE**
-**Priority:** 🔴 **HIGH** (RESOLVED)
-**Estimated Effort:** 20-30 hours (ACTUAL: Completed)
+### 1. Test suite does not compile
+**Status:** ❌ **OPEN**
+**Priority:** 🔴 **CRITICAL**
 
-**Current State:**
-- Unit test coverage: ~70% ✅
-- Network layer tests: ✅ Complete
-- Configuration parsing tests: ✅ Complete
-- Integration tests: ✅ Complete (DORA process, cross-platform, protocol compatibility, security)
-- Performance tests: ✅ Complete (throughput, latency, resources)
-- Load tests: ✅ Complete (RPS, concurrent leases, memory, stress)
+**Current state (April 2026):**
+- `simple_dhcpd_tests` **fails to build**: `DhcpParser::parse_message` is **static** (return value), tests use instance + out-parameter; `allocate_lease` requires **three** arguments; `DhcpMessage` uses **`header.xid`** etc., not top-level `xid`/`yiaddr`.
+- `test_dhcp_parser.cpp` / `test_lease_manager.cpp` exist but are **not** in `tests/CMakeLists.txt`.
 
-**Resolution:**
-- ✅ Integration tests for DORA process implemented
-- ✅ Tests for lease conflict resolution included
-- ✅ Security feature tests (basic validation) included
-- ✅ Performance benchmarks created and validated
-- ✅ Load/stress testing framework implemented
-
-**Impact:**
-- ✅ Production readiness validated
-- ✅ Performance claims validated
-- ✅ Behavior under load confirmed
-
-**Action Items:**
-- [x] Expand unit test coverage to 70%+ (ACHIEVED)
-- [x] Add integration tests for DORA process (COMPLETE)
-- [x] Add tests for lease conflict resolution (COMPLETE)
-- [x] Add tests for security features (COMPLETE - basic validation)
-- [x] Create performance test suite (COMPLETE)
-- [x] Implement load testing framework (COMPLETE)
-
-**Status:** ✅ **RESOLVED** - Production Version 1.0.0
+**Action items:**
+- [ ] Update integration, performance, and load tests to match current APIs.
+- [ ] Optionally add compatibility wrappers in code (less ideal than fixing tests).
+- [ ] Add missing test sources to CMake or delete dead tests.
 
 ---
 
@@ -59,7 +36,7 @@ This document tracks technical debt, known issues, code quality improvements, an
 **Priority:** 🔴 **HIGH**
 **Estimated Effort:** 8-12 hours
 
-**Location:** `src/dhcp_server.cpp:308`
+**Location:** `src/core/dhcp/server.cpp` (Decline handler)
 
 **Current State:**
 ```cpp
@@ -596,7 +573,4 @@ This document tracks technical debt, known issues, code quality improvements, an
 
 ---
 
-*Last Updated: December 2024*
-*Production Version: 100% Complete - READY FOR v1.0.0 RELEASE*
-*Enterprise Version: 15% Complete - Foundation Ready*
-*Next Review: After v1.0.0 release*
+*Last updated: April 2026 — see [PROGRESS_REPORT.md](PROGRESS_REPORT.md)*
