@@ -75,6 +75,21 @@ else ifeq ($(UNAME_S),Darwin)
     RMDIR = rm -rf
     MKDIR = mkdir -p
     CP = cp -r
+else ifeq ($(UNAME_S),FreeBSD)
+    PLATFORM = freebsd
+    CXX = c++
+    CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2 -DNDEBUG
+    LDFLAGS = -lssl -lcrypto -lpthread
+    PARALLEL_JOBS = $(shell sysctl -n hw.ncpu)
+    INSTALL_PREFIX = /usr/local
+    CONFIG_DIR = $(INSTALL_PREFIX)/etc/$(PROJECT_NAME)
+    EXE_EXT =
+    LIB_EXT = .so
+    DLL_EXT = .so
+    RM = rm -rf
+    RMDIR = rm -rf
+    MKDIR = mkdir -p
+    CP = cp -r
 else
     PLATFORM = linux
     CXX = g++
@@ -199,6 +214,15 @@ else ifeq ($(PLATFORM),linux)
 	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.rpm $(DIST_DIR)/ 2>/dev/null || true
 	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.deb $(DIST_DIR)/ 2>/dev/null || true
 	@echo "Linux packages created: RPM and DEB"
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Building FreeBSD packages..."
+	@mkdir -p $(DIST_DIR)
+	cd $(BUILD_DIR) && cpack -G TGZ
+	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.tar.gz $(DIST_DIR)/ 2>/dev/null || true
+	cd $(BUILD_DIR) && cpack -G FREEBSD || true
+	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.pkg $(DIST_DIR)/ 2>/dev/null || true
+	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.txz $(DIST_DIR)/ 2>/dev/null || true
+	@echo "FreeBSD packages created: TGZ (and native .pkg/.txz if CPack FREEBSD is available)"
 else ifeq ($(PLATFORM),windows)
 	@echo "Building Windows packages..."
 	@$(MKDIR) $(DIST_DIR)
@@ -278,6 +302,16 @@ else ifeq ($(PLATFORM),linux)
 	@cd $(DIST_DIR) && tar -czf $(PROJECT_NAME)-$(VERSION)-static-linux.tar.gz $(PROJECT_NAME)-$(VERSION)-static-linux/
 	@rm -rf $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-linux
 	@echo "Linux static binary package created: $(PROJECT_NAME)-$(VERSION)-static-linux.tar.gz"
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Creating FreeBSD static binary TAR.GZ..."
+	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd
+	@cp $(BUILD_DIR)/$(PROJECT_NAME) $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd/
+	@cp README.md $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd/
+	@cp LICENSE $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd/
+	@cp -r config $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd/
+	@cd $(DIST_DIR) && tar -czf $(PROJECT_NAME)-$(VERSION)-static-freebsd.tar.gz $(PROJECT_NAME)-$(VERSION)-static-freebsd/
+	@rm -rf $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd
+	@echo "FreeBSD static binary package created: $(PROJECT_NAME)-$(VERSION)-static-freebsd.tar.gz"
 else
 	@echo "Static binary package generation not supported on this platform"
 endif
@@ -408,6 +442,10 @@ else ifeq ($(PLATFORM),linux)
 	sudo apt-get install -y build-essential cmake libssl-dev libjsoncpp-dev
 	# For RPM-based systems
 	# sudo yum install -y gcc-c++ cmake openssl-devel jsoncpp-devel
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Installing dependencies on FreeBSD..."
+	sudo pkg update
+	sudo pkg install -y cmake jsoncpp openssl
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing dependencies on Windows..."
 	@echo "Please run: scripts\\build-windows.bat --deps"
@@ -432,6 +470,10 @@ else ifeq ($(PLATFORM),linux)
 	sudo apt-get update
 	sudo apt-get install -y clang-format cppcheck python3-pip
 	pip3 install bandit semgrep
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Installing development tools on FreeBSD..."
+	sudo pkg install -y llvm cppcheck py3-pip
+	pip3 install --user bandit semgrep
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing development tools on Windows..."
 	@echo "Please run: scripts\\build-windows.bat --dev-deps"
@@ -475,6 +517,19 @@ else ifeq ($(PLATFORM),linux)
 		echo "Please create the service file first"; \
 		exit 1; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Installing service on FreeBSD..."
+	@if [ -f $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME) ]; then \
+		sudo cp $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME) /usr/local/etc/rc.d/$(PROJECT_NAME); \
+		sudo chmod 0555 /usr/local/etc/rc.d/$(PROJECT_NAME); \
+		sudo sysrc simple_dhcpd_enable=YES; \
+		sudo service $(PROJECT_NAME) start; \
+		echo "Service installed and started successfully"; \
+	else \
+		echo "Service file not found at $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME)"; \
+		echo "Please create the service file first"; \
+		exit 1; \
+	fi
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing service on Windows..."
 	@if exist scripts\build-windows.bat ( \
@@ -508,6 +563,9 @@ else ifeq ($(PLATFORM),linux)
 			echo "Service is not enabled"; \
 		fi; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Checking service status on FreeBSD..."
+	@service $(PROJECT_NAME) status || true
 else ifeq ($(PLATFORM),windows)
 	@echo "Checking service status on Windows..."
 	@sc query simple-dhcpd
@@ -597,6 +655,8 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "  package-rpm      - Build RPM package (Linux only)"
 	@echo "  package-deb      - Build DEB package (Linux only)"
+else ifeq ($(PLATFORM),freebsd)
+	@echo "  package-tgz      - Build TGZ package (FreeBSD / CPack)"
 else ifeq ($(PLATFORM),windows)
 	@echo "  package-msi      - Build MSI package (Windows only)"
 	@echo "  package-zip      - Build ZIP package (Windows only)"
@@ -778,6 +838,17 @@ else
 	@echo "PKG packages are only supported on macOS"
 endif
 
+package-tgz: build
+ifeq ($(PLATFORM),freebsd)
+	@echo "Building TGZ package (CPack)..."
+	@mkdir -p $(DIST_DIR)
+	cd $(BUILD_DIR) && cpack -G TGZ
+	mv $(BUILD_DIR)/$(PROJECT_NAME)-$(VERSION)-*.tar.gz $(DIST_DIR)/ 2>/dev/null || true
+	@echo "TGZ package created under $(DIST_DIR)/"
+else
+	@echo "package-tgz is intended for FreeBSD (PLATFORM=freebsd)"
+endif
+
 # Show package information
 package-info:
 	@echo "Package Information for $(PROJECT_NAME) $(VERSION)"
@@ -797,6 +868,11 @@ else ifeq ($(PLATFORM),macos)
 	@echo "  - PKG (macOS Installer)"
 	@echo "  - TAR.GZ (Source)"
 	@echo "  - ZIP (Source)"
+else ifeq ($(PLATFORM),freebsd)
+	@echo "  - TGZ (CPack tarball binary)"
+	@echo "  - PKG (native CPack FREEBSD, when supported by CMake)"
+	@echo "  - TAR.GZ (Source)"
+	@echo "  - ZIP (Source)"
 else ifeq ($(PLATFORM),windows)
 	@echo "  - MSI (Windows Installer)"
 	@echo "  - ZIP (Windows Executable + Source)"
@@ -812,6 +888,7 @@ endif
 	@echo "  make package-msi      - Create MSI package (Windows only)"
 	@echo "  make package-dmg      - Create DMG package (macOS only)"
 	@echo "  make package-pkg      - Create PKG package (macOS only)"
+	@echo "  make package-tgz      - Create TGZ package (FreeBSD only)"
 
 # Legacy targets for backward compatibility
 debug: dev-build
@@ -844,6 +921,9 @@ else ifeq ($(PLATFORM),linux)
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Starting service on FreeBSD..."
+	@sudo service $(PROJECT_NAME) start || sudo service $(PROJECT_NAME) onestart
 else ifeq ($(PLATFORM),windows)
 	@echo "Starting service on Windows..."
 	@sc start simple-dhcpd
@@ -866,6 +946,9 @@ else ifeq ($(PLATFORM),linux)
 	else \
 		echo "Service not installed"; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Stopping service on FreeBSD..."
+	@sudo service $(PROJECT_NAME) stop || true
 else ifeq ($(PLATFORM),windows)
 	@echo "Stopping service on Windows..."
 	@sc stop simple-dhcpd
@@ -890,6 +973,9 @@ else ifeq ($(PLATFORM),linux)
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Restarting service on FreeBSD..."
+	@sudo service $(PROJECT_NAME) restart || (sudo service $(PROJECT_NAME) stop; sleep 2; sudo service $(PROJECT_NAME) start)
 else ifeq ($(PLATFORM),windows)
 	@echo "Restarting service on Windows..."
 	@sc stop simple-dhcpd
@@ -914,6 +1000,9 @@ else ifeq ($(PLATFORM),linux)
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Enabling service on FreeBSD..."
+	@sudo sysrc simple_dhcpd_enable=YES
 else ifeq ($(PLATFORM),windows)
 	@echo "Enabling service on Windows..."
 	@sc config simple-dhcpd start= auto
@@ -936,6 +1025,10 @@ else ifeq ($(PLATFORM),linux)
 	else \
 		echo "Service not installed"; \
 	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Disabling service on FreeBSD..."
+	@sudo service $(PROJECT_NAME) stop 2>/dev/null || true
+	@sudo sysrc -x simple_dhcpd_enable 2>/dev/null || sudo sysrc simple_dhcpd_enable=NO
 else ifeq ($(PLATFORM),windows)
 	@echo "Disabling service on Windows..."
 	@sc config simple-dhcpd start= disabled
@@ -958,6 +1051,16 @@ else ifeq ($(PLATFORM),linux)
 		sudo systemctl disable $(PROJECT_NAME); \
 		sudo rm -f /etc/systemd/system/$(PROJECT_NAME).service; \
 		sudo systemctl daemon-reload; \
+		echo "Service uninstalled successfully"; \
+	else \
+		echo "Service not found"; \
+	fi
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Uninstalling service on FreeBSD..."
+	@if [ -f /usr/local/etc/rc.d/$(PROJECT_NAME) ]; then \
+		sudo service $(PROJECT_NAME) stop 2>/dev/null || true; \
+		sudo sysrc -x simple_dhcpd_enable 2>/dev/null || sudo sysrc simple_dhcpd_enable=NO; \
+		sudo rm -f /usr/local/etc/rc.d/$(PROJECT_NAME); \
 		echo "Service uninstalled successfully"; \
 	else \
 		echo "Service not found"; \
@@ -998,6 +1101,16 @@ log-rotate: install
 ifeq ($(PLATFORM),linux)
 	sudo cp $(DEPLOYMENT_DIR)/logrotate.d/$(PROJECT_NAME) /etc/logrotate.d/
 	sudo chmod 644 /etc/logrotate.d/$(PROJECT_NAME)
+else ifeq ($(PLATFORM),freebsd)
+	@echo "Installing newsyslog fragment on FreeBSD..."
+	@if [ -f $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog ]; then \
+		sudo install -d /usr/local/etc/newsyslog.conf.d; \
+		sudo install -m 644 $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog /usr/local/etc/newsyslog.conf.d/$(PROJECT_NAME).conf; \
+		echo "Installed /usr/local/etc/newsyslog.conf.d/$(PROJECT_NAME).conf"; \
+	else \
+		echo "No newsyslog template at $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog"; \
+		exit 1; \
+	fi
 else ifeq ($(PLATFORM),windows)
 	@echo "Log rotation on Windows is handled by the Windows Event Log system"
 	@echo "Configure in Event Viewer or use PowerShell commands"
@@ -1057,7 +1170,7 @@ endif
 
 # Phony targets
 .PHONY: all build clean install uninstall test package package-source package-all \
-        package-deb package-rpm package-msi package-exe package-dmg package-pkg package-info \
+        package-deb package-rpm package-msi package-exe package-dmg package-pkg package-tgz package-info \
         static-build static-test static-package static-zip static-all \
         dev-build dev-test format check-style lint security-scan deps dev-deps \
         docker-build docker-run docker-stop service-install service-uninstall service-status \
