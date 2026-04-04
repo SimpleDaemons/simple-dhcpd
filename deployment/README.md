@@ -2,7 +2,7 @@
 
 This directory contains deployment configurations and examples for simple-dhcpd.
 
-**Product status:** The daemon is **pre–1.0** (CMake **0.3.0**). Validate **`ctest`** and your config in a lab before production traffic — see **`../project/PROGRESS_REPORT.md`**.
+**Product status:** The daemon is **pre–1.0** (CMake **0.6.0**). Validate **`ctest`** and your config in a lab before production traffic — see **`../project/PROGRESS_REPORT.md`**.
 
 ## Directory Structure
 

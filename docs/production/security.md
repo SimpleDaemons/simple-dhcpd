@@ -1,6 +1,6 @@
 # Production Version Security Guide
 
-**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
+**Version:** 0.6.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
 **License:** Apache 2.0
 
 ---
@@ -73,4 +73,4 @@ See [Security Best Practices](../shared/user-guide/security-best-practices.md) f
 ---
 
 **Last Updated:** December 2024
-**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)
+**Version:** 0.6.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)

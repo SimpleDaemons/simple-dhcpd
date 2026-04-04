@@ -8,7 +8,7 @@ Simple DHCP Daemon is available in three versions, each designed for different d
 
 ### 🏭 Production Version
 **License:** Apache 2.0  
-**Status:** **Pre–1.0** (CMake **0.3.0**) — core daemon + **default `ctest` suite passing** (60 tests). See **[project/PROGRESS_REPORT.md](../project/PROGRESS_REPORT.md)** before treating docs as “shipped 1.0.”
+**Status:** **Pre–1.0** (CMake **0.6.0**) — core daemon + **default `ctest` suite passing** (60 tests). See **[project/PROGRESS_REPORT.md](../project/PROGRESS_REPORT.md)** before treating docs as “shipped 1.0.”
 
 **Target:** Small to medium deployments, single-server installations
 
@@ -205,5 +205,5 @@ If you find any issues with the documentation or have suggestions for improvemen
 ---
 
 **Last updated:** April 2026  
-**Production version (CMake):** 0.3.0 — **pre–1.0** ([PROGRESS_REPORT.md](../project/PROGRESS_REPORT.md))  
+**Production version (CMake):** 0.6.0 — **pre–1.0** ([PROGRESS_REPORT.md](../project/PROGRESS_REPORT.md))  
 **Enterprise / Datacenter:** Roadmap / planned (see product-specific READMEs)

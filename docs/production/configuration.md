@@ -1,6 +1,6 @@
 # Production Version Configuration Guide
 
-**Version:** 0.3.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)  
+**Version:** 0.6.0 (pre–1.0 — see `project/PROGRESS_REPORT.md`)  
 **License:** Apache 2.0
 
 ---
@@ -268,4 +268,4 @@ See [Configuration Examples](../shared/configuration/examples.md) for more examp
 ---
 
 **Last updated:** April 2026  
-**Version:** 0.3.0 (pre–1.0)
+**Version:** 0.6.0 (pre–1.0)
