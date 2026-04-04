@@ -472,8 +472,26 @@ else ifeq ($(PLATFORM),linux)
 	pip3 install bandit semgrep
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Installing development tools on FreeBSD..."
-	sudo pkg install -y llvm cppcheck py3-pip
-	pip3 install --user bandit semgrep
+	sudo pkg update
+	sudo pkg install -y cppcheck python3
+	@PYPIP=$$(python3 -c 'import sys; print("py%d%d-pip" % sys.version_info[:2])' 2>/dev/null); \
+		if [ -n "$$PYPIP" ]; then sudo pkg install -y "$$PYPIP" || true; fi
+	@if ! python3 -m pip --version >/dev/null 2>&1; then \
+		python3 -m ensurepip --user 2>/dev/null || { echo "Install pip for your Python (e.g. sudo pkg install py311-pip)."; exit 1; }; \
+	fi
+	@{ for L in llvm20 llvm19 llvm18 llvm17 llvm16 llvm15; do \
+		sudo pkg install -y "$$L" && exit 0; \
+	done; echo "Warning: could not pkg install any of llvm20..llvm15; clang-format may be missing."; exit 0; }
+	@if ! command -v clang-format >/dev/null 2>&1; then \
+		for d in /usr/local/llvm*/bin/clang-format; do \
+			if [ -f "$$d" ]; then \
+				echo "Linking $$d -> /usr/local/bin/clang-format"; \
+				sudo ln -sf "$$d" /usr/local/bin/clang-format; \
+				break; \
+			fi; \
+		done; \
+	fi
+	python3 -m pip install --user bandit semgrep
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing development tools on Windows..."
 	@echo "Please run: scripts\\build-windows.bat --dev-deps"
