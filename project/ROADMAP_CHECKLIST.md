@@ -1,35 +1,28 @@
 # Simple DHCP Daemon - Development Checklist
 
-## Project Status: 🚀 Beta Development
-**Last Updated**: December 2024
-**Current Version**: 0.2.0-beta
-**Next Milestone**: Complete Production Version 1.0
+## Project status
+**Last updated:** April 2026  
+**CMake package version:** 0.3.0  
+**Honest status:** [PROGRESS_REPORT.md](PROGRESS_REPORT.md)
+
+**Production:** Pre–1.0 — **tests do not compile**; security/advanced lease **not wired** into `DhcpServer`.  
+**Next milestone:** Repair test suite + integrate or document scope for security/advanced lease.
 
 ---
 
-## Product Lines Overview
+## Product lines overview
 
-This project maintains two distinct product lines:
-
-1. **Production Version** - Core DHCP server for production environments
-   - Focus: Stability, reliability, essential features
-   - Target: Small to medium deployments, single-server installations
-   - License: Apache 2.0
-   - Status: 100% Complete - Ready for v1.0.0 Release
-
-2. **Enterprise Version** - Advanced DHCP server with enterprise features
-   - Focus: High availability, scalability, advanced management
-   - Target: Large deployments, multi-server environments, enterprise integrations
-   - License: BSL 1.1 (Business Source License 1.1)
-   - Status: ~15% Complete (shares Production foundation)
+1. **Production** — Apache 2.0 core daemon (see honest gaps in `PROGRESS_REPORT.md`).
+2. **Enterprise / datacenter** — Roadmap; same core today.
 
 ---
 
 # Production Version Roadmap
 
-## Status: 🚀 100% Complete
-**Target Release**: Q1 2025
-**Current Phase**: Production Ready - Release Candidate
+> **April 2026:** Checkboxes below are **mostly historical**. They do **not** reflect a passing test suite today (`simple_dhcpd_tests` fails to compile). Use [PROGRESS_REPORT.md](PROGRESS_REPORT.md) before trusting “complete” markers.
+
+## Status (legacy heading — not verified)
+**Prior claim:** 100% complete / release candidate — **retracted** until tests pass and integration matches scope.
 
 ---
 
@@ -62,7 +55,7 @@ This project maintains two distinct product lines:
 ## Phase 2: Core DHCP Protocol Implementation ✅ COMPLETED
 **Timeline**: 4-6 weeks
 **Status**: 100% Complete
-**Completion Date**: December 2024
+**Completion Date**: February 2025
 
 ### DHCP Protocol Stack
 - [x] DHCP message parsing
@@ -173,7 +166,7 @@ This project maintains two distinct product lines:
 **Timeline**: 6-8 weeks
 **Status**: 100% Complete
 **Target**: Q2 2025
-**Start Date**: December 2024
+**Start Date**: February 2025
 
 ### Lease Management
 - [x] Dynamic lease allocation
