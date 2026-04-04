@@ -10,22 +10,22 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 Simple DHCP Daemon is a C++17 DHCP server **under active development**. It targets small to medium deployments with a clear core (daemon, parser, leases, UDP, multi-format config).
 
-**Honest status (April 2026):** See **[project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md)**. The **main binary builds**, but the **default Google Test binary does not compile** (tests lag the core API). Large **security** and **advanced lease** modules exist in the library but are **not wired into the default `DhcpServer` path** until integrated.
+**Honest status (April 2026):** See **[project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md)**. The **production binary builds**, **`simple_dhcpd_tests` builds and passes** (`ctest`, 60 tests on the default target). **`DhcpServer`** can use **`LeaseManager`** or **`AdvancedLeaseManager`** (config), optional **`DhcpSecurityManager`** when security is enabled, config-driven options and server identifier, **declined-IP hold**, and **packet statistics**. Treat the project as **pre–1.0** until you validate **field deployment**, **relay/multi-subnet** behavior, **coverage**, and **packaging** on your platforms.
 
 ### What is in good shape today
-- Core daemon entrypoint, signals, config load, UDP receive loop
-- DHCP message handling path using **`LeaseManager`** (allocate / renew / release / basic Inform)
-- CMake production target and optional packaging hooks
+- Core daemon entrypoint, signals, config load, UDP receive loop (receive thread joins reliably via receive timeout)
+- DHCP message handling with **lease allocation**, optional **security** on the packet path, **statistics**, **Decline** with quarantine
+- **JSON** config with validation; YAML/INI supported to varying depth (see `PROGRESS_REPORT.md`)
+- CMake production target, CTest, optional packaging hooks
 
-### What is not “done” yet
-- Green automated test run (`simple_dhcpd_tests` needs API fixes)
-- Security manager enforcement on live DHCP traffic
-- Advanced lease manager as the server’s active backend
-- Claims like “50k RPS” or “production ready” — **not validated** by CI here
+### What still needs real-world validation
+- End-to-end DHCP against hardware clients (tests are mostly in-process / loopback)
+- High-scale RPS figures and “50k RPS”-style claims — **not CI-benchmarked** here
+- Windows and every packaged artifact on every distro
 
 ## Version 0.3.0 (CMake)
 
-**Label only** — treat as **pre–1.0** until tests pass and integration matches docs.
+**Label only** — **pre–1.0**; progress and gaps are summarized in **`project/PROGRESS_REPORT.md`**.
 
 ## Configuration
 
@@ -249,6 +249,8 @@ sudo simple-dhcpd -v -c /etc/simple-dhcpd/simple-dhcpd.conf
 
 ## Features
 
+The bullets below describe **intended and partially implemented** capabilities. For **what is verified in this repo today** (build, tests, wiring), use **[project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md)** — some marketing-style claims (e.g. SQLite lease DB, full RFC “complete”) are **not** accurate for the current code path.
+
 ### Core DHCP Protocol
 - ✅ **Complete DORA Process**: Discover/Offer/Request/ACK with full RFC compliance
 - ✅ **DHCP Operations**: Release, Decline, and Inform message handling
@@ -272,7 +274,7 @@ sudo simple-dhcpd -v -c /etc/simple-dhcpd/simple-dhcpd.conf
 - ✅ **Lease Renewal**: Automatic renewal handling with grace periods
 - ✅ **Lease Expiration**: Cleanup and reclamation of expired leases
 - ✅ **Conflict Resolution**: Multiple strategies for lease conflicts
-- ✅ **Database Persistence**: SQLite-based lease storage with backup/restore
+- ⚠️ **Database persistence**: Advanced lease backend uses **line-oriented text** (`LEASE:` / `STATIC:`), not SQLite
 - ✅ **Lease Analytics**: Utilization monitoring and historical tracking
 
 ### DHCP Options System (v0.3.0)

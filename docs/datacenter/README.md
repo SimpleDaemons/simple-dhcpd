@@ -2,7 +2,9 @@
 
 **Version:** Planned
 **License:** BSL 1.1 (Business Source License 1.1)
-**Status:** 📋 Planned - Design Phase
+**Status:** 📋 Planned - Design Phase  
+
+**Apache 2.0 production line (today):** **[../../project/PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)** — pre–1.0; default **`ctest`** suite passes. This Datacenter guide is **future product** documentation.
 
 ---
 

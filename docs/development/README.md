@@ -2,6 +2,8 @@
 
 Welcome to the Simple DHCP Daemon development guide. This document will help you get started with development, building, and contributing to the project.
 
+**April 2026:** The default Google Test binary **`simple_dhcpd_tests`** is part of the CMake build and is expected to pass **`ctest`** (60 tests on the standard target). Canonical product status: **[../../project/PROGRESS_REPORT.md](../../project/PROGRESS_REPORT.md)**.
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -535,5 +537,5 @@ sudo lsof -i :67
 
 ---
 
-**Last Updated:** December 2024
-**Version:** 1.0.0
+**Last updated:** April 2026  
+**CMake / product label:** 0.3.0 (pre–1.0)

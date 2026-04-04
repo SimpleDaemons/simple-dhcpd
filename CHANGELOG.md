@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Documentation (April 2026):** Reconciled root `README.md`, `project/*.md`, `docs/README.md`, `docs/production/README.md`, and related guides with **current build/test reality**: `simple_dhcpd_tests` **passes** (`ctest`, 60 tests); `DhcpServer` **wires** optional security and advanced lease backend; status remains **pre–1.0** until field/CI/packaging bars in `project/PRODUCTION_READINESS.md` are met. Canonical narrative: **`project/PROGRESS_REPORT.md`**.
+
 ### Added
 - Transparent configuration loading for JSON, YAML, and INI
 - YAML/INI coverage for server, subnets, global options, security, logging
@@ -177,4 +180,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **v0.3.0**: Advanced DHCP Features - Lease management, DHCP options, security features
 - **v0.4.0**: Enterprise Features - High availability, monitoring, management interface
 - **v0.5.0**: Performance Optimization - High-performance optimizations and scalability
-- **v1.0.0**: Production Ready - Complete feature set with production-grade stability
+- **v1.0.0** (future): **Not released** — requires checklist in `project/PRODUCTION_READINESS.md` (CI, field validation, coverage/packaging as claimed)
