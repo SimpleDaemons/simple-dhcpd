@@ -7,6 +7,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <chrono>
 #include <vector>
 #include <thread>
@@ -27,7 +28,8 @@ protected:
     void SetUp() override {
         config_manager_ = std::make_unique<ConfigManager>();
         DhcpConfig config = get_default_config();
-        config.listen_addresses.push_back("127.0.0.1");
+        config.subnets.clear();
+        config.listen_addresses = {"127.0.0.1"};
 
         DhcpSubnet subnet;
         subnet.name = "load-test";
@@ -40,11 +42,15 @@ protected:
 
         config_manager_->set_config(config);
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
         parser_ = std::make_unique<DhcpParser>();
     }
 
     void TearDown() override {
         parser_.reset();
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -77,9 +83,10 @@ TEST_F(HighRequestRateTest, RPSLimitTest) {
         discover[offset++] = 1;
         discover[offset++] = 255;
 
-        DhcpMessage msg;
-        if (parser_->parse_message(discover, msg)) {
+        try {
+            (void)DhcpParser::parse_message(discover);
             processed++;
+        } catch (...) {
         }
     };
 
@@ -91,7 +98,8 @@ TEST_F(HighRequestRateTest, RPSLimitTest) {
 
     auto end = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(end - start);
-    double actual_rps = (processed.load() * 1000.0) / duration.count();
+    const auto ms = std::max<int64_t>(1, duration.count());
+    double actual_rps = (processed.load() * 1000.0) / static_cast<double>(ms);
 
     EXPECT_GE(actual_rps, target_rps * 0.8) << "RPS: " << actual_rps << " (target: " << target_rps << ")";
     EXPECT_EQ(processed.load(), total_requests);
@@ -126,13 +134,13 @@ TEST_F(HighRequestRateTest, RPSStabilityTest) {
             discover[offset++] = 1;
             discover[offset++] = 255;
 
-            DhcpMessage msg;
-            parser_->parse_message(discover, msg);
+            (void)DhcpParser::parse_message(discover);
         }
 
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(end - start);
-        double rps = (requests_per_iteration * 1000.0) / duration.count();
+        const auto ms = std::max<int64_t>(1, duration.count());
+        double rps = (requests_per_iteration * 1000.0) / static_cast<double>(ms);
         rps_measurements.push_back(rps);
     }
 
@@ -163,7 +171,8 @@ protected:
     void SetUp() override {
         config_manager_ = std::make_unique<ConfigManager>();
         DhcpConfig config = get_default_config();
-        config.listen_addresses.push_back("127.0.0.1");
+        config.subnets.clear();
+        config.listen_addresses = {"127.0.0.1"};
 
         DhcpSubnet subnet;
         subnet.name = "concurrent-test";
@@ -176,9 +185,13 @@ protected:
 
         config_manager_->set_config(config);
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
     }
 
     void TearDown() override {
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -197,9 +210,12 @@ TEST_F(ConcurrentLeaseTest, LeaseLimitTest) {
             0x00, 0x11, 0x22, 0x33, 0x44,
             static_cast<uint8_t>(i & 0xFF)
         };
-        IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-        if (ip != 0) {
-            leases.push_back(ip);
+        try {
+            DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+            if (lease.ip_address != 0) {
+                leases.push_back(lease.ip_address);
+            }
+        } catch (...) {
         }
     }
 
@@ -223,10 +239,14 @@ TEST_F(ConcurrentLeaseTest, ConcurrentLeaseStability) {
                 0x11, 0x22, 0x33, 0x44,
                 static_cast<uint8_t>(i & 0xFF)
             };
-            IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-            if (ip != 0) {
-                success_count++;
-            } else {
+            try {
+                DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+                if (lease.ip_address != 0) {
+                    success_count++;
+                } else {
+                    failure_count++;
+                }
+            } catch (...) {
                 failure_count++;
             }
         }
@@ -260,24 +280,29 @@ protected:
     void SetUp() override {
         config_manager_ = std::make_unique<ConfigManager>();
         DhcpConfig config = get_default_config();
-        config.listen_addresses.push_back("127.0.0.1");
+        config.subnets.clear();
+        config.listen_addresses = {"127.0.0.1"};
 
         DhcpSubnet subnet;
         subnet.name = "stress-test";
-        subnet.network = string_to_ip("172.16.0.0");
-        subnet.prefix_length = 24;
-        subnet.range_start = string_to_ip("172.16.0.100");
-        subnet.range_end = string_to_ip("172.16.0.254");
+        subnet.network = string_to_ip("10.0.0.0");
+        subnet.prefix_length = 22;
+        subnet.range_start = string_to_ip("10.0.0.1");
+        subnet.range_end = string_to_ip("10.0.3.254");
         subnet.lease_time = 3600;
         config.subnets.push_back(subnet);
 
         config_manager_->set_config(config);
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
         parser_ = std::make_unique<DhcpParser>();
     }
 
     void TearDown() override {
         parser_.reset();
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -315,9 +340,10 @@ TEST_F(StressTest, HighLoadTest) {
             discover[offset++] = 1;
             discover[offset++] = 255;
 
-            DhcpMessage msg;
-            if (parser_->parse_message(discover, msg)) {
+            try {
+                (void)DhcpParser::parse_message(discover);
                 local_count++;
+            } catch (...) {
             }
         }
 
@@ -342,34 +368,34 @@ TEST_F(StressTest, HighLoadTest) {
 }
 
 TEST_F(StressTest, FailureRecoveryTest) {
-    // Test recovery from failures
     const DhcpSubnet& subnet = config_manager_->get_config().subnets[0];
 
-    // Allocate leases until pool is exhausted
-    std::vector<IpAddress> leases;
-    for (int i = 0; i < 200; ++i) {
+    int allocated = 0;
+    for (int i = 0; i < 10000; ++i) {
         MacAddress mac = {
-            0x00, 0x11, 0x22, 0x33, 0x44,
+            0x02, 0x11, 0x22,
+            static_cast<uint8_t>((i >> 16) & 0xFF),
+            static_cast<uint8_t>((i >> 8) & 0xFF),
             static_cast<uint8_t>(i & 0xFF)
         };
-        IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-        if (ip != 0) {
-            leases.push_back(ip);
+        try {
+            DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+            if (lease.ip_address != 0) {
+                allocated++;
+            }
+        } catch (const LeaseManagerException&) {
+            break;
         }
     }
 
-    // System should handle exhaustion gracefully
-    EXPECT_GT(leases.size(), 0) << "Should allocate some leases";
+    EXPECT_GT(allocated, 0) << "Should allocate some leases before pool exhaustion";
 
-    // Try to allocate more - should handle gracefully
     MacAddress test_mac = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    // This might fail, but shouldn't crash
-    EXPECT_NO_THROW({
-        IpAddress ip = lease_manager_->allocate_lease(test_mac, subnet.name);
-        // Result doesn't matter, just shouldn't crash
-    });
+    EXPECT_THROW(
+        (void)lease_manager_->allocate_lease(test_mac, 0, subnet.name),
+        LeaseManagerException);
 
-    std::cout << "Failure Recovery Test: Handled " << leases.size() << " leases gracefully" << std::endl;
+    std::cout << "Failure Recovery Test: Handled " << allocated << " leases before exhaustion" << std::endl;
 }
 
 TEST_F(StressTest, StabilityTest) {
@@ -380,13 +406,15 @@ TEST_F(StressTest, StabilityTest) {
 
     for (int i = 0; i < iterations; ++i) {
         MacAddress mac = {
-            0x00, 0x11, 0x22, 0x33, 0x44,
+            0x00, 0x11, 0x22,
+            static_cast<uint8_t>((i >> 16) & 0xFF),
+            static_cast<uint8_t>((i >> 8) & 0xFF),
             static_cast<uint8_t>(i & 0xFF)
         };
 
         try {
-            IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-            if (ip == 0) {
+            DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+            if (lease.ip_address == 0) {
                 errors++;
             }
         } catch (...) {
