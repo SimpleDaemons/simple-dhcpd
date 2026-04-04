@@ -111,6 +111,21 @@ DATA_DIR = /var/lib/$(PROJECT_NAME)
 # Default target
 all: build
 
+# Drop a build tree configured on another machine/path (avoids CMake cache errors).
+define cmake_stale_guard
+	@here="$(CURDIR)"; wantbuild="$$here/$(BUILD_DIR)"; \
+	cachedhome=$$(grep '^CMAKE_HOME_DIRECTORY:INTERNAL=' $(BUILD_DIR)/CMakeCache.txt 2>/dev/null | head -1 | sed 's/^[^=]*=//'); \
+	cachedbuild=$$(grep '^CMAKE_CACHEFILE_DIR:INTERNAL=' $(BUILD_DIR)/CMakeCache.txt 2>/dev/null | head -1 | sed 's/^[^=]*=//'); \
+	stale=; \
+	if [ -n "$$cachedhome" ] && [ "$$cachedhome" != "$$here" ]; then stale=1; fi; \
+	if [ -n "$$cachedbuild" ] && [ "$$cachedbuild" != "$$wantbuild" ]; then stale=1; fi; \
+	if [ -n "$$stale" ]; then \
+	  echo "CMake cache does not match this checkout (remove stale build/). Reconfiguring $(BUILD_DIR) from scratch."; \
+	  $(RM) $(BUILD_DIR); \
+	  $(MKDIR) $(BUILD_DIR); \
+	fi
+endef
+
 # Create build directory
 $(BUILD_DIR)-dir:
 ifeq ($(PLATFORM),windows)
@@ -124,7 +139,8 @@ build: $(BUILD_DIR)-dir
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && cmake .. -G "Visual Studio 16 2019" -A x64 && cmake --build . --config Release
 else
-	cd $(BUILD_DIR) && cmake .. && make -j$(PARALLEL_JOBS)
+	$(cmake_stale_guard)
+	cd $(BUILD_DIR) && cmake .. && $(MAKE) -j$(PARALLEL_JOBS)
 endif
 
 # Clean build
@@ -162,7 +178,7 @@ test: build
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && ctest --output-on-failure
 else
-	cd $(BUILD_DIR) && make test
+	cd $(BUILD_DIR) && $(MAKE) test
 endif
 
 # Generic package target (platform-specific)
@@ -200,14 +216,15 @@ dev-build: $(BUILD_DIR)-dir
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug && cmake --build . --config Debug
 else
-	cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Debug && make -j$(PARALLEL_JOBS)
+	$(cmake_stale_guard)
+	cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Debug && $(MAKE) -j$(PARALLEL_JOBS)
 endif
 
 dev-test: dev-build
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && ctest --output-on-failure
 else
-	cd $(BUILD_DIR) && make test
+	cd $(BUILD_DIR) && $(MAKE) test
 endif
 
 # Static binary targets
@@ -216,14 +233,15 @@ static-build: $(BUILD_DIR)-dir
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC_LINKING=ON && cmake --build . --config Release
 else
-	cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC_LINKING=ON && make -j$(PARALLEL_JOBS)
+	$(cmake_stale_guard)
+	cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC_LINKING=ON && $(MAKE) -j$(PARALLEL_JOBS)
 endif
 
 static-test: static-build
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && ctest --output-on-failure
 else
-	cd $(BUILD_DIR) && make test
+	cd $(BUILD_DIR) && $(MAKE) test
 endif
 
 # Create static binary package
