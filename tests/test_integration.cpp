@@ -27,9 +27,9 @@ protected:
         // Setup test configuration
         config_manager_ = std::make_unique<ConfigManager>();
 
-        // Create minimal test config
         DhcpConfig config = get_default_config();
-        config.listen_addresses.push_back("127.0.0.1");
+        config.subnets.clear();
+        config.listen_addresses = {"127.0.0.1"};
 
         DhcpSubnet subnet;
         subnet.name = "test-subnet";
@@ -37,17 +37,22 @@ protected:
         subnet.prefix_length = 24;
         subnet.range_start = string_to_ip("192.168.1.100");
         subnet.range_end = string_to_ip("192.168.1.200");
+        subnet.gateway = string_to_ip("192.168.1.1");
+        subnet.dns_servers = {string_to_ip("8.8.8.8")};
         subnet.lease_time = 3600;
         subnet.max_lease_time = 7200;
         config.subnets.push_back(subnet);
 
         config_manager_->set_config(config);
 
-        // Setup lease manager
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
     }
 
     void TearDown() override {
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -93,31 +98,30 @@ TEST_F(DoraProcessIntegrationTest, FullDoraProcess) {
     // Create Discover message
     std::vector<uint8_t> discover = create_dhcp_discover(client_mac);
 
-    // Parse Discover
-    DhcpParser parser;
-    DhcpMessage msg;
-    EXPECT_TRUE(parser.parse_message(discover, msg));
+    DhcpMessage msg = DhcpParser::parse_message(discover);
     EXPECT_EQ(msg.message_type, DhcpMessageType::DISCOVER);
 
-    // Process Discover and generate Offer
     const DhcpSubnet& subnet = config_manager_->get_config().subnets[0];
-    IpAddress offered_ip = lease_manager_->allocate_lease(client_mac, subnet.name);
-    EXPECT_NE(offered_ip, 0);
+    DhcpLease offered = lease_manager_->allocate_lease(client_mac, 0, subnet.name);
+    EXPECT_NE(offered.ip_address, 0u);
 
-    // Generate Offer message
-    DhcpMessage offer_msg;
-    offer_msg.message_type = DhcpMessageType::OFFER;
-    offer_msg.xid = msg.xid;
-    offer_msg.client_mac = client_mac;
-    offer_msg.yiaddr = offered_ip;
-
-    std::vector<uint8_t> offer_data = parser.generate_message(offer_msg);
+    const IpAddress sid = subnet.gateway ? subnet.gateway : string_to_ip("192.168.1.1");
+    DhcpMessageBuilder builder;
+    builder.set_message_type(DhcpMessageType::OFFER)
+        .set_transaction_id(msg.header.xid)
+        .set_client_mac(client_mac)
+        .set_your_ip(offered.ip_address)
+        .set_server_ip(sid)
+        .add_option(DhcpOptionCode::DHCP_MESSAGE_TYPE,
+                    std::vector<uint8_t>{message_type_to_option_value(DhcpMessageType::OFFER)})
+        .add_option_ip(DhcpOptionCode::SERVER_IDENTIFIER, sid);
+    std::vector<uint8_t> offer_data = DhcpParser::generate_message(builder.build());
     EXPECT_GT(offer_data.size(), 0);
 
     // Verify lease was created
     auto lease = lease_manager_->get_lease_by_mac(client_mac);
     EXPECT_NE(lease, nullptr);
-    EXPECT_EQ(lease->ip_address, offered_ip);
+    EXPECT_EQ(lease->ip_address, offered.ip_address);
 }
 
 // Integration Test: Protocol Compatibility
@@ -128,9 +132,6 @@ protected:
 };
 
 TEST_F(ProtocolCompatibilityTest, DhcpVersionCompatibility) {
-    // Test that we can parse standard DHCP messages
-    DhcpParser parser;
-
     // Create a standard DHCP Discover message
     std::vector<uint8_t> discover(576, 0);
     DhcpMessageHeader* header = reinterpret_cast<DhcpMessageHeader*>(discover.data());
@@ -151,8 +152,7 @@ TEST_F(ProtocolCompatibilityTest, DhcpVersionCompatibility) {
     discover[offset++] = 1; // DISCOVER
     discover[offset++] = 255;
 
-    DhcpMessage msg;
-    EXPECT_TRUE(parser.parse_message(discover, msg));
+    DhcpMessage msg = DhcpParser::parse_message(discover);
     EXPECT_EQ(msg.message_type, DhcpMessageType::DISCOVER);
 }
 
@@ -165,10 +165,9 @@ TEST_F(ProtocolCompatibilityTest, ClientCompatibility) {
     MacAddress mac2 = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     MacAddress mac3 = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-    // All should be valid
-    EXPECT_NE(mac1[0], 0);
-    EXPECT_NE(mac2[0], 0);
-    // mac3 is technically valid (broadcast-like)
+    EXPECT_EQ(mac1.size(), 6u);
+    EXPECT_EQ(mac2.size(), 6u);
+    EXPECT_EQ(mac3.size(), 6u);
 }
 
 // Integration Test: Cross-Platform Compatibility
@@ -213,10 +212,6 @@ TEST_F(SecurityIntegrationTest, BasicSecurityValidation) {
 }
 
 TEST_F(SecurityIntegrationTest, Option82Validation) {
-    // Test Option 82 (Relay Agent Information) handling
-    // This is a basic integration test - full implementation would test actual Option 82 parsing
-    DhcpParser parser;
-
     // Create message with Option 82
     std::vector<uint8_t> data(576, 0);
     DhcpMessageHeader* header = reinterpret_cast<DhcpMessageHeader*>(data.data());
@@ -245,9 +240,8 @@ TEST_F(SecurityIntegrationTest, Option82Validation) {
     data[offset++] = 1; // DISCOVER
     data[offset++] = 255;
 
-    DhcpMessage msg;
-    // Should parse successfully even with Option 82
-    EXPECT_TRUE(parser.parse_message(data, msg));
+    DhcpMessage msg = DhcpParser::parse_message(data);
+    EXPECT_EQ(msg.message_type, DhcpMessageType::DISCOVER);
 }
 
 // Integration Test: Configuration and Lease Management
@@ -256,7 +250,8 @@ protected:
     void SetUp() override {
         config_manager_ = std::make_unique<ConfigManager>();
         DhcpConfig config = get_default_config();
-        config.listen_addresses.push_back("127.0.0.1");
+        config.subnets.clear();
+        config.listen_addresses = {"127.0.0.1"};
 
         DhcpSubnet subnet;
         subnet.name = "integration-test";
@@ -264,14 +259,19 @@ protected:
         subnet.prefix_length = 24;
         subnet.range_start = string_to_ip("10.0.0.100");
         subnet.range_end = string_to_ip("10.0.0.200");
+        subnet.gateway = string_to_ip("10.0.0.1");
         subnet.lease_time = 3600;
         config.subnets.push_back(subnet);
 
         config_manager_->set_config(config);
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
     }
 
     void TearDown() override {
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -288,12 +288,11 @@ TEST_F(ConfigLeaseIntegrationTest, ConfigToLeaseAllocation) {
     MacAddress mac = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
     const DhcpSubnet& subnet = config.subnets[0];
 
-    IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-    EXPECT_NE(ip, 0);
+    DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+    EXPECT_NE(lease.ip_address, 0u);
 
-    // Verify IP is in configured range
-    EXPECT_GE(ntohl(ip), ntohl(subnet.range_start));
-    EXPECT_LE(ntohl(ip), ntohl(subnet.range_end));
+    EXPECT_GE(ntohl(lease.ip_address), ntohl(subnet.range_start));
+    EXPECT_LE(ntohl(lease.ip_address), ntohl(subnet.range_end));
 }
 
 TEST_F(ConfigLeaseIntegrationTest, MultipleLeaseAllocation) {
@@ -303,9 +302,9 @@ TEST_F(ConfigLeaseIntegrationTest, MultipleLeaseAllocation) {
     std::vector<IpAddress> allocated_ips;
     for (int i = 0; i < 5; ++i) {
         MacAddress mac = {0x00, 0x11, 0x22, 0x33, 0x44, static_cast<uint8_t>(0x50 + i)};
-        IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-        EXPECT_NE(ip, 0);
-        allocated_ips.push_back(ip);
+        DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+        EXPECT_NE(lease.ip_address, 0u);
+        allocated_ips.push_back(lease.ip_address);
     }
 
     // Verify all IPs are unique
