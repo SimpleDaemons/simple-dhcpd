@@ -1,0 +1,39 @@
+dhcp:
+  listen:
+  - 0.0.0.0:67
+  subnets:
+  - name: subnet-1
+    network: 172.16.4.0/24
+    prefixLength: 24
+    range: 192.168.1.100-192.168.1.200
+    gateway: 192.168.1.1
+    dnsServers:
+    - 8.8.8.8
+    - 8.8.4.4
+    domainName: local
+    leaseTime: 86400
+    maxLeaseTime: 172800
+    options:
+    - name: domain-name
+      value: dev.d1ns.com
+    - name: router
+      value: 172.16.4.1
+    - name: ntp-servers
+      value: pool.ntp.org
+    - name: bootfile-name
+      value: pxelinux.0
+    - name: subnet-mask
+      value: 255.255.255.0
+  globalOptions:
+  - name: subnet-mask
+    value: 255.255.255.0
+  - name: bootfile-name
+    value: pxelinux.0
+  - name: domain-name
+    value: d1ns.com
+  - name: tftp-server-name
+    value: tftp.d1ns.com
+  security: {}
+  performance: {}
+  logging: {}
+  monitoring: {}
