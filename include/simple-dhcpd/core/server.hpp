@@ -14,6 +14,7 @@
 #include "simple-dhcpd/core/network/udp_socket.hpp"
 #include "simple-dhcpd/core/parser.hpp"
 #include "simple-dhcpd/core/lease/manager.hpp"
+#include "simple-dhcpd/production/security/manager.hpp"
 #include "simple-dhcpd/core/utils/logger.hpp"
 #include <memory>
 #include <atomic>
@@ -99,9 +100,15 @@ private:
     std::unique_ptr<ConfigManager> config_manager_;
     std::unique_ptr<DhcpSocketManager> socket_manager_;
     std::unique_ptr<LeaseManager> lease_manager_;
+    std::unique_ptr<DhcpSecurityManager> security_manager_;
     std::atomic<bool> running_;
     std::atomic<bool> initialized_;
     mutable std::mutex mutex_;
+    mutable std::mutex stats_mutex_;
+    DhcpStats packet_stats_;
+
+    IpAddress dhcp_server_ip(const DhcpSubnet* subnet) const;
+    bool security_allow_message(const DhcpMessage& message, const std::string& recv_interface);
     
     /**
      * @brief Handle received DHCP message
