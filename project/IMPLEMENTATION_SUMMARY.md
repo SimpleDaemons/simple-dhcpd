@@ -1,17 +1,25 @@
-# Implementation Summary - Recent Improvements
-**Date:** December 2024
-**Session:** Production Version Completion & Product Line Reorganization
+# Implementation Summary — Recent Improvements
+
+**Original date:** February 2025  
+**Reconciliation:** April 2026
 
 ## 🎯 Overview
 
-This document summarizes the major improvements and feature completions, including Phase 3 completion, product line reorganization into Production and Enterprise versions, comprehensive testing implementation, and documentation completion. The Production Version is now **100% complete** and **READY FOR v1.0.0 RELEASE**.
+This document summarized intended Phase 3 / production-completion work. **It overstated shipping status.** As of April 2026:
+
+- The **production binary builds**, but the **Google Test target does not compile** (API mismatch).
+- **`DhcpSecurityManager`** and **`AdvancedLeaseManager`** are **not integrated** into `DhcpServer`.
+
+See **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** for the current honest picture. The sections below describe **what was built in the tree**, not what is verified or wired into the default daemon.
 
 ---
 
-## ✅ Completed Features
+## ✅ Completed Features (historical labels)
+
+**April 2026:** “100% complete” below means **substantial code exists**, not *integrated into `DhcpServer`*, *covered by passing tests*, or *shippable 1.0*. Prefer [PROGRESS_REPORT.md](PROGRESS_REPORT.md).
 
 ### 1. Advanced Lease Management
-**Status:** ✅ **100% Complete**
+**Status:** Code present — **not default server backend**; DB load path incomplete for dynamic leases
 
 **Implementation:**
 - `AdvancedLeaseManager` - Advanced lease management with conflict resolution
@@ -20,12 +28,12 @@ This document summarizes the major improvements and feature completions, includi
 - Lease renewal handling with grace periods
 - Lease expiration cleanup and reclamation
 - Multiple conflict resolution strategies
-- Lease database persistence (SQLite structure)
+- Lease database persistence (**text `LEASE:`/`STATIC:` file**, not SQLite)
 - Lease analytics and utilization monitoring
 
-**Files Modified:**
-- `include/advanced_lease_manager.hpp` - Advanced lease management interface
-- `src/advanced_lease_manager.cpp` - Implementation
+**Files:**
+- `include/simple-dhcpd/production/features/advanced_manager.hpp`
+- `src/production/features/advanced_manager.cpp`
 
 **Impact:** DHCP server now has production-ready lease management with conflict resolution and persistence.
 
@@ -52,7 +60,7 @@ This document summarizes the major improvements and feature completions, includi
 ---
 
 ### 3. Advanced Security Features
-**Status:** ✅ **95% Complete**
+**Status:** Implemented in **`DhcpSecurityManager`** — **not used by `DhcpServer`** (library / test path only until wired)
 
 **Implementation:**
 - `DhcpSecurityManager` - Comprehensive security framework
@@ -390,12 +398,11 @@ This document summarizes the major improvements and feature completions, includi
 
 ## 🔍 Verification
 
-### Build Status
-```bash
+### Build status (April 2026)
+```text
 ✅ CMake configuration: SUCCESS
-✅ Compilation: SUCCESS (all targets)
-✅ Tests: PASSING
-✅ Linter: NO ERRORS
+✅ simple-dhcpd (production): compiles
+❌ simple_dhcpd_tests: FAILS TO COMPILE (parser/lease/message API drift)
 ```
 
 ### Feature Verification
@@ -415,7 +422,4 @@ This document summarizes the major improvements and feature completions, includi
 
 ---
 
-*Last Updated: December 2024*
-*Production Version: 100% Complete - READY FOR v1.0.0 RELEASE*
-*Enterprise Version: 15% Complete - Foundation Ready*
-*Next Review: After v1.0.0 release*
+*Last updated: April 2026 — aligned with [PROGRESS_REPORT.md](PROGRESS_REPORT.md)*
