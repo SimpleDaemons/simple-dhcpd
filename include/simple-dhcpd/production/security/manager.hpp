@@ -44,7 +44,9 @@ enum class SecurityEventType {
     INVALID_OPTION_82,
     SUSPICIOUS_ACTIVITY,
     LEASE_CONFLICT,
-    UNAUTHORIZED_CLIENT
+    UNAUTHORIZED_CLIENT,
+    /** Do not filter by type in get_security_events (return all matching time range). */
+    ANY
 };
 
 /**
@@ -461,7 +463,7 @@ public:
     std::vector<SecurityEvent> get_security_events(
         std::chrono::system_clock::time_point start_time = std::chrono::system_clock::time_point::min(),
         std::chrono::system_clock::time_point end_time = std::chrono::system_clock::time_point::max(),
-        SecurityEventType event_type = SecurityEventType::UNAUTHORIZED_DHCP_SERVER);
+        SecurityEventType event_type = SecurityEventType::ANY);
     
     /**
      * @brief Get security statistics
@@ -520,9 +522,11 @@ private:
     
     std::function<void(const SecurityEvent&)> security_event_callback_;
     
-    mutable std::mutex mutex_;
+    /** Recursive: many paths call update_security_stats while already holding the lock. */
+    mutable std::recursive_mutex mutex_;
     std::thread cleanup_thread_;
-    
+    std::chrono::steady_clock::time_point last_security_cleanup_{};
+
     // Rate limiting tracking
     struct RateLimitTracker {
         std::vector<std::chrono::system_clock::time_point> requests;

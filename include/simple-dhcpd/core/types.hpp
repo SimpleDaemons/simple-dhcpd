@@ -398,8 +398,21 @@ struct DhcpConfig {
     bool enable_logging;
     bool enable_security;
     uint32_t max_leases;
-    
-    DhcpConfig() : enable_logging(true), enable_security(true), max_leases(10000) {}
+    /** DHCP Server Identifier (RFC 2131). 0 = derive from matching subnet gateway. */
+    IpAddress server_identifier;
+    /** Optional JSON/YAML security policy for DhcpSecurityManager. */
+    std::string security_policy_file;
+    /** Non-empty: use AdvancedLeaseManager with this LEASE:/STATIC: database path. */
+    std::string advanced_lease_database;
+    /** After DHCPDECLINE, suppress offering this IP (seconds). */
+    uint32_t decline_hold_seconds;
+
+    DhcpConfig()
+        : enable_logging(true),
+          enable_security(true),
+          max_leases(10000),
+          server_identifier(0),
+          decline_hold_seconds(3600) {}
     
     // Copy constructor
     DhcpConfig(const DhcpConfig& other) = default;

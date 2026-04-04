@@ -38,31 +38,31 @@ bool DhcpSecurityManager::is_dhcp_snooping_enabled() const {
 }
 
 void DhcpSecurityManager::add_trusted_interface(const std::string& interface_name) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     trusted_interfaces_.insert(interface_name);
     std::cout << "INFO: Added trusted interface: " << interface_name << std::endl;
 }
 
 void DhcpSecurityManager::remove_trusted_interface(const std::string& interface_name) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     trusted_interfaces_.erase(interface_name);
     std::cout << "INFO: Removed trusted interface: " << interface_name << std::endl;
 }
 
 bool DhcpSecurityManager::is_interface_trusted(const std::string& interface_name) const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return trusted_interfaces_.find(interface_name) != trusted_interfaces_.end();
 }
 
 void DhcpSecurityManager::add_snooping_binding(const DhcpSnoopingBinding& binding) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     snooping_bindings_.push_back(binding);
     std::cout << "INFO: Added snooping binding: " << binding.mac_address << " -> " << 
                  ip_to_string(binding.ip_address) << " on " << binding.interface << std::endl;
 }
 
 void DhcpSecurityManager::remove_snooping_binding(const std::string& mac_address, const IpAddress& ip_address) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     snooping_bindings_.erase(
         std::remove_if(snooping_bindings_.begin(), snooping_bindings_.end(),
@@ -75,7 +75,7 @@ void DhcpSecurityManager::remove_snooping_binding(const std::string& mac_address
 }
 
 std::vector<DhcpSnoopingBinding> DhcpSecurityManager::get_snooping_bindings() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return snooping_bindings_;
 }
 
@@ -95,7 +95,7 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
     }
     
     // Validate against snooping bindings
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     for (const auto& binding : snooping_bindings_) {
         if (binding.mac_address == mac_to_string(message.client_mac) && 
             binding.ip_address == message.client_ip) {
@@ -127,16 +127,15 @@ bool DhcpSecurityManager::validate_dhcp_message(const DhcpMessage& message, cons
     return false;
 }
 
-// Placeholder implementations for remaining methods
 void DhcpSecurityManager::add_mac_filter_rule(const MacFilterRule& rule) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     mac_filter_rules_.push_back(rule);
     std::cout << "INFO: Added MAC filter rule: " << rule.mac_address << " (" << 
                  (rule.allow ? "allow" : "deny") << ")" << std::endl;
 }
 
 void DhcpSecurityManager::remove_mac_filter_rule(const std::string& mac_address) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     mac_filter_rules_.erase(
         std::remove_if(mac_filter_rules_.begin(), mac_filter_rules_.end(),
@@ -149,7 +148,7 @@ void DhcpSecurityManager::remove_mac_filter_rule(const std::string& mac_address)
 }
 
 bool DhcpSecurityManager::check_mac_address(const std::string& mac_address) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     for (const auto& rule : mac_filter_rules_) {
         if (!rule.enabled) {
@@ -173,19 +172,19 @@ bool DhcpSecurityManager::check_mac_address(const std::string& mac_address) {
 }
 
 std::vector<MacFilterRule> DhcpSecurityManager::get_mac_filter_rules() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return mac_filter_rules_;
 }
 
 void DhcpSecurityManager::add_ip_filter_rule(const IpFilterRule& rule) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     ip_filter_rules_.push_back(rule);
     std::cout << "INFO: Added IP filter rule: " << ip_to_string(rule.ip_address) << " (" << 
                  (rule.allow ? "allow" : "deny") << ")" << std::endl;
 }
 
 void DhcpSecurityManager::remove_ip_filter_rule(const IpAddress& ip_address) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     ip_filter_rules_.erase(
         std::remove_if(ip_filter_rules_.begin(), ip_filter_rules_.end(),
@@ -198,7 +197,7 @@ void DhcpSecurityManager::remove_ip_filter_rule(const IpAddress& ip_address) {
 }
 
 bool DhcpSecurityManager::check_ip_address(const IpAddress& ip_address) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     for (const auto& rule : ip_filter_rules_) {
         if (!rule.enabled) {
@@ -222,12 +221,12 @@ bool DhcpSecurityManager::check_ip_address(const IpAddress& ip_address) {
 }
 
 std::vector<IpFilterRule> DhcpSecurityManager::get_ip_filter_rules() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return ip_filter_rules_;
 }
 
 void DhcpSecurityManager::add_rate_limit_rule(const RateLimitRule& rule) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     rate_limit_rules_.push_back(rule);
     std::cout << "INFO: Added rate limit rule: " << rule.identifier << " (" << 
                  std::to_string(rule.max_requests) << " requests per " << 
@@ -235,7 +234,7 @@ void DhcpSecurityManager::add_rate_limit_rule(const RateLimitRule& rule) {
 }
 
 void DhcpSecurityManager::remove_rate_limit_rule(const std::string& identifier, const std::string& identifier_type) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     rate_limit_rules_.erase(
         std::remove_if(rate_limit_rules_.begin(), rate_limit_rules_.end(),
@@ -248,7 +247,7 @@ void DhcpSecurityManager::remove_rate_limit_rule(const std::string& identifier, 
 }
 
 bool DhcpSecurityManager::check_rate_limit(const std::string& identifier, const std::string& identifier_type) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     // Find applicable rate limit rule
     RateLimitRule* applicable_rule = nullptr;
@@ -315,7 +314,7 @@ bool DhcpSecurityManager::check_rate_limit(const std::string& identifier, const 
 }
 
 std::vector<RateLimitRule> DhcpSecurityManager::get_rate_limit_rules() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return rate_limit_rules_;
 }
 
@@ -334,7 +333,7 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
         return true;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     // Check if Option 82 is required for this interface
     bool required = false;
@@ -417,22 +416,22 @@ bool DhcpSecurityManager::validate_option_82(const std::vector<uint8_t>& option_
 
 // Option 82 rule management
 void DhcpSecurityManager::add_option_82_rule(const Option82Rule& rule) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     option_82_rules_.push_back(rule);
 }
 
 void DhcpSecurityManager::clear_option_82_rules() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     option_82_rules_.clear();
 }
 
 std::vector<Option82Rule> DhcpSecurityManager::get_option_82_rules() const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return option_82_rules_;
 }
 
 void DhcpSecurityManager::set_option_82_required_for_interface(const std::string& interface, bool required) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     // Try to update existing
     for (auto& rule : option_82_rules_) {
         if (rule.interface == interface) {
@@ -446,7 +445,7 @@ void DhcpSecurityManager::set_option_82_required_for_interface(const std::string
 }
 
 void DhcpSecurityManager::add_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     TrustedRelayAgent agent;
     agent.circuit_id = circuit_id;
@@ -459,7 +458,7 @@ void DhcpSecurityManager::add_trusted_relay_agent(const std::string& circuit_id,
 }
 
 void DhcpSecurityManager::remove_trusted_relay_agent(const std::string& circuit_id, const std::string& remote_id) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     trusted_relay_agents_.erase(
         std::remove_if(trusted_relay_agents_.begin(), trusted_relay_agents_.end(),
@@ -491,7 +490,7 @@ bool DhcpSecurityManager::validate_client_authentication(const std::string& clie
         return true;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     // Find client credentials
     auto it = client_credentials_.find(client_mac);
@@ -539,7 +538,7 @@ bool DhcpSecurityManager::validate_client_authentication(const std::string& clie
 }
 
 void DhcpSecurityManager::report_security_event(const SecurityEvent& event) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     security_events_.push_back(event);
     
@@ -574,27 +573,29 @@ std::vector<SecurityEvent> DhcpSecurityManager::get_security_events(
     std::chrono::system_clock::time_point end_time,
     SecurityEventType event_type) {
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     std::vector<SecurityEvent> result;
     for (const auto& event : security_events_) {
-        if (event.timestamp >= start_time && event.timestamp <= end_time) {
-            if (event_type == SecurityEventType::UNAUTHORIZED_DHCP_SERVER || event.type == event_type) {
-                result.push_back(event);
-            }
+        if (event.timestamp < start_time || event.timestamp > end_time) {
+            continue;
         }
+        if (event_type != SecurityEventType::ANY && event.type != event_type) {
+            continue;
+        }
+        result.push_back(event);
     }
     
     return result;
 }
 
 SecurityStats DhcpSecurityManager::get_security_statistics() const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return security_stats_;
 }
 
 void DhcpSecurityManager::clear_security_statistics() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     security_stats_ = SecurityStats{};
     security_stats_.last_reset = std::chrono::system_clock::now();
@@ -620,7 +621,7 @@ bool DhcpSecurityManager::load_security_configuration(const std::string& config_
 
     auto trim = [](std::string s){ size_t a=s.find_first_not_of(" \t\r\n"); if(a==std::string::npos) return std::string(); size_t b=s.find_last_not_of(" \t\r\n"); return s.substr(a,b-a+1); };
 
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     // Reset existing rules
     option_82_rules_.clear();
     trusted_relay_agents_.clear();
@@ -759,7 +760,7 @@ void DhcpSecurityManager::stop() {
 }
 
 void DhcpSecurityManager::cleanup_expired_items() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
 
     const auto now = std::chrono::system_clock::now();
 
@@ -813,19 +814,25 @@ void DhcpSecurityManager::cleanup_expired_items() {
 }
 
 void DhcpSecurityManager::cleanup_worker() {
+    last_security_cleanup_ = std::chrono::steady_clock::now();
     while (running_) {
-        std::this_thread::sleep_for(std::chrono::minutes(5));
-        
-        if (running_) {
-            cleanup_expired_items();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (!running_) {
+            break;
         }
+        const auto now = std::chrono::steady_clock::now();
+        if (now - last_security_cleanup_ < std::chrono::minutes(5)) {
+            continue;
+        }
+        last_security_cleanup_ = now;
+        cleanup_expired_items();
     }
 }
 
 // Helper method implementations
 
 bool DhcpSecurityManager::update_rate_limit_tracker(const std::string& identifier, const std::string& identifier_type) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     
     auto now = std::chrono::system_clock::now();
     std::string tracker_key = identifier_type + ":" + identifier;
@@ -929,7 +936,7 @@ bool DhcpSecurityManager::validate_auth_hash(const std::string& client_mac,
 }
 
 void DhcpSecurityManager::update_security_stats(const std::string& stat_name) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     security_stats_.stats[stat_name]++;
     
     // Update specific counters

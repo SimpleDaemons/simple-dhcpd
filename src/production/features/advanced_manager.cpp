@@ -38,39 +38,35 @@ AdvancedLeaseManager::~AdvancedLeaseManager() {
 }
 
 bool AdvancedLeaseManager::add_static_lease(const StaticLease& static_lease) {
-    std::lock_guard<std::mutex> lock(static_leases_mutex_);
-    
-    // Check if static lease already exists
-    if (static_leases_.find(static_lease.mac_address) != static_leases_.end()) {
-        return false;
-    }
-    
-    // Check if IP is already allocated
     if (get_lease_by_ip(static_lease.ip_address) != nullptr) {
         return false;
     }
-    
-    auto lease_ptr = std::make_shared<StaticLease>(static_lease);
-    static_leases_[static_lease.mac_address] = lease_ptr;
-    
-    // Create corresponding dynamic lease
-    DhcpLease dynamic_lease;
-    dynamic_lease.mac_address = static_lease.mac_address;
-    dynamic_lease.ip_address = static_lease.ip_address;
-    dynamic_lease.hostname = static_lease.hostname;
-    dynamic_lease.lease_time = static_lease.lease_time;
-    dynamic_lease.lease_type = LeaseType::STATIC;
-    dynamic_lease.allocated_at = std::chrono::system_clock::now();
-    dynamic_lease.expires_at = dynamic_lease.allocated_at + static_lease.lease_time;
-    dynamic_lease.options = static_lease.options;
-    
-    // Use the public allocate_lease method instead of private add_lease
-    // Note: This creates a new lease allocation rather than directly adding
-    // For static leases, we might need to modify the base class or use a different approach
-    
-    std::cout << "INFO: Added static lease: " << mac_to_string(static_lease.mac_address) << 
+    {
+        std::lock_guard<std::mutex> lock(static_leases_mutex_);
+        if (static_leases_.find(static_lease.mac_address) != static_leases_.end()) {
+            return false;
+        }
+        static_leases_[static_lease.mac_address] = std::make_shared<StaticLease>(static_lease);
+    }
+
+    auto sp = std::make_shared<DhcpLease>();
+    sp->mac_address = static_lease.mac_address;
+    sp->ip_address = static_lease.ip_address;
+    sp->hostname = static_lease.hostname;
+    sp->lease_time = static_lease.lease_time;
+    sp->lease_type = LeaseType::STATIC;
+    sp->allocated_at = std::chrono::system_clock::now();
+    sp->expires_at = sp->allocated_at + static_lease.lease_time;
+    sp->lease_start = sp->allocated_at;
+    sp->lease_end = sp->expires_at;
+    sp->options = static_lease.options;
+    sp->is_static = true;
+    sp->is_active = true;
+    add_lease(sp);
+
+    std::cout << "INFO: Added static lease: " << mac_to_string(static_lease.mac_address) <<
                  " -> " << ip_to_string(static_lease.ip_address) << std::endl;
-    
+
     return true;
 }
 
@@ -292,10 +288,17 @@ void AdvancedLeaseManager::load_database() {
         
         try {
             if (line.substr(0, 6) == "LEASE:") {
-                // Parse dynamic lease
                 DhcpLease lease = deserialize_lease(line.substr(6));
-                // Use allocate_lease for new leases instead of private add_lease
-        // Note: This might not work exactly as intended for static leases
+                const auto now = std::chrono::system_clock::now();
+                lease.is_active = (now < lease.expires_at);
+                if (!lease.is_active) {
+                    continue;
+                }
+                lease.lease_start = lease.allocated_at;
+                lease.lease_end = lease.expires_at;
+                lease.is_static = false;
+                auto sp = std::make_shared<DhcpLease>(lease);
+                add_lease(sp);
             } else if (line.substr(0, 7) == "STATIC:") {
                 // Parse static lease
                 StaticLease static_lease = deserialize_static_lease(line.substr(7));
@@ -673,24 +676,8 @@ StaticLease AdvancedLeaseManager::deserialize_static_lease(const std::string& da
     }
     
     StaticLease static_lease;
-    // Parse MAC address (simple implementation)
-    std::istringstream mac_stream(tokens[0]);
-    std::string mac_byte;
-    int i = 0;
-    while (std::getline(mac_stream, mac_byte, ':') && i < 6) {
-        static_lease.mac_address[i++] = static_cast<uint8_t>(std::stoi(mac_byte, nullptr, 16));
-    }
-    
-    // Parse IP address (simple implementation)
-    std::istringstream ip_stream(tokens[1]);
-    std::string ip_byte;
-    uint32_t ip = 0;
-    i = 0;
-    while (std::getline(ip_stream, ip_byte, '.') && i < 4) {
-        ip |= (std::stoi(ip_byte) << (24 - (i * 8)));
-        i++;
-    }
-    static_lease.ip_address = ip;
+    static_lease.mac_address = string_to_mac(tokens[0]);
+    static_lease.ip_address = string_to_ip(tokens[1]);
     static_lease.hostname = tokens[2];
     static_lease.description = tokens[3];
     static_lease.lease_time = std::chrono::seconds(std::stoll(tokens[4]));
