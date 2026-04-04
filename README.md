@@ -8,35 +8,24 @@ A lightweight, high-performance DHCP server implementation designed for modern n
 
 ## Overview
 
-Simple DHCP Daemon is a modern, enterprise-grade DHCP server that provides:
+Simple DHCP Daemon is a C++17 DHCP server **under active development**. It targets small to medium deployments with a clear core (daemon, parser, leases, UDP, multi-format config).
 
-- **High Performance**: Handles 50,000+ requests per second with advanced optimizations
-- **Cross-Platform**: Runs on Linux, macOS, and Windows with native packaging
-- **Modern C++**: Built with C++17 for reliability, performance, and maintainability
-- **Multi-Format Configuration**: Support for JSON, YAML, and INI configuration formats
-- **Advanced Security**: Complete security framework with snooping, filtering, and authentication
-- **Lease Management**: Advanced lease management with conflict resolution and database persistence
-- **DHCP Options**: Comprehensive options system with validation and inheritance
-- **Production Ready**: Enterprise features with monitoring, logging, and compliance support
+**Honest status (April 2026):** See **[project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md)**. The **main binary builds**, but the **default Google Test binary does not compile** (tests lag the core API). Large **security** and **advanced lease** modules exist in the library but are **not wired into the default `DhcpServer` path** until integrated.
 
-## 🚀 Version 0.3.0 - Advanced Features Complete
+### What is in good shape today
+- Core daemon entrypoint, signals, config load, UDP receive loop
+- DHCP message handling path using **`LeaseManager`** (allocate / renew / release / basic Inform)
+- CMake production target and optional packaging hooks
 
-**Current Status**: Phase 1–3 Complete
+### What is not “done” yet
+- Green automated test run (`simple_dhcpd_tests` needs API fixes)
+- Security manager enforcement on live DHCP traffic
+- Advanced lease manager as the server’s active backend
+- Claims like “50k RPS” or “production ready” — **not validated** by CI here
 
-### What's Currently Implemented:
-- ✅ **Complete Daemon Framework**: Signal handling, configuration management, logging
-- ✅ **Full DHCP Protocol Implementation**: Complete DORA process with all message types
-- ✅ **Advanced Lease Management**: IP allocation, renewal, release, conflict resolution
-- ✅ **UDP Socket Handling**: Network communication infrastructure
-- ✅ **Multi-Format Configuration**: JSON, YAML, and INI with comprehensive examples
-- ✅ **Build System**: Cross-platform CMake build with packaging support
-- ✅ **Testing Framework**: Google Test integration with comprehensive test suite
+## Version 0.3.0 (CMake)
 
-### In Development:
-- 🚧 **Advanced Security Features**: Enhanced MAC filtering, rate limiting, DHCP snooping
-- 🚧 **Database Persistence**: Lease database with file-based storage
-- 🚧 **Performance Optimization**: High-throughput optimizations
-- 🚧 **Integration Testing**: End-to-end testing framework
+**Label only** — treat as **pre–1.0** until tests pass and integration matches docs.
 
 ## Configuration
 
