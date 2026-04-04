@@ -111,6 +111,14 @@ else
     CP = cp -r
 endif
 
+# Privileged command: empty when uid 0, else sudo or doas (minimal images may omit sudo)
+ifneq ($(PLATFORM),windows)
+ROOT_CMD := $(shell if [ $$(id -u) -eq 0 ]; then echo ""; \
+	elif command -v sudo >/dev/null 2>&1; then echo sudo; \
+	elif command -v doas >/dev/null 2>&1; then echo doas; \
+	else echo ""; fi)
+endif
+
 # Directories
 SRC_DIR = src
 INCLUDE_DIR = include
@@ -173,7 +181,7 @@ install: build
 ifeq ($(PLATFORM),windows)
 	cd $(BUILD_DIR) && cmake --install . --prefix "$(INSTALL_PREFIX)"
 else
-	cd $(BUILD_DIR) && sudo make install
+	cd $(BUILD_DIR) && $(ROOT_CMD) make install
 endif
 
 # Uninstall
@@ -181,11 +189,11 @@ uninstall:
 ifeq ($(PLATFORM),windows)
 	$(RMDIR) "$(INSTALL_PREFIX)"
 else
-	sudo rm -f $(INSTALL_PREFIX)/bin/$(PROJECT_NAME)
-	sudo rm -f $(INSTALL_PREFIX)/lib/lib$(PROJECT_NAME).so
-	sudo rm -f $(INSTALL_PREFIX)/lib/lib$(PROJECT_NAME).dylib
-	sudo rm -rf $(INSTALL_PREFIX)/include/$(PROJECT_NAME)
-	sudo rm -rf $(CONFIG_DIR)
+	$(ROOT_CMD) rm -f $(INSTALL_PREFIX)/bin/$(PROJECT_NAME)
+	$(ROOT_CMD) rm -f $(INSTALL_PREFIX)/lib/lib$(PROJECT_NAME).so
+	$(ROOT_CMD) rm -f $(INSTALL_PREFIX)/lib/lib$(PROJECT_NAME).dylib
+	$(ROOT_CMD) rm -rf $(INSTALL_PREFIX)/include/$(PROJECT_NAME)
+	$(ROOT_CMD) rm -rf $(CONFIG_DIR)
 endif
 
 # Test
@@ -435,17 +443,17 @@ endif
 deps:
 ifeq ($(PLATFORM),macos)
 	@echo "Installing dependencies on macOS..."
-	sudo port install openssl jsoncpp cmake
+	$(ROOT_CMD) port install openssl jsoncpp cmake
 else ifeq ($(PLATFORM),linux)
 	@echo "Installing dependencies on Linux..."
-	sudo apt-get update
-	sudo apt-get install -y build-essential cmake libssl-dev libjsoncpp-dev
+	$(ROOT_CMD) apt-get update
+	$(ROOT_CMD) apt-get install -y build-essential cmake libssl-dev libjsoncpp-dev
 	# For RPM-based systems
 	# sudo yum install -y gcc-c++ cmake openssl-devel jsoncpp-devel
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Installing dependencies on FreeBSD..."
-	sudo pkg update
-	sudo pkg install -y cmake jsoncpp openssl
+	$(ROOT_CMD) pkg update
+	$(ROOT_CMD) pkg install -y cmake jsoncpp openssl
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing dependencies on Windows..."
 	@echo "Please run: scripts\\build-windows.bat --deps"
@@ -457,7 +465,7 @@ dev-deps:
 ifeq ($(PLATFORM),macos)
 	@echo "Installing development tools on macOS..."
 	@echo "Installing available packages from MacPorts..."
-	sudo port install cppcheck bandit
+	$(ROOT_CMD) port install cppcheck bandit
 	@echo "Note: semgrep is optional and may fail to install from MacPorts."
 	@echo "You can install it manually with: pip3 install semgrep"
 	@echo "Note: clang-format is not available in MacPorts."
@@ -467,26 +475,26 @@ ifeq ($(PLATFORM),macos)
 	@echo "  3. Install manually from LLVM releases"
 else ifeq ($(PLATFORM),linux)
 	@echo "Installing development tools on Linux..."
-	sudo apt-get update
-	sudo apt-get install -y clang-format cppcheck python3-pip
+	$(ROOT_CMD) apt-get update
+	$(ROOT_CMD) apt-get install -y clang-format cppcheck python3-pip
 	pip3 install bandit semgrep
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Installing development tools on FreeBSD..."
-	sudo pkg update
-	sudo pkg install -y cppcheck python3
+	$(ROOT_CMD) pkg update
+	$(ROOT_CMD) pkg install -y cppcheck python3
 	@PYPIP=$$(python3 -c 'import sys; print("py%d%d-pip" % sys.version_info[:2])' 2>/dev/null); \
-		if [ -n "$$PYPIP" ]; then sudo pkg install -y "$$PYPIP" || true; fi
+		if [ -n "$$PYPIP" ]; then $(ROOT_CMD) pkg install -y "$$PYPIP" || true; fi
 	@if ! python3 -m pip --version >/dev/null 2>&1; then \
-		python3 -m ensurepip --user 2>/dev/null || { echo "Install pip for your Python (e.g. sudo pkg install py311-pip)."; exit 1; }; \
+		python3 -m ensurepip --user 2>/dev/null || { echo "Install pip for your Python (e.g. pkg install py311-pip as root, or sudo/doas pkg install py311-pip)."; exit 1; }; \
 	fi
 	@{ for L in llvm20 llvm19 llvm18 llvm17 llvm16 llvm15; do \
-		sudo pkg install -y "$$L" && exit 0; \
+		$(ROOT_CMD) pkg install -y "$$L" && exit 0; \
 	done; echo "Warning: could not pkg install any of llvm20..llvm15; clang-format may be missing."; exit 0; }
 	@if ! command -v clang-format >/dev/null 2>&1; then \
 		for d in /usr/local/llvm*/bin/clang-format; do \
 			if [ -f "$$d" ]; then \
 				echo "Linking $$d -> /usr/local/bin/clang-format"; \
-				sudo ln -sf "$$d" /usr/local/bin/clang-format; \
+				$(ROOT_CMD) ln -sf "$$d" /usr/local/bin/clang-format; \
 				break; \
 			fi; \
 		done; \
@@ -514,8 +522,8 @@ service-install: install
 ifeq ($(PLATFORM),macos)
 	@echo "Installing service on macOS..."
 	@if [ -f $(DEPLOYMENT_DIR)/launchd/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo cp $(DEPLOYMENT_DIR)/launchd/com.$(PROJECT_NAME).$(PROJECT_NAME).plist /Library/LaunchDaemons/; \
-		sudo launchctl load /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
+		$(ROOT_CMD) cp $(DEPLOYMENT_DIR)/launchd/com.$(PROJECT_NAME).$(PROJECT_NAME).plist /Library/LaunchDaemons/; \
+		$(ROOT_CMD) launchctl load /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
 		echo "Service installed and started successfully"; \
 	else \
 		echo "Service file not found at $(DEPLOYMENT_DIR)/launchd/com.$(PROJECT_NAME).$(PROJECT_NAME).plist"; \
@@ -525,10 +533,10 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Installing service on Linux..."
 	@if [ -f $(DEPLOYMENT_DIR)/systemd/$(PROJECT_NAME).service ]; then \
-		sudo cp $(DEPLOYMENT_DIR)/systemd/$(PROJECT_NAME).service /etc/systemd/system/; \
-		sudo systemctl daemon-reload; \
-		sudo systemctl enable $(PROJECT_NAME); \
-		sudo systemctl start $(PROJECT_NAME); \
+		$(ROOT_CMD) cp $(DEPLOYMENT_DIR)/systemd/$(PROJECT_NAME).service /etc/systemd/system/; \
+		$(ROOT_CMD) systemctl daemon-reload; \
+		$(ROOT_CMD) systemctl enable $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl start $(PROJECT_NAME); \
 		echo "Service installed and started successfully"; \
 	else \
 		echo "Service file not found at $(DEPLOYMENT_DIR)/systemd/$(PROJECT_NAME).service"; \
@@ -538,10 +546,10 @@ else ifeq ($(PLATFORM),linux)
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Installing service on FreeBSD..."
 	@if [ -f $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME) ]; then \
-		sudo cp $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME) /usr/local/etc/rc.d/$(PROJECT_NAME); \
-		sudo chmod 0555 /usr/local/etc/rc.d/$(PROJECT_NAME); \
-		sudo sysrc simple_dhcpd_enable=YES; \
-		sudo service $(PROJECT_NAME) start; \
+		$(ROOT_CMD) cp $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME) /usr/local/etc/rc.d/$(PROJECT_NAME); \
+		$(ROOT_CMD) chmod 0555 /usr/local/etc/rc.d/$(PROJECT_NAME); \
+		$(ROOT_CMD) sysrc simple_dhcpd_enable=YES; \
+		$(ROOT_CMD) service $(PROJECT_NAME) start; \
 		echo "Service installed and started successfully"; \
 	else \
 		echo "Service file not found at $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME)"; \
@@ -572,7 +580,7 @@ else ifeq ($(PLATFORM),linux)
 	@echo "Checking service status on Linux..."
 	@if systemctl is-active --quiet $(PROJECT_NAME); then \
 		echo "Service is running:"; \
-		sudo systemctl status $(PROJECT_NAME) --no-pager -l; \
+		$(ROOT_CMD) systemctl status $(PROJECT_NAME) --no-pager -l; \
 	else \
 		echo "Service is not running"; \
 		@if systemctl is-enabled --quiet $(PROJECT_NAME); then \
@@ -926,7 +934,7 @@ service-start:
 ifeq ($(PLATFORM),macos)
 	@echo "Starting service on macOS..."
 	@if [ -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo launchctl start com.$(PROJECT_NAME).$(PROJECT_NAME); \
+		$(ROOT_CMD) launchctl start com.$(PROJECT_NAME).$(PROJECT_NAME); \
 		echo "Service started successfully"; \
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
@@ -934,14 +942,14 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Starting service on Linux..."
 	@if [ -f /etc/systemd/system/$(PROJECT_NAME).service ]; then \
-		sudo systemctl start $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl start $(PROJECT_NAME); \
 		echo "Service started successfully"; \
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
 	fi
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Starting service on FreeBSD..."
-	@sudo service $(PROJECT_NAME) start || sudo service $(PROJECT_NAME) onestart
+	@$(ROOT_CMD) service $(PROJECT_NAME) start || $(ROOT_CMD) service $(PROJECT_NAME) onestart
 else ifeq ($(PLATFORM),windows)
 	@echo "Starting service on Windows..."
 	@sc start simple-dhcpd
@@ -951,7 +959,7 @@ service-stop:
 ifeq ($(PLATFORM),macos)
 	@echo "Stopping service on macOS..."
 	@if [ -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo launchctl stop com.$(PROJECT_NAME).$(PROJECT_NAME); \
+		$(ROOT_CMD) launchctl stop com.$(PROJECT_NAME).$(PROJECT_NAME); \
 		echo "Service stopped successfully"; \
 	else \
 		echo "Service not installed"; \
@@ -959,14 +967,14 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Stopping service on Linux..."
 	@if [ -f /etc/systemd/system/$(PROJECT_NAME).service ]; then \
-		sudo systemctl stop $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl stop $(PROJECT_NAME); \
 		echo "Service stopped successfully"; \
 	else \
 		echo "Service not installed"; \
 	fi
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Stopping service on FreeBSD..."
-	@sudo service $(PROJECT_NAME) stop || true
+	@$(ROOT_CMD) service $(PROJECT_NAME) stop || true
 else ifeq ($(PLATFORM),windows)
 	@echo "Stopping service on Windows..."
 	@sc stop simple-dhcpd
@@ -976,9 +984,9 @@ service-restart:
 ifeq ($(PLATFORM),macos)
 	@echo "Restarting service on macOS..."
 	@if [ -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo launchctl stop com.$(PROJECT_NAME).$(PROJECT_NAME); \
+		$(ROOT_CMD) launchctl stop com.$(PROJECT_NAME).$(PROJECT_NAME); \
 		sleep 2; \
-		sudo launchctl start com.$(PROJECT_NAME).$(PROJECT_NAME); \
+		$(ROOT_CMD) launchctl start com.$(PROJECT_NAME).$(PROJECT_NAME); \
 		echo "Service restarted successfully"; \
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
@@ -986,14 +994,14 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Restarting service on Linux..."
 	@if [ -f /etc/systemd/system/$(PROJECT_NAME).service ]; then \
-		sudo systemctl restart $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl restart $(PROJECT_NAME); \
 		echo "Service restarted successfully"; \
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
 	fi
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Restarting service on FreeBSD..."
-	@sudo service $(PROJECT_NAME) restart || (sudo service $(PROJECT_NAME) stop; sleep 2; sudo service $(PROJECT_NAME) start)
+	@$(ROOT_CMD) service $(PROJECT_NAME) restart || ($(ROOT_CMD) service $(PROJECT_NAME) stop; sleep 2; $(ROOT_CMD) service $(PROJECT_NAME) start)
 else ifeq ($(PLATFORM),windows)
 	@echo "Restarting service on Windows..."
 	@sc stop simple-dhcpd
@@ -1005,7 +1013,7 @@ service-enable:
 ifeq ($(PLATFORM),macos)
 	@echo "Enabling service on macOS..."
 	@if [ -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo launchctl load -w /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
+		$(ROOT_CMD) launchctl load -w /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
 		echo "Service enabled successfully"; \
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
@@ -1013,14 +1021,14 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Enabling service on Linux..."
 	@if [ -f /etc/systemd/system/$(PROJECT_NAME).service ]; then \
-		sudo systemctl enable $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl enable $(PROJECT_NAME); \
 		echo "Service enabled successfully"; \
 	else \
 		echo "Service not installed. Run 'make service-install' first"; \
 	fi
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Enabling service on FreeBSD..."
-	@sudo sysrc simple_dhcpd_enable=YES
+	@$(ROOT_CMD) sysrc simple_dhcpd_enable=YES
 else ifeq ($(PLATFORM),windows)
 	@echo "Enabling service on Windows..."
 	@sc config simple-dhcpd start= auto
@@ -1030,7 +1038,7 @@ service-disable:
 ifeq ($(PLATFORM),macos)
 	@echo "Disabling service on macOS..."
 	@if [ -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo launchctl unload /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
+		$(ROOT_CMD) launchctl unload /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
 		echo "Service disabled successfully"; \
 	else \
 		echo "Service not installed"; \
@@ -1038,15 +1046,15 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Disabling service on Linux..."
 	@if [ -f /etc/systemd/system/$(PROJECT_NAME).service ]; then \
-		sudo systemctl disable $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl disable $(PROJECT_NAME); \
 		echo "Service disabled successfully"; \
 	else \
 		echo "Service not installed"; \
 	fi
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Disabling service on FreeBSD..."
-	@sudo service $(PROJECT_NAME) stop 2>/dev/null || true
-	@sudo sysrc -x simple_dhcpd_enable 2>/dev/null || sudo sysrc simple_dhcpd_enable=NO
+	@$(ROOT_CMD) service $(PROJECT_NAME) stop 2>/dev/null || true
+	@$(ROOT_CMD) sysrc -x simple_dhcpd_enable 2>/dev/null || $(ROOT_CMD) sysrc simple_dhcpd_enable=NO
 else ifeq ($(PLATFORM),windows)
 	@echo "Disabling service on Windows..."
 	@sc config simple-dhcpd start= disabled
@@ -1056,8 +1064,8 @@ service-uninstall:
 ifeq ($(PLATFORM),macos)
 	@echo "Uninstalling service on macOS..."
 	@if [ -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist ]; then \
-		sudo launchctl unload /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
-		sudo rm -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
+		$(ROOT_CMD) launchctl unload /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
+		$(ROOT_CMD) rm -f /Library/LaunchDaemons/com.$(PROJECT_NAME).$(PROJECT_NAME).plist; \
 		echo "Service uninstalled successfully"; \
 	else \
 		echo "Service not found"; \
@@ -1065,10 +1073,10 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),linux)
 	@echo "Uninstalling service on Linux..."
 	@if [ -f /etc/systemd/system/$(PROJECT_NAME).service ]; then \
-		sudo systemctl stop $(PROJECT_NAME); \
-		sudo systemctl disable $(PROJECT_NAME); \
-		sudo rm -f /etc/systemd/system/$(PROJECT_NAME).service; \
-		sudo systemctl daemon-reload; \
+		$(ROOT_CMD) systemctl stop $(PROJECT_NAME); \
+		$(ROOT_CMD) systemctl disable $(PROJECT_NAME); \
+		$(ROOT_CMD) rm -f /etc/systemd/system/$(PROJECT_NAME).service; \
+		$(ROOT_CMD) systemctl daemon-reload; \
 		echo "Service uninstalled successfully"; \
 	else \
 		echo "Service not found"; \
@@ -1076,9 +1084,9 @@ else ifeq ($(PLATFORM),linux)
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Uninstalling service on FreeBSD..."
 	@if [ -f /usr/local/etc/rc.d/$(PROJECT_NAME) ]; then \
-		sudo service $(PROJECT_NAME) stop 2>/dev/null || true; \
-		sudo sysrc -x simple_dhcpd_enable 2>/dev/null || sudo sysrc simple_dhcpd_enable=NO; \
-		sudo rm -f /usr/local/etc/rc.d/$(PROJECT_NAME); \
+		$(ROOT_CMD) service $(PROJECT_NAME) stop 2>/dev/null || true; \
+		$(ROOT_CMD) sysrc -x simple_dhcpd_enable 2>/dev/null || $(ROOT_CMD) sysrc simple_dhcpd_enable=NO; \
+		$(ROOT_CMD) rm -f /usr/local/etc/rc.d/$(PROJECT_NAME); \
 		echo "Service uninstalled successfully"; \
 	else \
 		echo "Service not found"; \
@@ -1098,11 +1106,11 @@ ifeq ($(PLATFORM),windows)
 	$(MKDIR) "$(CONFIG_DIR)"
 	$(CP) $(CONFIG_DIR_SRC)\* "$(CONFIG_DIR)\"
 else
-	sudo mkdir -p $(CONFIG_DIR)
-	sudo cp -r $(CONFIG_DIR_SRC)/* $(CONFIG_DIR)/
-	sudo chown -R root:root $(CONFIG_DIR)
-	sudo chmod -R 644 $(CONFIG_DIR)
-	sudo find $(CONFIG_DIR) -type d -exec chmod 755 {} \;
+	$(ROOT_CMD) mkdir -p $(CONFIG_DIR)
+	$(ROOT_CMD) cp -r $(CONFIG_DIR_SRC)/* $(CONFIG_DIR)/
+	$(ROOT_CMD) chown -R root:root $(CONFIG_DIR)
+	$(ROOT_CMD) chmod -R 644 $(CONFIG_DIR)
+	$(ROOT_CMD) find $(CONFIG_DIR) -type d -exec chmod 755 {} \;
 endif
 
 config-backup:
@@ -1117,13 +1125,13 @@ endif
 # Log management
 log-rotate: install
 ifeq ($(PLATFORM),linux)
-	sudo cp $(DEPLOYMENT_DIR)/logrotate.d/$(PROJECT_NAME) /etc/logrotate.d/
-	sudo chmod 644 /etc/logrotate.d/$(PROJECT_NAME)
+	$(ROOT_CMD) cp $(DEPLOYMENT_DIR)/logrotate.d/$(PROJECT_NAME) /etc/logrotate.d/
+	$(ROOT_CMD) chmod 644 /etc/logrotate.d/$(PROJECT_NAME)
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Installing newsyslog fragment on FreeBSD..."
 	@if [ -f $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog ]; then \
-		sudo install -d /usr/local/etc/newsyslog.conf.d; \
-		sudo install -m 644 $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog /usr/local/etc/newsyslog.conf.d/$(PROJECT_NAME).conf; \
+		$(ROOT_CMD) install -d /usr/local/etc/newsyslog.conf.d; \
+		$(ROOT_CMD) install -m 644 $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog /usr/local/etc/newsyslog.conf.d/$(PROJECT_NAME).conf; \
 		echo "Installed /usr/local/etc/newsyslog.conf.d/$(PROJECT_NAME).conf"; \
 	else \
 		echo "No newsyslog template at $(DEPLOYMENT_DIR)/freebsd/$(PROJECT_NAME).newsyslog"; \
