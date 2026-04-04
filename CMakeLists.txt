@@ -13,11 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_VERSION "production" CACHE STRING "Version to build: production, enterprise, datacenter")
 set_property(CACHE BUILD_VERSION PROPERTY STRINGS production enterprise datacenter)
 
-# Platform detection
+# Platform detection (for status messages / packaging labels)
 if(WIN32)
     set(PLATFORM_NAME "Windows")
 elseif(APPLE)
     set(PLATFORM_NAME "macOS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    set(PLATFORM_NAME "FreeBSD")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "OpenBSD")
+    set(PLATFORM_NAME "OpenBSD")
 elseif(UNIX)
     set(PLATFORM_NAME "Linux")
 endif()
@@ -39,7 +43,8 @@ endif()
 
 if(ENABLE_JSON)
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+    # IMPORTED_TARGET carries -L/-I so linkers find libjsoncpp (e.g. under /usr/local on FreeBSD).
+    pkg_check_modules(JSONCPP REQUIRED IMPORTED_TARGET jsoncpp)
 endif()
 
 # Include directories
@@ -124,19 +129,17 @@ add_library(${PROJECT_NAME}_lib ${VERSION_SOURCES} ${VERSION_HEADERS})
 add_executable(${PROJECT_NAME} ${VERSION_MAIN})
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib Threads::Threads)
-target_link_libraries(${PROJECT_NAME}_lib Threads::Threads)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib Threads::Threads)
+target_link_libraries(${PROJECT_NAME}_lib PRIVATE Threads::Threads)
 
 if(ENABLE_SSL)
-    target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
-    target_link_libraries(${PROJECT_NAME}_lib OpenSSL::SSL OpenSSL::Crypto)
+    target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+    target_link_libraries(${PROJECT_NAME}_lib PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 endif()
 
 if(ENABLE_JSON)
-    target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES})
-    target_link_libraries(${PROJECT_NAME}_lib ${JSONCPP_LIBRARIES})
-    target_include_directories(${PROJECT_NAME} PRIVATE ${JSONCPP_INCLUDE_DIRS})
-    target_include_directories(${PROJECT_NAME}_lib PRIVATE ${JSONCPP_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::JSONCPP)
+    target_link_libraries(${PROJECT_NAME}_lib PRIVATE PkgConfig::JSONCPP)
 endif()
 
 # Compiler-specific options
