@@ -453,7 +453,7 @@ else ifeq ($(PLATFORM),linux)
 else ifeq ($(PLATFORM),freebsd)
 	@echo "Installing dependencies on FreeBSD..."
 	$(ROOT_CMD) pkg update
-	$(ROOT_CMD) pkg install -y cmake jsoncpp openssl
+	$(ROOT_CMD) pkg install -y cmake jsoncpp openssl googletest
 else ifeq ($(PLATFORM),windows)
 	@echo "Installing dependencies on Windows..."
 	@echo "Please run: scripts\\build-windows.bat --deps"

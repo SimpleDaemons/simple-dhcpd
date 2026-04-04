@@ -1,7 +1,6 @@
 # CPack configuration for simple-dhcpd
-# This file should be included in the main CMakeLists.txt
+# This file should be included in the main CMakeLists.txt (CPack is included there first)
 
-include(CPack)
 include(InstallRequiredSystemLibraries)
 
 # CPack General Settings
