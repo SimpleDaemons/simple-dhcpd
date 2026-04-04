@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# PROVIDE: simple_dhcpd
+# REQUIRE: DAEMON NETWORKING
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="simple_dhcpd"
+rcvar="${name}_enable"
+
+start_precmd="simple_dhcpd_prestart"
+
+simple_dhcpd_prestart()
+{
+	mkdir -p /var/run
+}
+
+command="/usr/sbin/daemon"
+procname="/usr/local/bin/simple-dhcpd"
+pidfile="/var/run/${name}.pid"
+command_args="-c -f -P ${pidfile} ${procname}"
+
+load_rc_config $name
+run_rc_command "$1"
