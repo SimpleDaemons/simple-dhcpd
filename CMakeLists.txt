@@ -195,8 +195,10 @@ if(UNIX AND NOT APPLE)
         DESTINATION lib/systemd/system
     )
 elseif(APPLE)
+    # Relative to CMAKE_INSTALL_PREFIX so CPack/DMG and non-root installs work.
+    # Copy into /Library/LaunchDaemons with: make service-install (or sudo cp from share path).
     install(FILES deployment/launchd/com.${PROJECT_NAME}.${PROJECT_NAME}.plist
-        DESTINATION /Library/LaunchDaemons
+        DESTINATION share/${PROJECT_NAME}/launchd
     )
 endif()
 
