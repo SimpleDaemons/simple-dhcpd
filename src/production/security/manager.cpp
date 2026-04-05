@@ -660,12 +660,12 @@ bool DhcpSecurityManager::load_security_configuration(const std::string& config_
         } else {
             // Minimal YAML/INI parsing: scan for keys we care about
             std::istringstream in(content); std::string line; std::string section;
-            bool in_rules = false; bool in_relays = false;
+            bool in_rules = false;
             while (std::getline(in, line)) {
                 std::string t = trim(line);
                 if (t.empty() || t[0]=='#' || t[0]==';') continue;
                 if (t.find("option_82:") == 0) { section = "option_82"; continue; }
-                if (t.find("trusted_relay_agents:") == 0) { section = "trusted_relay_agents"; in_relays=true; continue; }
+                if (t.find("trusted_relay_agents:") == 0) { section = "trusted_relay_agents"; continue; }
                 if (section == "option_82") {
                     if (t.find("enabled:") == 0) {
                         auto v = trim(t.substr(t.find(':')+1)); option_82_validation_enabled_ = (v=="true"||v=="1");

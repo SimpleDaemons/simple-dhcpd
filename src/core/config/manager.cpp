@@ -322,21 +322,17 @@ void ConfigManager::parse_yaml_config(const std::string& yaml_config) {
     auto parse_ip = [](const std::string& s) -> IpAddress { return string_to_ip(s); };
 
     DhcpSubnet* current_subnet = nullptr;
-    bool in_subnets = false;
     bool in_dns_servers = false;
-    bool in_global_options = false;
-    bool in_logging = false;
-    bool in_security = false;
 
     while (std::getline(in, line)) {
         std::string t = trim(line);
         if (t.empty() || t[0] == '#') continue;
 
-        if (t.rfind("server:", 0) == 0) { current_section = "server"; in_logging=false; in_security=false; continue; }
-        if (t.rfind("subnets:", 0) == 0) { current_section = "subnets"; in_subnets = true; in_dns_servers=false; continue; }
-        if (t.rfind("global_options:", 0) == 0) { current_section = "global_options"; in_global_options = true; continue; }
-        if (t.rfind("logging:", 0) == 0) { current_section = "logging"; in_logging = true; continue; }
-        if (t.rfind("security:", 0) == 0) { current_section = "security"; in_security = true; continue; }
+        if (t.rfind("server:", 0) == 0) { current_section = "server"; continue; }
+        if (t.rfind("subnets:", 0) == 0) { current_section = "subnets"; in_dns_servers = false; continue; }
+        if (t.rfind("global_options:", 0) == 0) { current_section = "global_options"; continue; }
+        if (t.rfind("logging:", 0) == 0) { current_section = "logging"; continue; }
+        if (t.rfind("security:", 0) == 0) { current_section = "security"; continue; }
 
         if (current_section == "server") {
             // key: value
