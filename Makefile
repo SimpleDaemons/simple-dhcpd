@@ -269,10 +269,11 @@ endif
 
 # Static binary targets
 static-build: $(BUILD_DIR)-dir
-	@echo "Building static binary..."
 ifeq ($(PLATFORM),windows)
+	@echo "Building static binary..."
 	cd $(BUILD_DIR) && cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC_LINKING=ON && cmake --build . --config Release
 else
+	@echo "Building static binary..."
 	$(cmake_stale_guard)
 	cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC_LINKING=ON && $(MAKE) -j$(PARALLEL_JOBS)
 endif
@@ -286,9 +287,9 @@ endif
 
 # Create static binary package
 static-package: static-build
+ifeq ($(PLATFORM),windows)
 	@echo "Creating static binary package..."
 	@mkdir -p $(DIST_DIR)
-ifeq ($(PLATFORM),windows)
 	@echo "Creating Windows static binary ZIP..."
 	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-windows
 	@cp $(BUILD_DIR)/$(PROJECT_NAME).exe $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-windows/
@@ -300,6 +301,8 @@ ifeq ($(PLATFORM),windows)
 	@echo "Windows static binary package created: $(PROJECT_NAME)-$(VERSION)-static-windows.zip"
 else
 ifeq ($(PLATFORM),macos)
+	@echo "Creating static binary package..."
+	@mkdir -p $(DIST_DIR)
 	@echo "Creating macOS static binary TAR.GZ..."
 	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-macos
 	@cp $(BUILD_DIR)/$(PROJECT_NAME) $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-macos/
@@ -311,6 +314,8 @@ ifeq ($(PLATFORM),macos)
 	@echo "macOS static binary package created: $(PROJECT_NAME)-$(VERSION)-static-macos.tar.gz"
 else
 ifeq ($(PLATFORM),linux)
+	@echo "Creating static binary package..."
+	@mkdir -p $(DIST_DIR)
 	@echo "Creating Linux static binary TAR.GZ..."
 	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-linux
 	@cp $(BUILD_DIR)/$(PROJECT_NAME) $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-linux/
@@ -322,6 +327,8 @@ ifeq ($(PLATFORM),linux)
 	@echo "Linux static binary package created: $(PROJECT_NAME)-$(VERSION)-static-linux.tar.gz"
 else
 ifeq ($(PLATFORM),freebsd)
+	@echo "Creating static binary package..."
+	@mkdir -p $(DIST_DIR)
 	@echo "Creating FreeBSD static binary TAR.GZ..."
 	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd
 	@cp $(BUILD_DIR)/$(PROJECT_NAME) $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd/
@@ -332,6 +339,8 @@ ifeq ($(PLATFORM),freebsd)
 	@rm -rf $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-freebsd
 	@echo "FreeBSD static binary package created: $(PROJECT_NAME)-$(VERSION)-static-freebsd.tar.gz"
 else
+	@echo "Creating static binary package..."
+	@mkdir -p $(DIST_DIR)
 	@echo "Static binary package generation not supported on this platform"
 endif
 endif
@@ -340,6 +349,7 @@ endif
 
 # Create static binary ZIP (cross-platform)
 static-zip: static-build
+ifeq ($(PLATFORM),windows)
 	@echo "Creating static binary ZIP package..."
 	@mkdir -p $(DIST_DIR)
 	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)
@@ -347,13 +357,21 @@ static-zip: static-build
 	@cp README.md $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
 	@cp LICENSE $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
 	@cp -r config $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
-ifeq ($(PLATFORM),windows)
 	@cd $(DIST_DIR) && powershell -Command "Compress-Archive -Path '$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)' -DestinationPath '$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM).zip' -Force"
-else
-	@cd $(DIST_DIR) && zip -r $(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM).zip $(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
-endif
 	@rm -rf $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)
 	@echo "Static binary ZIP package created: $(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM).zip"
+else
+	@echo "Creating static binary ZIP package..."
+	@mkdir -p $(DIST_DIR)
+	@mkdir -p $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)
+	@cp $(BUILD_DIR)/$(PROJECT_NAME)$(if $(filter windows,$(PLATFORM)),.exe,) $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
+	@cp README.md $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
+	@cp LICENSE $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
+	@cp -r config $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
+	@cd $(DIST_DIR) && zip -r $(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM).zip $(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)/
+	@rm -rf $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM)
+	@echo "Static binary ZIP package created: $(PROJECT_NAME)-$(VERSION)-static-$(PLATFORM).zip"
+endif
 
 # Create all static binary formats
 static-all: static-package static-zip
@@ -715,24 +733,12 @@ help-all:
 	@echo "  package-source   - Create source code packages (TAR.GZ + ZIP)"
 	@echo "  package-all      - Build all package formats"
 	@echo "  package-info     - Show package information"
-ifeq ($(PLATFORM),macos)
-	@echo "  package-dmg      - Build DMG package (macOS only)"
-	@echo "  package-pkg      - Build PKG package (macOS only)"
-else
-ifeq ($(PLATFORM),linux)
-	@echo "  package-rpm      - Build RPM package (Linux only)"
-	@echo "  package-deb      - Build DEB package (Linux only)"
-else
-ifeq ($(PLATFORM),freebsd)
-	@echo "  package-tgz      - Build TGZ package (FreeBSD / CPack)"
-else
-ifeq ($(PLATFORM),windows)
-	@echo "  package-msi      - Build MSI package (Windows only)"
-	@echo "  package-zip      - Build ZIP package (Windows only)"
-endif
-endif
-endif
-endif
+	@case "$(PLATFORM)" in \
+		macos) echo "  package-dmg      - Build DMG package (macOS only)"; echo "  package-pkg      - Build PKG package (macOS only)";; \
+		linux) echo "  package-rpm      - Build RPM package (Linux only)"; echo "  package-deb      - Build DEB package (Linux only)";; \
+		freebsd) echo "  package-tgz      - Build TGZ package (FreeBSD / CPack)";; \
+		windows) echo "  package-msi      - Build MSI package (Windows only)"; echo "  package-zip      - Build ZIP package (Windows only)";; \
+	esac
 	@echo ""
 	@echo "Development targets:"
 	@echo "  dev-build        - Build in debug mode"
@@ -793,9 +799,9 @@ endif
 
 # Package source code
 package-source: build
+ifeq ($(PLATFORM),windows)
 	@echo "Creating source packages..."
 	@mkdir -p $(DIST_DIR)
-ifeq ($(PLATFORM),windows)
 	@echo "Creating ZIP source package..."
 	powershell -Command "Compress-Archive -Path '$(SRC_DIR)', '$(INCLUDE_DIR)', 'CMakeLists.txt', 'Makefile', 'README.md', 'LICENSE', 'deployment', 'config', 'scripts' -DestinationPath '$(DIST_DIR)\$(PROJECT_NAME)-$(VERSION)-src.zip' -Force"
 	@echo "Creating TAR.GZ source package..."
@@ -810,6 +816,8 @@ ifeq ($(PLATFORM),windows)
 		config \
 		scripts
 else
+	@echo "Creating source packages..."
+	@mkdir -p $(DIST_DIR)
 	@echo "Creating TAR.GZ source package..."
 	tar -czf $(DIST_DIR)/$(PROJECT_NAME)-$(VERSION)-src.tar.gz \
 		$(SRC_DIR) \
@@ -930,32 +938,13 @@ package-info:
 	@echo "Distribution directory: $(DIST_DIR)"
 	@echo ""
 	@echo "Available package formats:"
-ifeq ($(PLATFORM),linux)
-	@echo "  - DEB (Debian/Ubuntu)"
-	@echo "  - RPM (Red Hat/CentOS/Fedora)"
-	@echo "  - TAR.GZ (Source)"
-	@echo "  - ZIP (Source)"
-else
-ifeq ($(PLATFORM),macos)
-	@echo "  - DMG (macOS Disk Image)"
-	@echo "  - PKG (macOS Installer)"
-	@echo "  - TAR.GZ (Source)"
-	@echo "  - ZIP (Source)"
-else
-ifeq ($(PLATFORM),freebsd)
-	@echo "  - TGZ (CPack tarball binary)"
-	@echo "  - PKG (native CPack FREEBSD, when supported by CMake)"
-	@echo "  - TAR.GZ (Source)"
-	@echo "  - ZIP (Source)"
-else
-ifeq ($(PLATFORM),windows)
-	@echo "  - MSI (Windows Installer)"
-	@echo "  - ZIP (Windows Executable + Source)"
-	@echo "  - TAR.GZ (Source)"
-endif
-endif
-endif
-endif
+	@case "$(PLATFORM)" in \
+		linux) echo "  - DEB (Debian/Ubuntu)"; echo "  - RPM (Red Hat/CentOS/Fedora)"; echo "  - TAR.GZ (Source)"; echo "  - ZIP (Source)";; \
+		macos) echo "  - DMG (macOS Disk Image)"; echo "  - PKG (macOS Installer)"; echo "  - TAR.GZ (Source)"; echo "  - ZIP (Source)";; \
+		freebsd) echo "  - TGZ (CPack tarball binary)"; echo "  - PKG (native CPack FREEBSD, when supported by CMake)"; echo "  - TAR.GZ (Source)"; echo "  - ZIP (Source)";; \
+		windows) echo "  - MSI (Windows Installer)"; echo "  - ZIP (Windows Executable + Source)"; echo "  - TAR.GZ (Source)";; \
+		*) echo "  (platform-specific formats depend on PLATFORM)";; \
+	esac
 	@echo ""
 	@echo "To create packages:"
 	@echo "  make package          - Create platform-specific packages"
@@ -1202,11 +1191,13 @@ else
 endif
 
 config-backup:
+ifeq ($(PLATFORM),windows)
 	@$(MKDIR) $(DIST_DIR)/config-backup
 	$(CP) $(CONFIG_DIR_SRC) $(DIST_DIR)/config-backup/
-ifeq ($(PLATFORM),windows)
 	powershell -Command "Compress-Archive -Path '$(DIST_DIR)\config-backup' -DestinationPath '$(DIST_DIR)\config-backup-$(VERSION).zip' -Force"
 else
+	@$(MKDIR) $(DIST_DIR)/config-backup
+	$(CP) $(CONFIG_DIR_SRC) $(DIST_DIR)/config-backup/
 	tar -czf $(DIST_DIR)/config-backup-$(VERSION).tar.gz -C $(DIST_DIR) config-backup
 endif
 
@@ -1238,10 +1229,11 @@ endif
 
 # Backup and restore
 backup: config-backup
-	@$(MKDIR) $(DIST_DIR)/backup
 ifeq ($(PLATFORM),windows)
+	@$(MKDIR) $(DIST_DIR)/backup
 	powershell -Command "Compress-Archive -Path '$(CONFIG_DIR_SRC)', '$(DEPLOYMENT_DIR)', '$(SRC_DIR)', '$(INCLUDE_DIR)', 'CMakeLists.txt', 'Makefile', 'README.md', 'LICENSE' -DestinationPath '$(DIST_DIR)\$(PROJECT_NAME)-backup-$(VERSION).zip' -Force"
 else
+	@$(MKDIR) $(DIST_DIR)/backup
 	tar -czf $(DIST_DIR)/$(PROJECT_NAME)-backup-$(VERSION).tar.gz \
 		$(CONFIG_DIR_SRC) \
 		$(DEPLOYMENT_DIR) \
@@ -1254,8 +1246,8 @@ else
 endif
 
 restore: backup
-	@echo "Restoring from backup..."
 ifeq ($(PLATFORM),windows)
+	@echo "Restoring from backup..."
 	@if exist $(DIST_DIR)\$(PROJECT_NAME)-backup-$(VERSION).zip ( \
 		powershell -Command "Expand-Archive -Path '$(DIST_DIR)\$(PROJECT_NAME)-backup-$(VERSION).zip' -DestinationPath '.' -Force"; \
 		echo Restore completed; \
@@ -1263,6 +1255,7 @@ ifeq ($(PLATFORM),windows)
 		echo No backup found at $(DIST_DIR)\$(PROJECT_NAME)-backup-$(VERSION).zip; \
 	)
 else
+	@echo "Restoring from backup..."
 	@if [ -f $(DIST_DIR)/$(PROJECT_NAME)-backup-$(VERSION).tar.gz ]; then \
 		tar -xzf $(DIST_DIR)/$(PROJECT_NAME)-backup-$(VERSION).tar.gz; \
 		echo "Restore completed"; \
@@ -1273,11 +1266,13 @@ endif
 
 # Cleanup
 distclean: clean
+ifeq ($(PLATFORM),windows)
 	$(RM) $(DIST_DIR)
 	$(RM) $(PACKAGE_DIR)
-ifeq ($(PLATFORM),windows)
 	for /r . %%i in (*.o *.a *.so *.dylib *.exe *.dll *.obj *.pdb *.ilk *.exp *.lib) do del "%%i" 2>nul
 else
+	$(RM) $(DIST_DIR)
+	$(RM) $(PACKAGE_DIR)
 	find . -name "*.o" -delete
 	find . -name "*.a" -delete
 	find . -name "*.so" -delete
