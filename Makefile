@@ -23,10 +23,12 @@ PARALLEL_JOBS ?=
 INSTALL_PREFIX ?=
 
 MAKE ?= make
-M = $(CURDIR)/scripts/mk.sh
+# Relative path: do not use $(CURDIR) — empty on some BSD/BusyBox makes → "/scripts/mk.sh".
+MK_SH = ./scripts/mk.sh
 
+# ROOT from the shell cwd when the recipe runs (correct with make -C dir).
 # Environment passed to every mk.sh invocation (quote paths for spaces)
-E = ROOT="$(CURDIR)" MAKE="$(MAKE)" OS="$(OS)" SHELL="$(SHELL)" \
+E = ROOT="$$(pwd)" MAKE="$(MAKE)" OS="$(OS)" SHELL="$(SHELL)" \
 	PROJECT_NAME="$(PROJECT_NAME)" VERSION="$(VERSION)" \
 	BUILD_DIR="$(BUILD_DIR)" DIST_DIR="$(DIST_DIR)" PACKAGE_DIR="$(PACKAGE_DIR)" \
 	SRC_DIR="$(SRC_DIR)" INCLUDE_DIR="$(INCLUDE_DIR)" CONFIG_DIR_SRC="$(CONFIG_DIR_SRC)" \
@@ -38,43 +40,43 @@ E = ROOT="$(CURDIR)" MAKE="$(MAKE)" OS="$(OS)" SHELL="$(SHELL)" \
 all: build
 
 $(BUILD_DIR)-dir:
-	@env $(E) sh "$(M)" mkdir-build-dir
+	@env $(E) sh $(MK_SH) mkdir-build-dir
 
 build: $(BUILD_DIR)-dir
-	@env $(E) sh "$(M)" build
+	@env $(E) sh $(MK_SH) build
 
 clean:
-	@env $(E) sh "$(M)" clean
+	@env $(E) sh $(MK_SH) clean
 
 install: build
-	@env $(E) sh "$(M)" install
+	@env $(E) sh $(MK_SH) install
 
 uninstall:
-	@env $(E) sh "$(M)" uninstall
+	@env $(E) sh $(MK_SH) uninstall
 
 test: build
-	@env $(E) sh "$(M)" test
+	@env $(E) sh $(MK_SH) test
 
 package: build
-	@env $(E) sh "$(M)" package
+	@env $(E) sh $(MK_SH) package
 
 dev-build: $(BUILD_DIR)-dir
-	@env $(E) sh "$(M)" dev-build
+	@env $(E) sh $(MK_SH) dev-build
 
 dev-test: dev-build
-	@env $(E) sh "$(M)" dev-test
+	@env $(E) sh $(MK_SH) dev-test
 
 static-build: $(BUILD_DIR)-dir
-	@env $(E) sh "$(M)" static-build
+	@env $(E) sh $(MK_SH) static-build
 
 static-test: static-build
-	@env $(E) sh "$(M)" static-test
+	@env $(E) sh $(MK_SH) static-test
 
 static-package: static-build
-	@env $(E) sh "$(M)" static-package
+	@env $(E) sh $(MK_SH) static-package
 
 static-zip: static-build
-	@env $(E) sh "$(M)" static-zip
+	@env $(E) sh $(MK_SH) static-zip
 
 static-all: static-package static-zip
 	@echo "All static binary packages created successfully"
@@ -82,22 +84,22 @@ static-all: static-package static-zip
 	@ls -la "$(DIST_DIR)"/$(PROJECT_NAME)-$(VERSION)-static-* 2>/dev/null || echo "No static binary packages found"
 
 format:
-	@env $(E) sh "$(M)" format
+	@env $(E) sh $(MK_SH) format
 
 check-style:
-	@env $(E) sh "$(M)" check-style
+	@env $(E) sh $(MK_SH) check-style
 
 lint: check-style
-	@env $(E) sh "$(M)" lint
+	@env $(E) sh $(MK_SH) lint
 
 security-scan:
-	@env $(E) sh "$(M)" security-scan
+	@env $(E) sh $(MK_SH) security-scan
 
 deps:
-	@env $(E) sh "$(M)" deps
+	@env $(E) sh $(MK_SH) deps
 
 dev-deps:
-	@env $(E) sh "$(M)" dev-deps
+	@env $(E) sh $(MK_SH) dev-deps
 
 docker-build:
 	docker build -t $(PROJECT_NAME):$(VERSION) .
@@ -110,10 +112,10 @@ docker-stop:
 	docker rm $(PROJECT_NAME)-$(VERSION)
 
 service-install: install
-	@env $(E) sh "$(M)" service-install
+	@env $(E) sh $(MK_SH) service-install
 
 service-status:
-	@env $(E) sh "$(M)" service-status
+	@env $(E) sh $(MK_SH) service-status
 
 help:
 	@echo "A lightweight and secure DHCP server daemon - Main Help"
@@ -173,7 +175,7 @@ help:
 	@echo "  make help-all    - Show all available targets"
 
 help-all:
-	@env $(E) sh "$(M)" help-all
+	@env $(E) sh $(MK_SH) help-all
 
 help-build:
 	@echo "Build: all, build, clean, install, uninstall, test, dev-build, dev-test,"
@@ -200,7 +202,7 @@ help-platform:
 	@echo "Platform detection runs inside scripts (Windows, macOS, Linux, FreeBSD). Override: PARALLEL_JOBS=8 make build"
 
 package-source: build
-	@env $(E) sh "$(M)" package-source
+	@env $(E) sh $(MK_SH) package-source
 
 package-all: package package-source
 	@echo "All packages created successfully"
@@ -210,28 +212,28 @@ package-all: package package-source
 	@ls -la "$(DIST_DIR)"/$(PROJECT_NAME)-$(VERSION)-src.* 2>/dev/null || echo "No source packages found"
 
 package-deb: build
-	@env $(E) sh "$(M)" package-deb
+	@env $(E) sh $(MK_SH) package-deb
 
 package-rpm: build
-	@env $(E) sh "$(M)" package-rpm
+	@env $(E) sh $(MK_SH) package-rpm
 
 package-msi: build
-	@env $(E) sh "$(M)" package-msi
+	@env $(E) sh $(MK_SH) package-msi
 
 package-exe: build
-	@env $(E) sh "$(M)" package-exe
+	@env $(E) sh $(MK_SH) package-exe
 
 package-dmg: build
-	@env $(E) sh "$(M)" package-dmg
+	@env $(E) sh $(MK_SH) package-dmg
 
 package-pkg: build
-	@env $(E) sh "$(M)" package-pkg
+	@env $(E) sh $(MK_SH) package-pkg
 
 package-tgz: build
-	@env $(E) sh "$(M)" package-tgz
+	@env $(E) sh $(MK_SH) package-tgz
 
 package-info:
-	@env $(E) sh "$(M)" package-info
+	@env $(E) sh $(MK_SH) package-info
 
 debug: dev-build
 release: build
@@ -245,40 +247,40 @@ restart: service-restart
 status: service-status
 
 service-start:
-	@env $(E) sh "$(M)" service-start
+	@env $(E) sh $(MK_SH) service-start
 
 service-stop:
-	@env $(E) sh "$(M)" service-stop
+	@env $(E) sh $(MK_SH) service-stop
 
 service-restart:
-	@env $(E) sh "$(M)" service-restart
+	@env $(E) sh $(MK_SH) service-restart
 
 service-enable:
-	@env $(E) sh "$(M)" service-enable
+	@env $(E) sh $(MK_SH) service-enable
 
 service-disable:
-	@env $(E) sh "$(M)" service-disable
+	@env $(E) sh $(MK_SH) service-disable
 
 service-uninstall:
-	@env $(E) sh "$(M)" service-uninstall
+	@env $(E) sh $(MK_SH) service-uninstall
 
 config-install: install
-	@env $(E) sh "$(M)" config-install
+	@env $(E) sh $(MK_SH) config-install
 
 config-backup:
-	@env $(E) sh "$(M)" config-backup
+	@env $(E) sh $(MK_SH) config-backup
 
 log-rotate: install
-	@env $(E) sh "$(M)" log-rotate
+	@env $(E) sh $(MK_SH) log-rotate
 
 backup: config-backup
-	@env $(E) sh "$(M)" backup
+	@env $(E) sh $(MK_SH) backup
 
 restore: backup
-	@env $(E) sh "$(M)" restore
+	@env $(E) sh $(MK_SH) restore
 
 distclean: clean
-	@env $(E) sh "$(M)" distclean
+	@env $(E) sh $(MK_SH) distclean
 
 .PHONY: all build clean install uninstall test package package-source package-all \
 	package-deb package-rpm package-msi package-exe package-dmg package-pkg package-tgz package-info \
