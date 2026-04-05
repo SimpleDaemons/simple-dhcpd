@@ -43,17 +43,15 @@ ifeq ($(OS),Windows_NT)
     RMDIR = rmdir /S /Q
     MKDIR = mkdir
     CP = copy
-    # Check if running in Git Bash or similar
-    ifeq ($(shell echo $$SHELL),/usr/bin/bash)
-        # Running in Git Bash, use Unix commands
-        RM = rm -rf
-        RMDIR = rm -rf
-        MKDIR = mkdir -p
-        CP = cp -r
-        # Use Unix-style paths
-        INSTALL_PREFIX = /c/Program\ Files/$(PROJECT_NAME)
-        CONFIG_DIR = /c/Program\ Files/$(PROJECT_NAME)/etc
-    endif
+# Git Bash / MSYS: directives must start in column 0 (BusyBox make, strict GNU make)
+ifeq ($(shell echo $$SHELL),/usr/bin/bash)
+    RM = rm -rf
+    RMDIR = rm -rf
+    MKDIR = mkdir -p
+    CP = cp -r
+    INSTALL_PREFIX = /c/Program\ Files/$(PROJECT_NAME)
+    CONFIG_DIR = /c/Program\ Files/$(PROJECT_NAME)/etc
+endif
 else
 ifeq ($(UNAME_S),Darwin)
     PLATFORM = macos
