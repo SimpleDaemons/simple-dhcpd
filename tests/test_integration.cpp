@@ -158,8 +158,6 @@ TEST_F(ProtocolCompatibilityTest, DhcpVersionCompatibility) {
 
 TEST_F(ProtocolCompatibilityTest, ClientCompatibility) {
     // Test compatibility with different client types
-    DhcpParser parser;
-
     // Test with different MAC address formats
     MacAddress mac1 = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
     MacAddress mac2 = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
