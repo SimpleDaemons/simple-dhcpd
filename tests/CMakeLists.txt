@@ -59,7 +59,7 @@ target_link_libraries(simple_dhcpd_tests PRIVATE
 )
 
 if(ENABLE_JSON)
-    target_link_libraries(simple_dhcpd_tests PRIVATE PkgConfig::JSONCPP)
+    target_link_libraries(simple_dhcpd_tests PRIVATE ${SIMPLE_DHCPD_JSONCPP_TARGET})
 endif()
 
 target_include_directories(simple_dhcpd_tests PRIVATE

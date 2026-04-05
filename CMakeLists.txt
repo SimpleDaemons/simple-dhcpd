@@ -42,9 +42,47 @@ if(ENABLE_SSL)
 endif()
 
 if(ENABLE_JSON)
-    find_package(PkgConfig REQUIRED)
-    # IMPORTED_TARGET carries -L/-I so linkers find libjsoncpp (e.g. under /usr/local on FreeBSD).
-    pkg_check_modules(JSONCPP REQUIRED IMPORTED_TARGET jsoncpp)
+    # Prefer pkg-config when present (clean -L/-I on e.g. FreeBSD /usr/local). Otherwise fall back so
+    # minimal images without pkgconf still configure (find_path/find_library).
+    set(SIMPLE_DHCPD_JSONCPP_TARGET "")
+    find_package(PkgConfig QUIET)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(JSONCPP QUIET IMPORTED_TARGET jsoncpp)
+        if(JSONCPP_FOUND)
+            set(SIMPLE_DHCPD_JSONCPP_TARGET PkgConfig::JSONCPP)
+        endif()
+    endif()
+    if(NOT SIMPLE_DHCPD_JSONCPP_TARGET)
+        find_package(JsonCpp CONFIG QUIET)
+        if(NOT JsonCpp_FOUND)
+            find_package(jsoncpp CONFIG QUIET)
+        endif()
+        if(TARGET JsonCpp::JsonCpp)
+            set(SIMPLE_DHCPD_JSONCPP_TARGET JsonCpp::JsonCpp)
+        elseif(TARGET jsoncpp_lib)
+            set(SIMPLE_DHCPD_JSONCPP_TARGET jsoncpp_lib)
+        elseif(TARGET jsoncpp_static)
+            set(SIMPLE_DHCPD_JSONCPP_TARGET jsoncpp_static)
+        endif()
+    endif()
+    if(NOT SIMPLE_DHCPD_JSONCPP_TARGET)
+        find_path(JSONCPP_INCLUDE_DIR NAMES json/json.h PATH_SUFFIXES jsoncpp)
+        find_library(JSONCPP_LIBRARY NAMES jsoncpp libjsoncpp)
+        if(JSONCPP_INCLUDE_DIR AND JSONCPP_LIBRARY)
+            add_library(simple_dhcpd_jsoncpp UNKNOWN IMPORTED)
+            set_target_properties(simple_dhcpd_jsoncpp PROPERTIES
+                IMPORTED_LOCATION "${JSONCPP_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${JSONCPP_INCLUDE_DIR}")
+            set(SIMPLE_DHCPD_JSONCPP_TARGET simple_dhcpd_jsoncpp)
+        endif()
+    endif()
+    if(NOT SIMPLE_DHCPD_JSONCPP_TARGET)
+        message(FATAL_ERROR
+            "ENABLE_JSON is ON but jsoncpp was not found. "
+            "Install jsoncpp (and optionally pkgconf for pkg-config), e.g. FreeBSD: pkg install jsoncpp pkgconf; "
+            "Alpine: apk add jsoncpp-dev pkgconf; Debian: apt install libjsoncpp-dev pkg-config. "
+            "Or configure with -DENABLE_JSON=OFF.")
+    endif()
 endif()
 
 # Include directories
@@ -138,8 +176,8 @@ if(ENABLE_SSL)
 endif()
 
 if(ENABLE_JSON)
-    target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::JSONCPP)
-    target_link_libraries(${PROJECT_NAME}_lib PRIVATE PkgConfig::JSONCPP)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${SIMPLE_DHCPD_JSONCPP_TARGET})
+    target_link_libraries(${PROJECT_NAME}_lib PRIVATE ${SIMPLE_DHCPD_JSONCPP_TARGET})
 endif()
 
 # Compiler-specific options
