@@ -3,7 +3,8 @@
 
 : "${ROOT:=$(pwd)}"
 : "${PROJECT_NAME:=simple-dhcpd}"
-: "${VERSION:=0.1.0}"
+# Default when Makefile does not pass VERSION; match CMakeLists.txt project(... VERSION ...)
+: "${VERSION:=0.6.0}"
 : "${BUILD_DIR:=build}"
 : "${DIST_DIR:=dist}"
 : "${PACKAGE_DIR:=packaging}"
