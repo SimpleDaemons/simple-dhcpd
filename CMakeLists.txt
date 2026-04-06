@@ -185,8 +185,10 @@ if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX-)
     target_compile_options(${PROJECT_NAME}_lib PRIVATE /W4 /WX-)
 else()
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unused-private-field)
-    target_compile_options(${PROJECT_NAME}_lib PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unused-private-field)
+    # -Wno-unused-private-field is Clang-only; GCC (e.g. CentOS) rejects it.
+    set(_SIMPLE_DHCPD_CLANG_PRIV_FIELD "$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-unused-private-field>")
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter ${_SIMPLE_DHCPD_CLANG_PRIV_FIELD})
+    target_compile_options(${PROJECT_NAME}_lib PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter ${_SIMPLE_DHCPD_CLANG_PRIV_FIELD})
     if(ENABLE_STATIC_LINKING)
         # Only apply static linking flags for GCC, not clang
         if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

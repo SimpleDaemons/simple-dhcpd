@@ -9,6 +9,7 @@
 #include "simple-dhcpd/core/config/manager.hpp"
 #include "simple-dhcpd/core/utils/logger.hpp"
 #include "simple-dhcpd/core/utils/utils.hpp"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <json/json.h>
