@@ -8,7 +8,8 @@
 # you may not use this file except in compliance with the License.
 
 PROJECT_NAME = simple-dhcpd
-VERSION = 0.1.0
+# Keep in sync with CMakeLists.txt project(... VERSION ...)
+VERSION = 0.6.0
 BUILD_DIR = build
 DIST_DIR = dist
 PACKAGE_DIR = packaging
