@@ -25,8 +25,8 @@ Originally, **v0.4.0**–**v0.6.0** pointed at commits where `CMakeLists.txt` li
 
 | Tag | Repair tip (full SHA in `git show`) |
 |-----|-------------------------------------|
-| **v0.4.0** | **`b703957`** — based on original v0.4.0 (`b631542`) + *track src/core sources* + *test alignment*; full build including tests. |
-| **v0.5.0** | **`f2919ba`** — based on original v0.5.0 (`6dbe857`) + *track src/core sources*; same tree as `b703957`, different parent order. |
+| **v0.4.0** | Tip matches original v0.4.0 line (`b631542` + source + test commits); full build including tests. Inspect with `git rev-parse v0.4.0^{commit}`. |
+| **v0.5.0** | Tip matches original v0.5.0 line (`6dbe857` + source cherry-pick); same tree as v0.4.0 repair, different parent order. Inspect with `git rev-parse v0.5.0^{commit}`. |
 | **v0.6.0** | **Current `main`** at release time (CMake **0.6.0**, portability fixes, verify script). |
 
 The first fix on `main` was **`ab8050a`** (*fix: track src/core sources*). Tags above use that change (or later `main`) so GitHub source archives build.
