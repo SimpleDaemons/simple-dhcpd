@@ -27,24 +27,29 @@ protected:
     void SetUp() override {
         config_manager_ = std::make_unique<ConfigManager>();
         DhcpConfig config = get_default_config();
-        config.listen_addresses.push_back("127.0.0.1");
+        config.listen_addresses = {"127.0.0.1:67"};
+        config.subnets.clear();
 
         DhcpSubnet subnet;
         subnet.name = "perf-test";
-        subnet.network = string_to_ip("192.168.1.0");
-        subnet.prefix_length = 24;
-        subnet.range_start = string_to_ip("192.168.1.100");
-        subnet.range_end = string_to_ip("192.168.1.254");
+        subnet.network = string_to_ip("10.0.0.0");
+        subnet.prefix_length = 22;
+        subnet.range_start = string_to_ip("10.0.0.1");
+        subnet.range_end = string_to_ip("10.0.3.254");
         subnet.lease_time = 3600;
         config.subnets.push_back(subnet);
 
         config_manager_->set_config(config);
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
         parser_ = std::make_unique<DhcpParser>();
     }
 
     void TearDown() override {
         parser_.reset();
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -76,8 +81,7 @@ TEST_F(ThroughputTest, MessageParsingThroughput) {
     auto start = high_resolution_clock::now();
 
     for (int i = 0; i < iterations; ++i) {
-        DhcpMessage msg;
-        parser_->parse_message(discover, msg);
+        (void)DhcpParser::parse_message(discover);
     }
 
     auto end = high_resolution_clock::now();
@@ -102,7 +106,7 @@ TEST_F(ThroughputTest, LeaseAllocationThroughput) {
             0x00, 0x11, 0x22, 0x33, 0x44,
             static_cast<uint8_t>(i & 0xFF)
         };
-        lease_manager_->allocate_lease(mac, subnet.name);
+        lease_manager_->allocate_lease(mac, 0, subnet.name);
     }
 
     auto end = high_resolution_clock::now();
@@ -152,8 +156,7 @@ TEST_F(LatencyTest, MessageParsingLatency) {
 
     for (int i = 0; i < iterations; ++i) {
         auto start = high_resolution_clock::now();
-        DhcpMessage msg;
-        parser_->parse_message(discover, msg);
+        (void)DhcpParser::parse_message(discover);
         auto end = high_resolution_clock::now();
 
         total_latency += duration_cast<nanoseconds>(end - start).count();
@@ -186,9 +189,13 @@ protected:
 
         config_manager_->set_config(config);
         lease_manager_ = std::make_unique<LeaseManager>(config_manager_->get_config());
+        lease_manager_->start();
     }
 
     void TearDown() override {
+        if (lease_manager_) {
+            lease_manager_->stop();
+        }
         lease_manager_.reset();
         config_manager_.reset();
     }
@@ -208,8 +215,8 @@ TEST_F(ResourceUsageTest, MemoryUsagePerLease) {
             0x00, 0x11, 0x22, 0x33, 0x44,
             static_cast<uint8_t>(i & 0xFF)
         };
-        IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-        leases.push_back(ip);
+        DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+        leases.push_back(lease.ip_address);
     }
 
     // Basic memory usage check - verify we can handle 100 leases
@@ -235,8 +242,8 @@ TEST_F(ResourceUsageTest, ConcurrentLeaseAllocation) {
                 0x11, 0x22, 0x33, 0x44,
                 static_cast<uint8_t>(i & 0xFF)
             };
-            IpAddress ip = lease_manager_->allocate_lease(mac, subnet.name);
-            if (ip != 0) {
+            DhcpLease lease = lease_manager_->allocate_lease(mac, 0, subnet.name);
+            if (lease.ip_address != 0) {
                 success_count++;
             }
         }
