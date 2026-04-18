@@ -1,0 +1,38 @@
+# Releasing simple-dhcpd
+
+## Verify a tag builds (clean tree)
+
+From the repository root, with OpenSSL and jsoncpp available (and GoogleTest if tests are enabled):
+
+```sh
+chmod +x scripts/verify-release-build.sh
+./scripts/verify-release-build.sh v0.2.1 v0.3.0 v0.6.0
+```
+
+The script uses a fresh `git worktree` per tag and removes any `build/` directory checked out with the tag (some older tags accidentally carried a stale `CMakeCache.txt`).
+
+Override CMake options if needed:
+
+```sh
+CMAKE_EXTRA="-DBUILD_VERSION=production -DENABLE_TESTS=OFF" ./scripts/verify-release-build.sh v0.3.0
+```
+
+## Tags v0.4.0, v0.5.0, and older v0.6.0
+
+For a period, `CMakeLists.txt` referenced `src/core/dhcp/parser.cpp` (and related files) before those paths existed in the tree. Tags **v0.4.0**, **v0.5.0**, and an early **v0.6.0** (before the source-tracking fix) **do not configure** from a clean clone.
+
+The first commit that restores a matching source tree is **`ab8050a`** (*fix: track src/core sources*). The **v0.6.0** tag should point at **current `main`** (or at least `ab8050a`) so that GitHub’s “Source code” archive and packagers can build.
+
+Releases for **v0.2.1** and **v0.3.0** use the older single-target layout and verify cleanly.
+
+## GitHub releases
+
+After a tag points at a buildable commit:
+
+1. `git push origin vX.Y.Z` (use `git push --force origin vX.Y.Z` only if you moved an existing tag intentionally).
+2. Create or edit the GitHub Release for that tag; paste the corresponding section from `CHANGELOG.md`.
+3. Optional: attach CPack artifacts (`cpack` in your build directory) with `gh release upload`.
+
+## Version source of truth
+
+`CMakeLists.txt` sets `project(simple-dhcpd VERSION …)`. Keep `CHANGELOG.md`, packaging, and tags aligned with that version for the release you are publishing.
