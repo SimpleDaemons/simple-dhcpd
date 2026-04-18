@@ -17,11 +17,19 @@ Override CMake options if needed:
 CMAKE_EXTRA="-DBUILD_VERSION=production -DENABLE_TESTS=OFF" ./scripts/verify-release-build.sh v0.3.0
 ```
 
-## Tags v0.4.0, v0.5.0, and older v0.6.0
+## Tags v0.4.0, v0.5.0, and v0.6.0 (repaired)
 
-For a period, `CMakeLists.txt` referenced `src/core/dhcp/parser.cpp` (and related files) before those paths existed in the tree. Tags **v0.4.0**, **v0.5.0**, and an early **v0.6.0** (before the source-tracking fix) **do not configure** from a clean clone.
+Originally, **v0.4.0**–**v0.6.0** pointed at commits where `CMakeLists.txt` listed `src/core/dhcp/parser.cpp` (and related files) before those paths existed. Clean checkouts could not configure.
 
-The first commit that restores a matching source tree is **`ab8050a`** (*fix: track src/core sources*). The **v0.6.0** tag should point at **current `main`** (or at least `ab8050a`) so that GitHub’s “Source code” archive and packagers can build.
+**Current tags (intended for releases):**
+
+| Tag | Repair tip (full SHA in `git show`) |
+|-----|-------------------------------------|
+| **v0.4.0** | **`b703957`** — based on original v0.4.0 (`b631542`) + *track src/core sources* + *test alignment*; full build including tests. |
+| **v0.5.0** | **`f2919ba`** — based on original v0.5.0 (`6dbe857`) + *track src/core sources*; same tree as `b703957`, different parent order. |
+| **v0.6.0** | **Current `main`** at release time (CMake **0.6.0**, portability fixes, verify script). |
+
+The first fix on `main` was **`ab8050a`** (*fix: track src/core sources*). Tags above use that change (or later `main`) so GitHub source archives build.
 
 Releases for **v0.2.1** and **v0.3.0** use the older single-target layout and verify cleanly.
 
