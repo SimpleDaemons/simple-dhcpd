@@ -1,105 +1,106 @@
-# CPack configuration for simple-dhcpd
-# This file should be included in the main CMakeLists.txt (CPack is included there first)
+# CPack extras for simple-dhcpd (included before include(CPack) from CMakeLists.txt).
+# Do not set CPACK_GENERATOR here — the parent chooses DEB/RPM/DMG/PKG/FreeBSD.
 
 include(InstallRequiredSystemLibraries)
 
-# CPack General Settings
 set(CPACK_PACKAGE_NAME "simple-dhcpd")
 set(CPACK_PACKAGE_VENDOR "SimpleDaemons")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "simple-dhcpd - A lightweight and secure daemon")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
-set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_SOURCE_DIR}/packaging/assets/welcome.html")
-set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "SimpleDaemons\\\\simple-dhcpd")
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/packaging/assets/icons/simple-dhcpd.ico")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "simple-dhcpd - A lightweight and secure DHCP daemon")
+set(CPACK_PACKAGE_CONTACT "support@simpledaemons.com")
 
-# macOS PackageMaker (PKG)
-set(CPACK_GENERATOR "PackageMaker")
-set(CPACK_PACKAGEMAKER_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/packaging/assets/icons/background.png")
-set(CPACK_PACKAGEMAKER_PACKAGE_NAME "simple-dhcpd")
-set(CPACK_PACKAGEMAKER_DISTRIBUTION_FILE "${CMAKE_SOURCE_DIR}/packaging/macos/pkg/Distribution.xml")
-set(CPACK_PACKAGEMAKER_RESOURCES_DIR "${CMAKE_SOURCE_DIR}/packaging/macos/pkg")
+# productbuild only accepts .txt/.html/.rtf/.rtfd for license/readme/welcome.
+if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/LICENSE.txt")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/packaging/LICENSE.txt")
+elseif(EXISTS "${CMAKE_SOURCE_DIR}/LICENSE")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+endif()
 
-# macOS DragNDrop (DMG)
+if(APPLE)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/assets/readme.html")
+        set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/packaging/assets/readme.html")
+    endif()
+    if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/assets/welcome.html")
+        set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_SOURCE_DIR}/packaging/assets/welcome.html")
+    endif()
+    # DragNDrop volume icon must be .icns — skip missing/wrong formats.
+    if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/assets/icons/simple-dhcpd.icns")
+        set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/packaging/assets/icons/simple-dhcpd.icns")
+    else()
+        unset(CPACK_PACKAGE_ICON)
+    endif()
+else()
+    if(EXISTS "${CMAKE_SOURCE_DIR}/README.md")
+        set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+    endif()
+endif()
+
 set(CPACK_DMG_VOLUME_NAME "simple-dhcpd")
 set(CPACK_DMG_FORMAT "UDZO")
-set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/packaging/assets/icons/dmg-background.png")
-set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_SOURCE_DIR}/packaging/macos/dmg/setup-dsstore.sh")
+if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/assets/icons/dmg-background.png")
+    set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/packaging/assets/icons/dmg-background.png")
+endif()
+# Optional DS_Store customizer — only enable a known-good AppleScript helper.
+# Broken/placeholder scripts cause CPack DragNDrop to fail entirely.
+if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/macos/dmg/setup-dsstore.sh")
+    file(READ "${CMAKE_SOURCE_DIR}/packaging/macos/dmg/setup-dsstore.sh" _dmg_ds_script LIMIT 200)
+    if(_dmg_ds_script MATCHES "osascript" AND NOT _dmg_ds_script MATCHES "TODO|placeholder|FIXME")
+        # Keep disabled until the AppleScript is validated on BUILD_DMG;
+        # a failed setup script aborts the whole DMG build.
+        # set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_SOURCE_DIR}/packaging/macos/dmg/setup-dsstore.sh")
+    endif()
+endif()
 
-# Windows NSIS
-set(CPACK_NSIS_PACKAGE_NAME "simple-dhcpd")
-set(CPACK_NSIS_DISPLAY_NAME "simple-dhcpd")
-set(CPACK_NSIS_HELP_LINK "https://github.com/simpledaemons/simple-dhcpd")
-set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/simpledaemons/simple-dhcpd")
-set(CPACK_NSIS_CONTACT "support@simpledaemons.com")
-set(CPACK_NSIS_MODIFY_PATH ON)
-set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/packaging/assets/icons/simple-dhcpd.ico")
-set(CPACK_NSIS_MUI_UNICON "${CMAKE_SOURCE_DIR}/packaging/assets/icons/simple-dhcpd.ico")
-set(CPACK_NSIS_MUI_HEADERIMAGE "${CMAKE_SOURCE_DIR}/packaging/assets/icons/header.bmp")
-set(CPACK_NSIS_MUI_WELCOMEFINISHPAGE_BITMAP "${CMAKE_SOURCE_DIR}/packaging/assets/icons/wizard.bmp")
-set(CPACK_NSIS_LICENSE_FILE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
-set(CPACK_NSIS_INSTALLED_ICON_NAME "simple-dhcpd.exe")
-set(CPACK_NSIS_CREATE_ICONS_EXTRA
-    "CreateShortCut '$SMPROGRAMS\\\\$START_MENU_FOLDER\\\\simple-dhcpd.lnk' '$INSTDIR\\\\simple-dhcpd.exe'"
-)
-set(CPACK_NSIS_DELETE_ICONS_EXTRA
-    "Delete '$SMPROGRAMS\\\\$START_MENU_FOLDER\\\\simple-dhcpd.lnk'"
-)
-
-# Windows WIX (MSI)
-set(CPACK_WIX_PRODUCT_GUID "PUT-GUID-HERE")
-set(CPACK_WIX_UPGRADE_GUID "PUT-GUID-HERE")
-set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/simpledaemons/simple-dhcpd")
-set(CPACK_WIX_PROPERTY_ARPHELPLINK "https://github.com/simpledaemons/simple-dhcpd")
-set(CPACK_WIX_PROPERTY_ARPURLUPDATEINFO "https://github.com/simpledaemons/simple-dhcpd/releases")
-set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/packaging/assets/icons/wix-banner.bmp")
-set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/packaging/assets/icons/wix-dialog.bmp")
-set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/packaging/licenses/LICENSE.rtf")
-
-# Debian Package
+# Debian
 set(CPACK_DEBIAN_PACKAGE_NAME "simple-dhcpd")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libssl3 (>= 3.0.0), libc6 (>= 2.31)")
 set(CPACK_DEBIAN_PACKAGE_SECTION "net")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
-    "${CMAKE_SOURCE_DIR}/packaging/linux/deb/postinst"
-    "${CMAKE_SOURCE_DIR}/packaging/linux/deb/prerm"
-    "${CMAKE_SOURCE_DIR}/packaging/linux/deb/postrm"
-)
+if(ENABLE_STATIC_LINKING)
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+else()
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libssl3 (>= 3.0.0), libc6 (>= 2.31)")
+endif()
+if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/linux/deb/postinst")
+    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+        "${CMAKE_SOURCE_DIR}/packaging/linux/deb/postinst"
+        "${CMAKE_SOURCE_DIR}/packaging/linux/deb/prerm"
+        "${CMAKE_SOURCE_DIR}/packaging/linux/deb/postrm"
+    )
+endif()
 
-# RPM Package
+# RPM
 set(CPACK_RPM_PACKAGE_NAME "simple-dhcpd")
 set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
 set(CPACK_RPM_PACKAGE_LICENSE "Apache-2.0")
-set(CPACK_RPM_PACKAGE_REQUIRES "openssl-libs, jsoncpp")
-set(CPACK_RPM_PRE_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/preinstall.sh")
-set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/postinstall.sh")
-set(CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/preuninstall.sh")
-set(CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/postuninstall.sh")
+if(ENABLE_STATIC_LINKING)
+    set(CPACK_RPM_PACKAGE_REQUIRES "")
+else()
+    set(CPACK_RPM_PACKAGE_REQUIRES "openssl-libs, jsoncpp")
+endif()
+if(EXISTS "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/preinstall.sh")
+    set(CPACK_RPM_PRE_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/preinstall.sh")
+    set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/postinstall.sh")
+    set(CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/preuninstall.sh")
+    set(CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/packaging/linux/rpm/postuninstall.sh")
+endif()
 
-# Component installation
-install(TARGETS simple-dhcpd
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
+# Optional package contents
+if(EXISTS "${CMAKE_SOURCE_DIR}/config/simple-dhcpd.conf")
+    install(FILES config/simple-dhcpd.conf
+        DESTINATION etc/simple-dhcpd
+        RENAME simple-dhcpd.conf.example
+    )
+elseif(EXISTS "${CMAKE_SOURCE_DIR}/config/simple-dhcpd.conf.example")
+    install(FILES config/simple-dhcpd.conf.example
+        DESTINATION etc/simple-dhcpd
+    )
+endif()
 
-install(FILES config/simple-dhcpd.conf
-    DESTINATION etc/simple-dhcpd
-    RENAME simple-dhcpd.conf.example
-)
-
-install(FILES deployment/systemd/simple-dhcpd.service
-    DESTINATION lib/systemd/system
-)
+if(EXISTS "${CMAKE_SOURCE_DIR}/deployment/systemd/simple-dhcpd.service")
+    install(FILES deployment/systemd/simple-dhcpd.service
+        DESTINATION lib/systemd/system
+    )
+endif()
 
 install(FILES LICENSE README.md
     DESTINATION share/doc/simple-dhcpd
 )
-

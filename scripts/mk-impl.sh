@@ -79,6 +79,22 @@ cmd_test() {
 	fi
 }
 
+# Move CPack outputs into dist/ (names may include platform ids or suffixes).
+_cpack_collect() {
+	ext="$1"
+	found=0
+	for f in "$BUILD_DIR"/${PROJECT_NAME}-*."$ext" "$BUILD_DIR"/${PROJECT_NAME}_*."$ext"; do
+		[ -f "$f" ] || continue
+		mv "$f" "$DIST_DIR/"
+		found=1
+	done
+	if [ "$found" -eq 0 ]; then
+		echo "WARNING: no .$ext packages found under $BUILD_DIR" >&2
+		return 1
+	fi
+	return 0
+}
+
 cmd_package() {
 	$MKDIR "$DIST_DIR"
 	case "$PLATFORM" in
@@ -86,25 +102,25 @@ cmd_package() {
 		echo "Building macOS packages..."
 		(cd "$BUILD_DIR" && cpack -G DragNDrop)
 		(cd "$BUILD_DIR" && cpack -G productbuild)
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.dmg "$DIST_DIR/" 2>/dev/null || true
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.pkg "$DIST_DIR/" 2>/dev/null || true
+		_cpack_collect dmg || true
+		_cpack_collect pkg || true
 		echo "macOS packages created: DMG and PKG"
 		;;
 	linux)
 		echo "Building Linux packages..."
 		(cd "$BUILD_DIR" && cpack -G RPM)
 		(cd "$BUILD_DIR" && cpack -G DEB)
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.rpm "$DIST_DIR/" 2>/dev/null || true
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.deb "$DIST_DIR/" 2>/dev/null || true
+		_cpack_collect rpm || true
+		_cpack_collect deb || true
 		echo "Linux packages created: RPM and DEB"
 		;;
 	freebsd)
 		echo "Building FreeBSD packages..."
 		(cd "$BUILD_DIR" && cpack -G TGZ)
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.tar.gz "$DIST_DIR/" 2>/dev/null || true
+		_cpack_collect tar.gz || true
 		(cd "$BUILD_DIR" && cpack -G FREEBSD || true)
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.pkg "$DIST_DIR/" 2>/dev/null || true
-		mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.txz "$DIST_DIR/" 2>/dev/null || true
+		_cpack_collect pkg || true
+		_cpack_collect txz || true
 		echo "FreeBSD packages created: TGZ (and native .pkg/.txz if CPack FREEBSD is available)"
 		;;
 	windows)
@@ -112,8 +128,8 @@ cmd_package() {
 		$MKDIR "$DIST_DIR"
 		(cd "$BUILD_DIR" && cpack -G WIX)
 		(cd "$BUILD_DIR" && cpack -G ZIP)
-		$CP "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.msi "$DIST_DIR"/ 2>/dev/null || true
-		$CP "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.zip "$DIST_DIR"/ 2>/dev/null || true
+		_cpack_collect msi || true
+		_cpack_collect zip || true
 		echo "Windows packages created: MSI and ZIP"
 		;;
 	*)
@@ -853,8 +869,8 @@ cmd_package_deb() {
 	echo "Building DEB package..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G DEB)
-	mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.deb "$DIST_DIR"/
-	echo "DEB package created: $DIST_DIR/${PROJECT_NAME}-${VERSION}-*.deb"
+	_cpack_collect deb
+	echo "DEB package created under $DIST_DIR/"
 }
 
 cmd_package_rpm() {
@@ -865,8 +881,8 @@ cmd_package_rpm() {
 	echo "Building RPM package..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G RPM)
-	mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.rpm "$DIST_DIR"/
-	echo "RPM package created: $DIST_DIR/${PROJECT_NAME}-${VERSION}-*.rpm"
+	_cpack_collect rpm
+	echo "RPM package created under $DIST_DIR/"
 }
 
 cmd_package_msi() {
@@ -877,8 +893,8 @@ cmd_package_msi() {
 	echo "Building MSI package..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G WIX)
-	$CP "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.msi "$DIST_DIR"/
-	echo "MSI package created: $DIST_DIR/${PROJECT_NAME}-${VERSION}-*.msi"
+	_cpack_collect msi
+	echo "MSI package created under $DIST_DIR/"
 }
 
 cmd_package_exe() {
@@ -889,8 +905,8 @@ cmd_package_exe() {
 	echo "Building EXE package..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G ZIP)
-	$CP "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.zip "$DIST_DIR"/
-	echo "EXE package created: $DIST_DIR/${PROJECT_NAME}-${VERSION}-*.zip"
+	_cpack_collect zip
+	echo "EXE package created under $DIST_DIR/"
 }
 
 cmd_package_dmg() {
@@ -901,8 +917,8 @@ cmd_package_dmg() {
 	echo "Building DMG package..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G DragNDrop)
-	mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.dmg "$DIST_DIR"/
-	echo "DMG package created: $DIST_DIR/${PROJECT_NAME}-${VERSION}-*.dmg"
+	_cpack_collect dmg
+	echo "DMG package created under $DIST_DIR/"
 }
 
 cmd_package_pkg() {
@@ -913,8 +929,8 @@ cmd_package_pkg() {
 	echo "Building PKG package..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G productbuild)
-	mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.pkg "$DIST_DIR"/
-	echo "PKG package created: $DIST_DIR/${PROJECT_NAME}-${VERSION}-*.pkg"
+	_cpack_collect pkg
+	echo "PKG package created under $DIST_DIR/"
 }
 
 cmd_package_tgz() {
@@ -925,7 +941,7 @@ cmd_package_tgz() {
 	echo "Building TGZ package (CPack)..."
 	$MKDIR "$DIST_DIR"
 	(cd "$BUILD_DIR" && cpack -G TGZ)
-	mv "$BUILD_DIR"/${PROJECT_NAME}-${VERSION}-*.tar.gz "$DIST_DIR"/ 2>/dev/null || true
+	_cpack_collect tar.gz || true
 	echo "TGZ package created under $DIST_DIR/"
 }
 
