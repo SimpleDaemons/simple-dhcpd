@@ -1,24 +1,31 @@
-# Project management documentation
+# Project Management Documentation
 
-Internal planning and status docs for Simple DHCP Daemon.
+Internal planning docs for **Simple DHCP Daemon** (`simple-dhcpd`).
 
-## Start here
+## Document index
 
-**[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** — canonical **honest** status: build, **`ctest`** results, server wiring, and remaining gaps before calling it 1.0.
+### Status & progress
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** — overall status and metrics
+- **[PROGRESS_REPORT.md](PROGRESS_REPORT.md)** — honest assessment of what works
+- **[../PROJECT_OVERVIEW.md](../PROJECT_OVERVIEW.md)** — short executive overview
 
-## Other files
+### Implementation & features
+- **[FEATURE_AUDIT.md](FEATURE_AUDIT.md)** — implemented vs stubbed
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** — recent work summary (if present)
 
-| Document | Role |
-|----------|------|
-| [PROJECT_STATUS.md](PROJECT_STATUS.md) | High-level overview (reconciled toward `PROGRESS_REPORT.md`) |
-| [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) | Checklist for a real 1.0 (core dev items largely met; ops/CI/coverage still open) |
-| [FEATURE_AUDIT.md](FEATURE_AUDIT.md) | Feature vs server path vs tests |
-| [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) | Historical completion notes + April 2026 caveats |
-| [TECHNICAL_DEBT.md](TECHNICAL_DEBT.md) | Debt inventory (default test target **passes**; remaining debt updated in-file) |
-| [ROADMAP_CHECKLIST.md](ROADMAP_CHECKLIST.md) | Long checklist; top banner is current; many `[x]` rows are **aspirational** unless re-verified |
+### Planning & roadmap
+- **[ROADMAP.md](../ROADMAP.md)** — public roadmap
+- **[ROADMAP_CHECKLIST.md](ROADMAP_CHECKLIST.md)** — detailed checklists
 
-User-facing guides under **[docs/](../docs/)** were refreshed (April 2026) to **pre–1.0** language; deep pages may still over-claim — prefer **`PROGRESS_REPORT.md`** when in doubt.
+### Technical debt
+- **[TECHNICAL_DEBT.md](TECHNICAL_DEBT.md)** — known debt (canonical name; not `TECH_DEBT.md`)
 
----
+### Release
+- **[RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)** — pre/post-release steps
+- **[RELEASING.md](../RELEASING.md)** — tag and publish how-to
+- **[CHANGELOG.md](../CHANGELOG.md)** — release history
+- **[VERSIONING.md](../VERSIONING.md)** — SemVer policy
 
-*Last updated: April 2026*
+User-facing guides live under **[docs/](../docs/)** when present.
+
+*Standard: SimpleDaemons `STANDARDIZATION_TEMPLATES/docs/PROJECT_DOCS_STANDARD.md`*

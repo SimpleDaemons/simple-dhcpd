@@ -1,5 +1,8 @@
 # Simple DHCP Daemon - Development Roadmap
 
+
+**Honesty note:** Prefer [project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md) when phase checkmarks may be historical. Item-level tracking: [project/ROADMAP_CHECKLIST.md](project/ROADMAP_CHECKLIST.md). Overview: [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
+
 **April 2026:** For **verified** build, test, and wiring status, see **[project/PROGRESS_REPORT.md](project/PROGRESS_REPORT.md)**. This roadmap is **planning**; phase checkmarks are not a substitute for CI and field validation.
 
 ## Overview
